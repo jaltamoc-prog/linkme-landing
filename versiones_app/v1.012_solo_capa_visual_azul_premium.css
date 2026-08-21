@@ -1,0 +1,307 @@
+
+
+/* v1.012 - capa visual premium azul. Solo estética: color, sombras, fondos y acentos. */
+:root{
+  --bg:#F7F8FC;
+  --soft:#E9EDFF;
+  --ink:#0A0D14;
+  --muted:#5D667A;
+  --line:#DDE3F7;
+  --brand:#2448FF;
+  --brand-dark:#1834D8;
+  --brand-soft:#E9EDFF;
+  --violet:#7757FF;
+  --white:#FFFFFF;
+  --shadow:0 24px 70px rgba(10,13,20,.10);
+  --premium-gradient:linear-gradient(135deg,#2448FF 0%,#7757FF 100%);
+}
+
+html{
+  background:#F7F8FC;
+}
+
+body{
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 78% 10%, rgba(36,72,255,.075), transparent 30%),
+    radial-gradient(circle at 8% 46%, rgba(119,87,255,.055), transparent 26%),
+    #F7F8FC;
+}
+
+.site-header{
+  background:rgba(247,248,252,.88);
+  border-bottom:1px solid rgba(221,227,247,.92);
+  backdrop-filter:blur(16px);
+}
+
+.brand,
+.footer-brand{
+  color:var(--ink);
+}
+
+.desktop-nav,
+.login-link{
+  color:#606A80;
+}
+
+.desktop-nav a:hover,
+.login-link:hover{
+  color:var(--brand);
+}
+
+.button{
+  background:var(--brand);
+  color:#fff;
+  box-shadow:0 16px 34px rgba(36,72,255,.24);
+}
+
+.button:hover{
+  background:var(--brand-dark);
+  box-shadow:0 18px 40px rgba(36,72,255,.30);
+}
+
+.button-soft,
+.secondary-plan{
+  background:#0A0D14;
+  color:#fff;
+  box-shadow:0 14px 32px rgba(10,13,20,.16);
+}
+
+.button-soft:hover,
+.secondary-plan:hover{
+  background:#151B2A;
+}
+
+.eyebrow{
+  color:var(--brand);
+}
+
+.hero{
+  background:
+    radial-gradient(circle at 78% 42%, rgba(36,72,255,.13), transparent 26%),
+    radial-gradient(circle at 86% 24%, rgba(119,87,255,.12), transparent 24%);
+}
+
+.hero-trust{
+  color:#667089;
+}
+
+.hero-image-wrap,
+.video-phone-wrap,
+.demo-video-panel{
+  position:relative;
+}
+
+.hero-image-wrap::before,
+.video-phone-wrap::before{
+  content:"";
+  position:absolute;
+  width:78%;
+  height:68%;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(36,72,255,.20), rgba(119,87,255,.09) 45%, transparent 72%);
+  filter:blur(18px);
+  z-index:0;
+}
+
+.hero-phone-image,
+.video-phone{
+  position:relative;
+  z-index:1;
+}
+
+.hero-phone-image{
+  filter:drop-shadow(0 30px 76px rgba(36,72,255,.16)) drop-shadow(0 16px 44px rgba(10,13,20,.10));
+}
+
+.video-phone{
+  box-shadow:0 26px 70px rgba(36,72,255,.14), 0 18px 48px rgba(10,13,20,.10);
+}
+
+.value-strip{
+  border-color:var(--line);
+  background:var(--line);
+}
+
+.value-strip div,
+.card,
+.step,
+.feature-list div,
+.plan-card,
+.price-confidence,
+.trust-points span,
+details,
+.demo-card{
+  border-color:var(--line);
+}
+
+.value-strip div,
+.card,
+.step,
+.feature-list div,
+.plan-card,
+.demo-card{
+  background:rgba(255,255,255,.92);
+}
+
+.soft-section,
+.trust-faq-section,
+.trust-section{
+  background:
+    radial-gradient(circle at 18% 20%, rgba(36,72,255,.055), transparent 26%),
+    #E9EDFF;
+}
+
+.section-heading h2,
+.demo-copy h3,
+.final-cta h2,
+.compact-final-cta h2{
+  color:var(--ink);
+}
+
+.section-heading p,
+.demo-copy p,
+.card p,
+.step p,
+.plan-copy,
+.plan-note,
+.pricing-footnote,
+.footer p{
+  color:var(--muted);
+}
+
+.phone-card,
+.demo-card,
+.plan-card,
+.featured-plan{
+  box-shadow:0 22px 62px rgba(10,13,20,.08);
+}
+
+.mock-cover,
+.demo-top{
+  background:
+    radial-gradient(circle at 24% 20%, rgba(36,72,255,.16), transparent 32%),
+    linear-gradient(135deg,#E9EDFF,#FFFFFF);
+}
+
+.mock-buttons span,
+.demo-card a{
+  border-color:var(--line);
+  background:#FFFFFF;
+}
+
+.mock-qr{
+  color:var(--brand);
+}
+
+.step span{
+  color:var(--brand);
+}
+
+.feature-list strong,
+.card h3,
+.step h3,
+.plan-card h3,
+summary{
+  color:var(--ink);
+}
+
+.featured-plan{
+  border:2px solid rgba(36,72,255,.46);
+  box-shadow:0 30px 78px rgba(36,72,255,.13), 0 18px 48px rgba(10,13,20,.08);
+}
+
+.plan-badge{
+  background:#EEF2FF;
+  color:#27375F;
+}
+
+.featured-badge{
+  background:var(--premium-gradient);
+  color:#fff;
+}
+
+.price-section{
+  background:
+    radial-gradient(circle at 50% 30%, rgba(36,72,255,.09), transparent 28%),
+    linear-gradient(180deg,#F7F8FC 0%,#FFFFFF 100%);
+}
+
+.price-confidence{
+  background:#FFFFFF;
+  color:#4C5872;
+}
+
+.plan-equivalent{
+  background:#EEF2FF;
+  color:#23345E;
+}
+
+.saving-box{
+  border-color:rgba(36,72,255,.18);
+  background:linear-gradient(180deg,#F8FAFF,#FFFFFF);
+}
+
+.saving-box strong{
+  color:var(--brand);
+}
+
+.saving-box span{
+  color:var(--muted);
+}
+
+.featured-list{
+  color:#3E4861;
+}
+
+.trust-points span{
+  background:#FFFFFF;
+  color:#3E4861;
+}
+
+.final-cta{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(119,87,255,.22), transparent 32%),
+    linear-gradient(135deg,#0A0D14 0%,#121A33 100%);
+}
+
+.footer{
+  background:#FFFFFF;
+  border-top:1px solid var(--line);
+}
+
+.footer-grid a:hover{
+  color:var(--brand);
+}
+
+/* Microacento premium controlado */
+.featured-plan::before,
+.price-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(36,72,255,.18),rgba(119,87,255,.12),transparent 45%);
+  opacity:.55;
+  z-index:0;
+}
+
+.featured-plan > *,
+.price-card > *{
+  position:relative;
+  z-index:1;
+}
+
+@media(max-width:980px){
+  body{
+    background:
+      radial-gradient(circle at 50% 4%, rgba(36,72,255,.08), transparent 28%),
+      #F7F8FC;
+  }
+
+  .hero{
+    background:
+      radial-gradient(circle at 50% 58%, rgba(36,72,255,.12), transparent 30%);
+  }
+}
