@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}LinkMe | Tu tarjeta digital viva{% endblock %}
+{% block description %}Crea tu tarjeta digital LinkMe: un QR vivo para compartir tu contacto, redes, pagos y perfil profesional.{% endblock %}
+
+{% block content %}
+
+<!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
+
+<section id="inicio" class="hero compact-hero">
+  <div class="hero-copy">
+    <div class="eyebrow">Tarjeta digital profesional</div>
+    <h1>Tu tarjeta digital.<br>Viva, clara y siempre actualizada.</h1>
+    <p class="hero-text">
+      Comparte tu contacto, redes, pagos y perfil profesional desde un solo QR.
+      LinkMe te ayuda a presentarte bien y a que te guarden sin fricción.
+    </p>
+    <div class="hero-actions">
+      <a class="button" href="{{ create_url }}">Crear mi LinkMe</a>
+      <a class="secondary-link" href="#demo">Ver ejemplo</a>
+    </div>
+    <div class="hero-trust">Pago seguro con Stripe · Cupón en checkout · QR permanente</div>
+  </div>
+
+  <div class="hero-visual">
+    <!-- v1.009 HERO IMAGEN MOCKUP MUJER -->
+    <div class="hero-image-wrap">
+      <img
+        class="hero-phone-image"
+        src="{{ url_for('static', filename='img/mockup_mujer_linkme.png') }}?v={{ asset_version }}"
+        alt="Mockup de LinkMe en celular"
+        loading="eager"
+      >
+    </div>
+  </div>
+
+  <div class="value-strip compact-value-strip">
+    <div><strong>QR vivo</strong><span>Edita tus datos sin cambiar tu código.</span></div>
+    <div><strong>Perfil público</strong><span>Comparte solo lo que quieres mostrar.</span></div>
+    <div><strong>Mi LinkMe</strong><span>Gestiona tu tarjeta desde tu celular.</span></div>
+  </div>
+</section>
+
+<section id="demo" class="section compact-section demo-section">
+  <div class="section-heading">
+    <span class="eyebrow">Producto visible</span>
+    <h2>Así se ve una LinkMe.</h2>
+    <p>Una página simple para que cualquier persona pueda identificarte, guardarte y contactarte.</p>
+  </div>
+
+  <div class="demo-grid compact-demo-grid demo-three-column">
+    <!-- v1.009 DEMO 3 COLUMNAS: PRIVADO / TEXTO / PUBLICO -->
+    <div class="demo-video-panel private-demo-panel">
+      <h3 class="video-label">Perfil privado</h3>
+      <video class="video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
+        <source src="{{ url_for('static', filename='video/linkme_mockup_privado.mp4') }}?v={{ asset_version }}" type="video/mp4">
+      </video>
+    </div>
+
+    <div class="demo-copy">
+      <h3>Un QR para compartir. Un acceso privado para controlar.</h3>
+      <p>
+        LinkMe separa lo que los demás ven de lo que tú gestionas. Tu perfil público es claro;
+        tu acceso privado te permite actualizar información cuando lo necesites.
+      </p>
+      <a class="button button-soft" href="{{ create_url }}">Crear mi LinkMe</a>
+    </div>
+
+    <div class="demo-video-panel public-demo-panel">
+      <h3 class="video-label">Perfil público</h3>
+      <video class="video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
+        <source src="{{ url_for('static', filename='video/linkme_mockup_publico.mp4') }}?v={{ asset_version }}" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona" class="section compact-section soft-section split-section">
+  <div class="section-heading">
+    <span class="eyebrow">Beneficios</span>
+    <h2>Menos fricción para compartir quién eres.</h2>
+  </div>
+
+  <div class="cards four compact-cards">
+    <article class="card"><h3>Te guardan más fácil</h3><p>Tu contacto puede guardarse sin teclear nombres, teléfonos o correos.</p></article>
+    <article class="card"><h3>Tu QR no caduca</h3><p>Cambia tus datos cuando quieras. El mismo QR sigue funcionando.</p></article>
+    <article class="card"><h3>Todo en un solo lugar</h3><p>WhatsApp, teléfono, correo, redes, ubicación, pagos y enlaces importantes.</p></article>
+    <article class="card"><h3>Control público y privado</h3><p>Tú gestionas tu LinkMe desde tu acceso privado. Los demás ven tu perfil público.</p></article>
+  </div>
+
+  <div class="section-heading second-heading">
+    <span class="eyebrow">Natural e intuitivo</span>
+    <h2>Crea. Comparte. Actualiza.</h2>
+    <p>Sin tutoriales largos. LinkMe se entiende al verlo.</p>
+  </div>
+
+  <div class="steps compact-steps">
+    <div class="step"><span>01</span><h3>Crea</h3><p>Agrega tus datos, foto, redes y formas de contacto.</p></div>
+    <div class="step"><span>02</span><h3>Comparte</h3><p>Usa tu QR o link para que abran tu perfil público.</p></div>
+    <div class="step"><span>03</span><h3>Actualiza</h3><p>Tu información cambia; tu QR permanece.</p></div>
+  </div>
+</section>
+
+<section id="caracteristicas" class="section compact-section">
+  <div class="section-heading">
+    <span class="eyebrow">Diferenciadores</span>
+    <h2>No es solo una lista de links. Es tu presentación digital.</h2>
+    <p>Hecha para networking, ventas, servicios profesionales y equipos que necesitan compartir información clara en segundos.</p>
+  </div>
+
+  <div class="feature-list compact-feature-list">
+    <div><strong>Doble perfil:</strong> privado para gestionar, público para compartir.</div>
+    <div><strong>QR vivo:</strong> un solo código, siempre actualizado.</div>
+    <div><strong>Contacto guardable:</strong> menos errores, menos tecleo.</div>
+    <div><strong>Diseño coherente:</strong> información ordenada y con tu color.</div>
+    <div><strong>Pagos y datos útiles:</strong> Stripe, Hotmart, CLABE o links importantes.</div>
+  </div>
+
+  <div class="section-heading second-heading">
+    <span class="eyebrow">Casos de uso</span>
+    <h2>Hecha para quienes viven de presentarse bien.</h2>
+  </div>
+
+  <div class="cards four compact-cards use-case-cards">
+    <article class="card"><h3>Ventas</h3><p>Un escaneo puede llevar directo a WhatsApp, mejor aún ligas de pago de tu servicio o producto.</p></article>
+    <article class="card"><h3>Servicios profesionales</h3><p>Comparte contacto, ubicación, redes y credenciales desde un solo lugar.</p></article>
+    <article class="card"><h3>Eventos</h3><p>Menos tarjetas físicas. Más contactos guardados.</p></article>
+    <article class="card"><h3>Equipos</h3><p>Cada integrante con una tarjeta alineada a la marca.</p></article>
+  </div>
+</section>
+
+<section id="precio" class="section compact-section price-section">
+  <!-- v1.010 AJUSTES COPY PRECIOS -->
+  <div class="section-heading price-heading">
+    <span class="eyebrow">Precios</span>
+    <h2>Tres formas de usarlo. Un mismo producto.</h2>
+    <p>Mantenemos precios simples y estables. Elige mensual si quieres flexibilidad, semestral si buscas eficiencia, o anual si optimizas costo total.</p>
+    <div class="price-confidence">El mismo nivel de servicio en todos los planes; solo cambia el compromiso.</div>
+  </div>
+
+  <div class="pricing-grid compact-pricing-grid">
+    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
+      <div class="plan-badge">Flexible</div>
+      <h3>Mensual</h3>
+      <p class="plan-price"><span>USD</span> $4.99 <small>/ mes</small></p>
+      <p class="plan-copy">Empieza sin compromiso.</p>
+      <div class="plan-equivalent">Equivalente anual: USD $59.88</div>
+      <p class="plan-note">Flexibilidad</p>
+    
+      <div class="plan-card-cta">Crear mensual</div>
+    </a>
+
+    <a class="plan-card featured-plan plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con el plan anual recomendado">
+      <div class="plan-badge featured-badge">Mejor valor</div>
+      <h3>Anual</h3>
+      <p class="plan-price"><span>USD</span> $29.97 <small>/ año</small></p>
+      <p class="plan-copy">Máximo valor, mínimo costo sostenido.</p>
+      <div class="saving-box"><strong>Ahorro vs mensual: 52%</strong><span>USD $29.91 menos al año.</span></div>
+      <div class="saving-box"><strong>Ahorro vs semestral: 37%</strong><span>USD $16.01 menos al año.</span></div>
+      <ul class="featured-list">
+        <li>Pagas una vez en 365 días.</li>
+        <li>Actualizaciones incluidas. Sin sorpresas.</li>
+        <li>El costo más bajo por mes.</li>
+      </ul>
+    
+      <div class="plan-card-cta">Crear anual</div>
+    </a>
+
+    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
+      <div class="plan-badge">Eficiente</div>
+      <h3>Semestral</h3>
+      <p class="plan-price"><span>USD</span> $22.99 <small>/ 6 meses</small></p>
+      <p class="plan-copy">Optimiza tu costo sin irte al anual.</p>
+      <div class="plan-equivalent">Equivalente anual: USD $45.98</div>
+      <p class="plan-note">Para quienes planifican por periodos.</p>
+    
+      <div class="plan-card-cta">Crear semestral</div>
+    </a>
+  </div>
+
+  <p class="pricing-footnote">
+    Precios transparentes. Sin descuentos artificiales, sin letras pequeñas. Si tienes un cupón, podrás aplicarlo antes de pagar en Stripe.
+  </p>
+</section>
+
+<section id="preguntas" class="section compact-section trust-faq-section">
+  <div class="section-heading">
+    <span class="eyebrow">Confianza</span>
+    <h2>Tus datos, bajo tu control.</h2>
+    <p>Tú decides qué información agregar a tu LinkMe. Puedes actualizar tus datos cuando lo necesites y mantener tu QR funcionando sin volver a imprimir nada.</p>
+  </div>
+
+  <div class="trust-points">
+    <span>Sin letras chiquitas</span>
+    <span>Pago seguro con Stripe</span>
+    <span>QR activo durante tu periodo contratado</span>
+    <span>Información editable desde tu acceso privado</span>
+  </div>
+
+  <div class="section-heading second-heading">
+    <span class="eyebrow">Preguntas</span>
+    <h2>Lo básico, claro.</h2>
+  </div>
+
+  <div class="faq compact-faq">
+    <!-- v1.007 FAQ ACTUALIZADO -->
+    <details>
+      <summary>¿Necesito descargar una app?</summary>
+      <p>No. Tus contactos no necesitan descargar nada. Solo escanean tu QR o abren tu enlace y ven tu perfil público directamente en el navegador de su celular.</p>
+      <p>Tú puedes guardar LinkMe en la pantalla de inicio de tu celular para entrar rápidamente a tu administrador, mostrar tu QR y actualizar tu información.</p>
+    </details>
+
+    <details>
+      <summary>¿Cuántas veces puedo actualizar mis datos?</summary>
+      <p>Todas las veces que lo necesites durante tu periodo contratado. No hay límite de cambios.</p>
+      <p>Actualizas tu información desde tu acceso privado y tu perfil público muestra automáticamente la versión más reciente. Tu QR y tu enlace siguen siendo los mismos.</p>
+    </details>
+
+    <details>
+      <summary>¿Cómo tengo mi QR a la mano para compartirlo?</summary>
+      <p>Guarda LinkMe en la pantalla de inicio de tu celular y entra con un toque.</p>
+      <p>Desde tu administrador tendrás siempre acceso a tu QR para mostrarlo cuantas veces quieras. También podrás editar tus datos y actualizar tu foto de perfil o banner.</p>
+    </details>
+
+    <details>
+      <summary>¿Pueden guardar mis datos en los contactos de su celular?</summary>
+      <p>Sí. Desde tu perfil público pueden guardar tus datos directamente en los contactos de su celular.</p>
+      <p>El contacto incluye el enlace a tu LinkMe público para que puedan volver a consultar tu perfil cuando quieran.</p>
+    </details>
+
+    <details>
+      <summary>Si cambio mis datos, ¿se actualiza también el contacto que alguien ya guardó?</summary>
+      <p>Tu perfil público sí se actualiza automáticamente. El contacto que una persona ya guardó en su celular, no.</p>
+      <p>Si quiere tener también tus datos actualizados en su agenda, deberá entrar nuevamente a tu LinkMe público y guardar el contacto otra vez.</p>
+    </details>
+
+    <details>
+      <summary>¿Qué pasa con mi privacidad?</summary>
+      <p>Tú controlas qué información publicas. Tu perfil público solo muestra los datos que agregues a tu LinkMe, y tu acceso privado sirve para gestionar y actualizar tu tarjeta.</p>
+    </details>
+
+    <details>
+      <summary>¿Cómo se paga?</summary>
+      <p>Puedes pagar con tarjeta de crédito o débito a través de Stripe.</p>
+    </details>
+  </div>
+
+  <div class="compact-final-cta">
+    <h2>Que conocerte sea fácil. Que contactarte sea inmediato.</h2>
+    <a class="button" href="{{ create_url }}">Crear mi LinkMe</a>
+  </div>
+</section>
+
+{% endblock %}
