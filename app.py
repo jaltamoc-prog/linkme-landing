@@ -1,3 +1,5 @@
+# v1.033 Landing LinkMe - recursos visuales actualizados
+# Reemplaza la imagen principal y los videos de perfil privado y público.
 # v1.032 Landing LinkMe - FAQ acceso desde cualquier dispositivo
 from flask import Flask, render_template, redirect, Response, request
 import os
@@ -5,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1032"
+ASSET_VERSION = "1033"
 
 @app.context_processor
 def inject_asset_version():
