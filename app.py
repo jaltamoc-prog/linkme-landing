@@ -1,4 +1,4 @@
-# v1.033 Landing LinkMe - recursos visuales actualizados
+# v1.034 Landing LinkMe - precios México/internacional
 # Reemplaza la imagen principal y los videos de perfil privado y público.
 # v1.032 Landing LinkMe - FAQ acceso desde cualquier dispositivo
 from flask import Flask, render_template, redirect, Response, request
@@ -7,11 +7,23 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1033"
+ASSET_VERSION = "1034"
 
 @app.context_processor
 def inject_asset_version():
     return {"asset_version": ASSET_VERSION}
+
+
+def detectar_mercado():
+    pais = (
+        request.headers.get("CF-IPCountry")
+        or request.headers.get("CloudFront-Viewer-Country")
+        or request.headers.get("X-Country-Code")
+        or ""
+    ).strip().upper()
+    if pais:
+        return "mxn" if pais == "MX" else "usd"
+    return "mxn" if "ES-MX" in (request.headers.get("Accept-Language") or "").upper() else "usd"
 
 @app.after_request
 def add_cache_headers(response):
@@ -42,7 +54,7 @@ def aplicar_headers_basicos(response):
 
 @app.route("/")
 def index():
-    return render_template("index.html", login_url="https://linkme-mvp.onrender.com/s/in", price_usd="29.97", create_url="/nuevo")
+    return render_template("index.html", login_url="https://linkme-mvp.onrender.com/s/in", create_url="/nuevo", market=detectar_mercado())
 
 @app.route("/crearmilinkme")
 def crearmilinkme():

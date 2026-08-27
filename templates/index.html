@@ -141,9 +141,9 @@
     <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
       <div class="plan-badge">Flexible</div>
       <h3>Mensual</h3>
-      <p class="plan-price"><span>USD</span> $4.99 <small>/ mes</small></p>
+      <p class="plan-price localized-price" data-mxn="MXN|$137" data-usd="USD|$7.99"><span>MXN</span> $137 <small>/ mes</small></p>
       <p class="plan-copy">Empieza sin compromiso.</p>
-      <div class="plan-equivalent">Equivalente anual: USD $59.88</div>
+      <div class="plan-equivalent localized-copy" data-mxn="Equivalente anual: MXN $1,644" data-usd="Equivalente anual: USD $95.88">Equivalente anual: MXN $1,644</div>
       <p class="plan-note">Flexibilidad</p>
     
       <div class="plan-card-cta">Crear mensual</div>
@@ -152,10 +152,10 @@
     <a class="plan-card featured-plan plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con el plan anual recomendado">
       <div class="plan-badge featured-badge">Mejor valor</div>
       <h3>Anual</h3>
-      <p class="plan-price"><span>USD</span> $29.97 <small>/ año</small></p>
+      <p class="plan-price localized-price" data-mxn="MXN|$597" data-usd="USD|$34.99"><span>MXN</span> $597 <small>/ año</small></p>
       <p class="plan-copy">Máximo valor, mínimo costo sostenido.</p>
-      <div class="saving-box"><strong>Ahorro vs mensual: 52%</strong><span>USD $29.91 menos al año.</span></div>
-      <div class="saving-box"><strong>Ahorro vs semestral: 37%</strong><span>USD $16.01 menos al año.</span></div>
+      <div class="saving-box"><strong>Ahorro vs mensual: 64%</strong><span class="localized-copy" data-mxn="MXN $1,047 menos al año." data-usd="USD $60.89 menos al año.">MXN $1,047 menos al año.</span></div>
+      <div class="saving-box"><strong>Ahorro vs semestral: 32%</strong><span class="localized-copy" data-mxn="MXN $277 menos al año." data-usd="USD $14.99 menos al año.">MXN $277 menos al año.</span></div>
       <ul class="featured-list">
         <li>Pagas una vez en 365 días.</li>
         <li>Actualizaciones incluidas. Sin sorpresas.</li>
@@ -168,9 +168,9 @@
     <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
       <div class="plan-badge">Eficiente</div>
       <h3>Semestral</h3>
-      <p class="plan-price"><span>USD</span> $22.99 <small>/ 6 meses</small></p>
+      <p class="plan-price localized-price" data-mxn="MXN|$437" data-usd="USD|$24.99"><span>MXN</span> $437 <small>/ 6 meses</small></p>
       <p class="plan-copy">Optimiza tu costo sin irte al anual.</p>
-      <div class="plan-equivalent">Equivalente anual: USD $45.98</div>
+      <div class="plan-equivalent localized-copy" data-mxn="Equivalente anual: MXN $874" data-usd="Equivalente anual: USD $49.98">Equivalente anual: MXN $874</div>
       <p class="plan-note">Para quienes planifican por periodos.</p>
     
       <div class="plan-card-cta">Crear semestral</div>
@@ -178,7 +178,7 @@
   </div>
 
   <p class="pricing-footnote">
-    Precios transparentes. Sin descuentos artificiales, sin letras pequeñas. Si tienes un cupón, podrás aplicarlo antes de pagar en Stripe.
+    <span id="pricingMarketNote">Precios para México en MXN.</span> Stripe puede mostrar el equivalente en la moneda local disponible al pagar. Si tienes un cupón, podrás aplicarlo antes del pago.
   </p>
 </section>
 
