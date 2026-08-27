@@ -1,3 +1,4 @@
+# v1.036 Landing LinkMe - propuesta de valor centrada en el beneficio
 # v1.035 Landing LinkMe - ajustes de redacción y estructura
 # v1.034 Landing LinkMe - precios México/internacional
 # Reemplaza la imagen principal y los videos de perfil privado y público.
@@ -8,7 +9,7 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1035"
+ASSET_VERSION = "1036"
 
 @app.context_processor
 def inject_asset_version():
