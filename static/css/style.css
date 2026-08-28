@@ -810,6 +810,59 @@ body{
   box-shadow:0 26px 70px rgba(36,72,255,.14), 0 18px 48px rgba(10,13,20,.10);
 }
 
+/* v1.037 - contorno SVG de celular para imagen principal y videos */
+.device-frame{
+  position:relative;
+  display:grid;
+  place-items:center;
+  aspect-ratio:142 / 269;
+  isolation:isolate;
+}
+
+.hero-device-frame{
+  width:min(385px,100%);
+}
+
+.demo-device-frame{
+  width:min(290px,100%);
+}
+
+.device-frame > .device-content{
+  position:absolute;
+  z-index:1;
+  top:3.2%;
+  right:5.8%;
+  bottom:3.2%;
+  left:5.8%;
+  width:88.4%;
+  height:93.6%;
+  object-fit:cover;
+  border-radius:10.5% / 5.5%;
+  box-shadow:none;
+  filter:none;
+}
+
+.device-outline{
+  position:absolute;
+  z-index:2;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  filter:drop-shadow(0 24px 42px rgba(10,13,20,.22));
+}
+
+@media(max-width:980px){
+  .hero-device-frame{width:min(335px,100%)}
+  .demo-device-frame{width:min(305px,100%)}
+}
+
+@media(max-width:560px){
+  .hero-device-frame{width:min(304px,100%)}
+  .demo-device-frame{width:min(288px,100%)}
+}
+
 .value-strip{
   border-color:var(--line);
   background:var(--line);
