@@ -3220,6 +3220,67 @@ body{
   }
 }
 
+/* v1.050 - capas corregidas y texto sin fondos sobre los videos */
+.fullbleed-stage{
+  position:relative !important;
+  isolation:isolate;
+}
+
+.fullbleed-stage > .fullbleed-video{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  opacity:1 !important;
+  filter:none !important;
+  transform:none !important;
+}
+
+.fullbleed-stage > .stage-shade{
+  display:none !important;
+}
+
+.fullbleed-stage > .stage-copy{
+  position:relative !important;
+  z-index:3 !important;
+  color:#FFFFFF !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+.fullbleed-stage .stage-copy h1,
+.fullbleed-stage .stage-copy h2,
+.fullbleed-stage .stage-copy p,
+.fullbleed-stage .stage-copy .hero-text,
+.fullbleed-stage .stage-copy .hero-trust,
+.fullbleed-stage .stage-copy .secondary-link,
+.fullbleed-stage .stage-copy .eyebrow{
+  color:#FFFFFF !important;
+  opacity:1 !important;
+  text-shadow:
+    0 3px 16px rgba(0,0,0,.96),
+    0 1px 4px rgba(0,0,0,1),
+    0 0 1px rgba(0,0,0,1);
+}
+
+.fullbleed-stage .stage-copy .button{
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.38),
+    0 0 0 1px rgba(255,255,255,.22);
+}
+
+@media(max-width:760px){
+  .fullbleed-stage > .stage-copy{
+    background:transparent !important;
+    margin-bottom:22px;
+  }
+}
+
 /* v1.048 - videos protagonistas, separados del texto */
 .hero.compact-hero{
   min-height:760px;
