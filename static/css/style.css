@@ -834,13 +834,14 @@ body{
 .device-screen{
   position:absolute;
   z-index:1;
-  top:3.2%;
-  right:6.2%;
-  bottom:4.2%;
-  left:6.2%;
+  top:4%;
+  right:9.2%;
+  bottom:4%;
+  left:9.2%;
   overflow:hidden;
-  border-radius:10.5% / 5.5%;
-  background:#fff;
+  border-radius:8.5% / 4.2%;
+  background:#050505;
+  clip-path:inset(0 round 8.5% 8.5% 7% 7%);
 }
 
 .device-screen > .device-content{
