@@ -25,12 +25,14 @@
     <!-- v1.009 HERO IMAGEN MOCKUP MUJER -->
     <div class="hero-image-wrap">
       <div class="device-frame hero-device-frame">
-        <img
-          class="device-content hero-phone-image"
-          src="{{ url_for('static', filename='img/mockup_mujer_linkme.png') }}?v={{ asset_version }}"
-          alt="Mockup de LinkMe en celular"
-          loading="eager"
-        >
+        <div class="device-screen">
+          <img
+            class="device-content hero-phone-image"
+            src="{{ url_for('static', filename='img/mockup_mujer_linkme.png') }}?v={{ asset_version }}"
+            alt="Mockup de LinkMe en celular"
+            loading="eager"
+          >
+        </div>
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
     </div>
@@ -50,9 +52,11 @@
     <div class="demo-video-panel private-demo-panel">
       <h3 class="video-label">Perfil privado</h3>
       <div class="device-frame demo-device-frame">
-        <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
-          <source src="{{ url_for('static', filename='video/linkme_mockup_privado.mp4') }}?v={{ asset_version }}" type="video/mp4">
-        </video>
+        <div class="device-screen">
+          <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
+            <source src="{{ url_for('static', filename='video/linkme_mockup_privado.mp4') }}?v={{ asset_version }}" type="video/mp4">
+          </video>
+        </div>
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
     </div>
@@ -69,9 +73,11 @@
     <div class="demo-video-panel public-demo-panel">
       <h3 class="video-label">Perfil público</h3>
       <div class="device-frame demo-device-frame">
-        <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
-          <source src="{{ url_for('static', filename='video/linkme_mockup_publico.mp4') }}?v={{ asset_version }}" type="video/mp4">
-        </video>
+        <div class="device-screen">
+          <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
+            <source src="{{ url_for('static', filename='video/linkme_mockup_publico.mp4') }}?v={{ asset_version }}" type="video/mp4">
+          </video>
+        </div>
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
     </div>
