@@ -815,7 +815,7 @@ body{
   position:relative;
   display:grid;
   place-items:center;
-  aspect-ratio:142 / 269;
+  aspect-ratio:465 / 918;
   isolation:isolate;
   background:transparent;
 }
@@ -834,13 +834,12 @@ body{
 .device-screen{
   position:absolute;
   z-index:1;
-  top:4%;
-  left:50%;
-  width:78%;
+  top:5.56%;
+  left:7.31%;
+  width:85.59%;
   aspect-ratio:384 / 832;
-  transform:translateX(-50%);
   overflow:hidden;
-  border-radius:8% / 4%;
+  border-radius:7.5% / 3.5%;
   background:#050505;
 }
 
