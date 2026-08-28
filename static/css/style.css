@@ -3220,6 +3220,33 @@ body{
   }
 }
 
+/* v1.051 - respaldo visible si iOS bloquea autoplay */
+.mobile-video-play{
+  position:absolute;
+  z-index:5;
+  right:22px;
+  bottom:22px;
+  display:grid;
+  place-items:center;
+  width:54px;
+  height:54px;
+  padding:0 0 0 3px;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:50%;
+  color:#FFFFFF;
+  background:rgba(5,10,30,.58);
+  box-shadow:0 12px 32px rgba(0,0,0,.28);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  font-size:22px;
+  cursor:pointer;
+}
+
+.mobile-video-play:focus-visible{
+  outline:3px solid #8FB4FF;
+  outline-offset:3px;
+}
+
 /* v1.050 - capas corregidas y texto sin fondos sobre los videos */
 .fullbleed-stage{
   position:relative !important;

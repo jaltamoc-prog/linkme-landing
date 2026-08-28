@@ -7,7 +7,7 @@
 <!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
 
 <section id="inicio" class="hero compact-hero fullbleed-stage hero-fullbleed-stage">
-  <video class="motion-stage-video fullbleed-video" autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
+  <video class="motion-stage-video fullbleed-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
     <source src="{{ url_for('static', filename='video/motion/linkme_mexico_monterrey.mp4') }}?v={{ asset_version }}" type="video/mp4">
   </video>
   <div class="stage-shade" aria-hidden="true"></div>
@@ -28,7 +28,7 @@
 
 <section id="demo" class="section compact-section demo-section">
   <div class="fullbleed-stage demo-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york_v2.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york_v2.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york_v2.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york_v2.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
     <div class="stage-shade" aria-hidden="true"></div>
     <div class="section-heading stage-copy">
       <span class="eyebrow">Producto visible</span>
@@ -78,7 +78,7 @@
 
 <section id="como-funciona" class="section compact-section soft-section split-section benefits-motion-section">
   <div class="fullbleed-stage benefits-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
     <div class="stage-shade" aria-hidden="true"></div>
     <div class="section-heading stage-copy">
       <span class="eyebrow">Beneficios</span>

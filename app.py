@@ -1,3 +1,4 @@
+# v1.051 Landing LinkMe - autoplay compatible con iPhone y Android
 # v1.050 Landing LinkMe - texto limpio visible sobre video
 # v1.049 Landing LinkMe - videos full-screen por sección
 # v1.048 Landing LinkMe - videos protagonistas y contraste editorial
@@ -23,7 +24,7 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1050"
+ASSET_VERSION = "1051"
 
 @app.context_processor
 def inject_asset_version():
