@@ -1,3 +1,4 @@
+# v1.042 Landing LinkMe - medios ajustados a la pantalla del celular
 # v1.041 Landing LinkMe - recorte inferior dentro del celular
 # v1.040 Landing LinkMe - pantalla ajustada dentro del celular
 # v1.039 Landing LinkMe - un solo contorno de celular
@@ -14,7 +15,7 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1041"
+ASSET_VERSION = "1042"
 
 @app.context_processor
 def inject_asset_version():
