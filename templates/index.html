@@ -7,13 +7,6 @@
 <!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
 
 <section id="inicio" class="hero compact-hero">
-  <div class="motion-backdrop hero-motion-backdrop" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="metadata" tabindex="-1" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york.jpg') }}?v={{ asset_version }}">
-      <source src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" type="video/mp4">
-    </video>
-    <span class="motion-glow motion-glow-one"></span>
-    <span class="motion-glow motion-glow-two"></span>
-  </div>
   <div class="hero-copy">
     <div class="eyebrow">Tu punto de contacto digital</div>
     <h1>Todo lo que necesitan para contactarte<br>y hacer negocio contigo.</h1>
@@ -28,34 +21,25 @@
     <div class="hero-trust">Información actualizable · Contacto inmediato · Pago seguro con Stripe</div>
   </div>
 
-  <div class="hero-visual">
-    <!-- v1.009 HERO IMAGEN MOCKUP MUJER -->
-    <div class="hero-image-wrap">
-      <div class="device-frame hero-device-frame">
-        <div class="device-screen">
-          <img
-            class="device-content hero-phone-image"
-            src="{{ url_for('static', filename='img/mockup_mujer_linkme.png') }}?v={{ asset_version }}"
-            alt="Mockup de LinkMe en celular"
-            loading="eager"
-          >
-        </div>
-        <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
-      </div>
+  <div class="hero-visual hero-cinematic">
+    <div class="cinematic-video-card hero-video-card">
+      <video autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
+        <source src="{{ url_for('static', filename='video/motion/linkme_mexico_monterrey.mp4') }}?v={{ asset_version }}" type="video/mp4">
+      </video>
     </div>
   </div>
 
 </section>
 
 <section id="demo" class="section compact-section demo-section">
-  <div class="motion-backdrop demo-motion-backdrop" aria-hidden="true">
-    <video class="lazy-motion-video" muted loop playsinline preload="none" tabindex="-1" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_mexico_monterrey.mp4') }}?v={{ asset_version }}">
-    </video>
-  </div>
   <div class="section-heading">
     <span class="eyebrow">Producto visible</span>
     <h2>Tu punto de contacto digital.</h2>
     <p>Tu identidad profesional y todas tus formas de contacto en un perfil claro, ordenado y fácil de usar.</p>
+  </div>
+
+  <div class="cinematic-video-card section-cinematic-video">
+    <video class="lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
   </div>
 
   <div class="demo-grid compact-demo-grid demo-three-column">
@@ -96,13 +80,13 @@
 </section>
 
 <section id="como-funciona" class="section compact-section soft-section split-section benefits-motion-section">
-  <div class="motion-backdrop benefits-motion-backdrop" aria-hidden="true">
-    <video class="lazy-motion-video" muted loop playsinline preload="none" tabindex="-1" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}">
-    </video>
-  </div>
   <div class="section-heading">
     <span class="eyebrow">Beneficios</span>
     <h2>Convierte tu información en oportunidades de contacto.</h2>
+  </div>
+
+  <div class="cinematic-video-card section-cinematic-video benefits-cinematic-video">
+    <video class="lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
   </div>
 
   <div class="cards four compact-cards">

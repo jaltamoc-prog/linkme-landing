@@ -1,3 +1,4 @@
+# v1.048 Landing LinkMe - videos protagonistas y contraste editorial
 # v1.047 Landing LinkMe - motion-first con videos originales de LinkMe
 # v1.046 Landing LinkMe - diseño editorial inmersivo motion-first
 # v1.045 Landing LinkMe - marco único responsivo sin SVG superpuesto
@@ -20,7 +21,7 @@ import os
 app = Flask(__name__)
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1047"
+ASSET_VERSION = "1048"
 
 @app.context_processor
 def inject_asset_version():
