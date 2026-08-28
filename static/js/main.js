@@ -79,6 +79,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".motion-stage-video").forEach(function (video) {
+      video.pause();
+    });
     lazyMotionVideos.forEach(function (video) {
       video.removeAttribute("data-src");
     });

@@ -6,8 +6,12 @@
 
 <!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
 
-<section id="inicio" class="hero compact-hero">
-  <div class="hero-copy">
+<section id="inicio" class="hero compact-hero fullbleed-stage hero-fullbleed-stage">
+  <video class="motion-stage-video fullbleed-video" autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
+    <source src="{{ url_for('static', filename='video/motion/linkme_mexico_monterrey.mp4') }}?v={{ asset_version }}" type="video/mp4">
+  </video>
+  <div class="stage-shade" aria-hidden="true"></div>
+  <div class="hero-copy stage-copy">
     <div class="eyebrow">Tu punto de contacto digital</div>
     <h1>Todo lo que necesitan para contactarte<br>y hacer negocio contigo.</h1>
     <p class="hero-text">
@@ -20,29 +24,21 @@
     </div>
     <div class="hero-trust">Información actualizable · Contacto inmediato · Pago seguro con Stripe</div>
   </div>
-
-  <div class="hero-visual hero-cinematic">
-    <div class="cinematic-video-card hero-video-card">
-      <video autoplay muted loop playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_mexico_monterrey.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
-        <source src="{{ url_for('static', filename='video/motion/linkme_mexico_monterrey.mp4') }}?v={{ asset_version }}" type="video/mp4">
-      </video>
-    </div>
-  </div>
-
 </section>
 
 <section id="demo" class="section compact-section demo-section">
-  <div class="section-heading">
-    <span class="eyebrow">Producto visible</span>
-    <h2>Tu punto de contacto digital.</h2>
-    <p>Tu identidad profesional y todas tus formas de contacto en un perfil claro, ordenado y fácil de usar.</p>
+  <div class="fullbleed-stage demo-fullbleed-stage">
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york_v2.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york_v2.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
+    <div class="stage-shade" aria-hidden="true"></div>
+    <div class="section-heading stage-copy">
+      <span class="eyebrow">Producto visible</span>
+      <h2>Tu punto de contacto digital.</h2>
+      <p>Tu identidad profesional y todas tus formas de contacto en un perfil claro, ordenado y fácil de usar.</p>
+    </div>
   </div>
 
-  <div class="cinematic-video-card section-cinematic-video">
-    <video class="lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
-  </div>
-
-  <div class="demo-grid compact-demo-grid demo-three-column">
+  <div class="section-after-stage">
+   <div class="demo-grid compact-demo-grid demo-three-column">
     <!-- v1.009 DEMO 3 COLUMNAS: PRIVADO / TEXTO / PUBLICO -->
     <div class="demo-video-panel private-demo-panel">
       <h3 class="video-label">Perfil privado</h3>
@@ -76,19 +72,21 @@
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
     </div>
+   </div>
   </div>
 </section>
 
 <section id="como-funciona" class="section compact-section soft-section split-section benefits-motion-section">
-  <div class="section-heading">
-    <span class="eyebrow">Beneficios</span>
-    <h2>Convierte tu información en oportunidades de contacto.</h2>
+  <div class="fullbleed-stage benefits-fullbleed-stage">
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
+    <div class="stage-shade" aria-hidden="true"></div>
+    <div class="section-heading stage-copy">
+      <span class="eyebrow">Beneficios</span>
+      <h2>Convierte tu información en oportunidades de contacto.</h2>
+    </div>
   </div>
 
-  <div class="cinematic-video-card section-cinematic-video benefits-cinematic-video">
-    <video class="lazy-motion-video" muted loop playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
-  </div>
-
+  <div class="section-after-stage">
   <div class="cards four compact-cards">
     <article class="card"><h3>Que te entiendan en segundos</h3><p>Muestra claramente quién eres, qué haces y cómo puedes ayudar.</p></article>
     <article class="card"><h3>Que puedan actuar de inmediato</h3><p>Llamarte, escribirte, ubicarte, guardar tus datos o pagarte con un clic.</p></article>
@@ -106,6 +104,7 @@
     <div class="step"><span>01</span><h3>Comparte</h3><p>Envía tu enlace o muestra tu QR para abrir tu LinkMe.</p></div>
     <div class="step"><span>02</span><h3>Conecta</h3><p>Tu cliente entiende quién eres y elige cómo contactarte.</p></div>
     <div class="step"><span>03</span><h3>Actualiza</h3><p>Mantén vigente tu información sin volver a compartirla.</p></div>
+  </div>
   </div>
 </section>
 
