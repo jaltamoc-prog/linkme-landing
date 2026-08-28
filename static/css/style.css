@@ -3588,3 +3588,35 @@ body{
     display:none;
   }
 }
+
+/* v1.053 - texto azul-negro con halo claro no invasivo */
+.fullbleed-stage .stage-copy h1,
+.fullbleed-stage .stage-copy h2{
+  color:#07111F !important;
+  opacity:1 !important;
+  -webkit-text-stroke:.7px rgba(255,255,255,.88);
+  paint-order:stroke fill;
+  text-shadow:
+    0 0 2px rgba(255,255,255,.92),
+    0 2px 7px rgba(255,255,255,.52);
+}
+
+.fullbleed-stage .stage-copy p,
+.fullbleed-stage .stage-copy .hero-text,
+.fullbleed-stage .stage-copy .hero-trust,
+.fullbleed-stage .stage-copy .secondary-link,
+.fullbleed-stage .stage-copy .eyebrow{
+  color:#07111F !important;
+  opacity:1 !important;
+  -webkit-text-stroke:.28px rgba(255,255,255,.90);
+  paint-order:stroke fill;
+  text-shadow:
+    0 0 2px rgba(255,255,255,.94),
+    0 2px 6px rgba(255,255,255,.58);
+}
+
+.fullbleed-stage .stage-copy .button{
+  color:#FFFFFF !important;
+  -webkit-text-stroke:0;
+  text-shadow:none;
+}
