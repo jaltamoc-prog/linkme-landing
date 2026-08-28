@@ -3620,3 +3620,44 @@ body{
   -webkit-text-stroke:0;
   text-shadow:none;
 }
+
+/* v1.054 - filtro ligero uniforme: video visible y texto legible */
+.fullbleed-stage > .stage-shade{
+  display:block !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+  background:rgba(4,10,24,.30) !important;
+}
+
+.fullbleed-stage > .stage-copy{
+  z-index:3 !important;
+}
+
+.fullbleed-stage .stage-copy h1,
+.fullbleed-stage .stage-copy h2,
+.fullbleed-stage .stage-copy p,
+.fullbleed-stage .stage-copy .hero-text,
+.fullbleed-stage .stage-copy .hero-trust,
+.fullbleed-stage .stage-copy .secondary-link,
+.fullbleed-stage .stage-copy .eyebrow{
+  color:#FFFFFF !important;
+  -webkit-text-stroke:0 !important;
+  text-shadow:
+    0 2px 5px rgba(0,0,0,.78),
+    0 8px 24px rgba(0,0,0,.42) !important;
+}
+
+@media(max-width:760px){
+  .fullbleed-stage > .stage-shade{
+    background:rgba(4,10,24,.38) !important;
+  }
+
+  .fullbleed-stage .stage-copy h1,
+  .fullbleed-stage .stage-copy h2{
+    text-shadow:
+      0 2px 5px rgba(0,0,0,.92),
+      0 8px 22px rgba(0,0,0,.58) !important;
+  }
+}
