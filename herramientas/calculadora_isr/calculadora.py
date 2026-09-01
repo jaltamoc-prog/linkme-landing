@@ -83,7 +83,10 @@ def calculate(payload: dict) -> dict:
     provisional_payments = money(payload.get("provisional_payments"))
     subsidy = money(payload.get("subsidy"))
 
-    total_income = salaries + assimilated + real_interest + other_accumulated + exempt_income
+    # Los ingresos exentos ya forman parte del total capturado; no se suman otra vez.
+    total_income = salaries + assimilated + real_interest + other_accumulated
+    if exempt_income > total_income:
+        raise ValueError("Los ingresos exentos no pueden ser mayores que los ingresos totales.")
     accumulated_income = max(Decimal("0"), total_income - exempt_income)
 
     deductions = payload.get("deductions") or {}
