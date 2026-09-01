@@ -12,11 +12,15 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/select.css') }}">
+  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/powered.css') }}">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora ISR México","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"MXN"}}</script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="Inicio"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></a>
+    <div class="brand-group">
+      <a class="brand" href="#inicio" aria-label="Inicio"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></a>
+      <a class="powered-link" href="https://linkme.life/" aria-label="Ir a LinkMe"><span class="linkme-icon">LM</span><span>Powered by <strong>linkme.life</strong></span></a>
+    </div>
     <nav><a href="#como-funciona">Cómo funciona</a><a href="#guia">Guía fiscal</a><a href="#faq">Preguntas</a></nav>
     <a class="top-cta" href="#calculadora">Calcular ahora</a>
   </header>
@@ -126,6 +130,8 @@
 
     <section class="uses"><span class="eyebrow">ÚSALA PARA</span><h2>Tomar decisiones con más claridad</h2><div class="three-cols"><article><h3>Preparar tu anual</h3><p>Anticipa documentos e importes antes de entrar al portal del SAT.</p></article><article><h3>Revisar deducciones</h3><p>Identifica cuánto solicitaste y cuánto podría aplicar por límites.</p></article><article><h3>Proyectar 2026</h3><p>Estima el efecto anual de ingresos, retenciones y gastos deducibles.</p></article></div></section>
 
+    <div class="ad ad-content"><span>ANUNCIO</span><p>728 × 90</p></div>
+
     <section class="faq" id="faq"><span class="eyebrow">PREGUNTAS FRECUENTES</span><h2>Lo importante, claro</h2>
       <details><summary>¿Esta calculadora presenta mi declaración?</summary><p>No. Estima el ISR y te ayuda a comprenderlo. La presentación se realiza en el portal oficial del SAT.</p></details>
       <details><summary>¿La tabla mensual 2026 sirve para calcular la anual?</summary><p>No directamente. Esta herramienta usa la tarifa anual del ejercicio. Las retenciones de nómina usan tarifas según su periodicidad.</p></details>
@@ -134,10 +140,7 @@
     </section>
   </main>
 
-  <footer><div class="brand"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></div><p>Herramienta informativa independiente. No es un sitio del SAT.</p><p>© 2026 · <a href="{{ url_for('calculadora_isr.privacy') }}">Privacidad</a> · <a href="{{ url_for('calculadora_isr.terms') }}">Términos</a> · <a href="{{ url_for('calculadora_isr.contact') }}">Contacto</a></p></footer>
-
-  <div class="corner-ad" id="cornerAd"><button aria-label="Cerrar anuncio">×</button><span>ANUNCIO</span><p>Espacio publicitario</p></div>
-  <div class="modal" id="adModal" aria-hidden="true"><div class="modal-card"><button class="modal-close" aria-label="Cerrar">×</button><span>ANUNCIO</span><strong>Espacio publicitario</strong><p>Tu reporte comenzará a descargarse.</p><button class="continue-download">Continuar al PDF</button></div></div>
+  <footer><div class="brand"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></div><p>Herramienta informativa independiente. No es un sitio del SAT.</p><a class="powered-link powered-footer" href="https://linkme.life/"><span class="linkme-icon">LM</span><span>Powered by <strong>linkme.life</strong></span></a><p>© 2026 · <a href="{{ url_for('calculadora_isr.privacy') }}">Privacidad</a> · <a href="{{ url_for('calculadora_isr.terms') }}">Términos</a> · <a href="{{ url_for('calculadora_isr.contact') }}">Contacto</a></p></footer>
   <script src="{{ url_for('calculadora_isr.static', filename='js/app.js') }}"></script>
 </body>
 </html>

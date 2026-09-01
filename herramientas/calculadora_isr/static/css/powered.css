@@ -1,0 +1,53 @@
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.powered-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #536673;
+  font-size: 11px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.powered-link strong {
+  color: #123b5d;
+}
+
+.linkme-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #76bb40;
+  color: #fff;
+  font: 800 11px Manrope, sans-serif;
+}
+
+.powered-footer,
+.powered-footer strong {
+  color: #fff;
+}
+
+footer a {
+  color: #bdd0dc;
+}
+
+@media (max-width: 700px) {
+  .brand-group {
+    gap: 9px;
+  }
+
+  .powered-link > span:last-child {
+    display: none;
+  }
+
+  .powered-footer > span:last-child {
+    display: inline;
+  }
+}
