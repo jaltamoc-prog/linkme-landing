@@ -1,0 +1,14 @@
+.sources {
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 0 26px;
+  text-align: center;
+}
+.sources h2 { margin: 10px 0 28px; font: 800 clamp(30px, 4vw, 46px) Manrope; letter-spacing: -.03em; }
+.sources > p { color: var(--muted); line-height: 1.7; }
+.sources ul { margin: 30px 0; padding: 0; list-style: none; text-align: left; }
+.sources li { margin: 12px 0; }
+.sources a { display: block; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--blue); font-weight: 800; text-decoration: none; }
+.sources a:hover { text-decoration: underline; }
+.source-date { font-size: 13px; }
+@media (max-width: 850px) { .sources { margin: 70px auto; } }

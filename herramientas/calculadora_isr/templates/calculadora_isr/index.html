@@ -6,13 +6,14 @@
   <title>Calculadora ISR asalariados 2026 | Estima saldo a favor</title>
   <meta name="description" content="Calculadora ISR para asalariados en México. Estima tu declaración anual 2025 o tu ISR anual 2026, deducciones personales y saldo a favor.">
   <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://linkme.life/calculadora-isr">
+  <link rel="canonical" href="https://linkme.life/calculadora-isr/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/select.css') }}">
-  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/powered.css') }}">
+  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/styles.css') }}?v=104">
+  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/select.css') }}?v=104">
+  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/powered.css') }}?v=104">
+  <link rel="stylesheet" href="{{ url_for('calculadora_isr.static', filename='css/adsense-ready.css') }}?v=104">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculadora ISR México","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"MXN"}}</script>
 </head>
 <body>
@@ -21,7 +22,7 @@
       <a class="brand" href="#inicio" aria-label="Inicio"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></a>
       <a class="powered-link" href="https://linkme.life/" aria-label="Ir a LinkMe"><span class="linkme-icon">LM</span><span>Powered by <strong>linkme.life</strong></span></a>
     </div>
-    <nav><a href="#como-funciona">Cómo funciona</a><a href="#guia">Guía fiscal</a><a href="#faq">Preguntas</a></nav>
+    <nav><a href="#como-funciona">Cómo funciona</a><a href="#guia">Guía fiscal</a><a href="#fuentes">Fuentes</a><a href="#faq">Preguntas</a></nav>
     <a class="top-cta" href="#calculadora">Calcular ahora</a>
   </header>
 
@@ -34,7 +35,7 @@
         <div class="trust-row"><span>✓ Sin registro</span><span>✓ No guardamos tus datos</span><span>✓ Reporte PDF</span></div>
       </div>
       <div class="hero-proof">
-        <span>ACTUALIZADA</span><strong>2026</strong><p>Anexo 8 RMF<br>Tarifa anual oficial</p>
+        <span>ACTUALIZADA</span><strong>2026</strong><p>Anexo 8 RMF<br>31 de agosto de 2026</p>
       </div>
     </section>
 
@@ -113,7 +114,7 @@
       </div>
     </section>
 
-    <div class="ad ad-banner"><span>ANUNCIO</span><p>970 × 90</p></div>
+    <div class="ad-slot ad-banner" hidden aria-hidden="true"></div>
 
     <section class="steps-section" id="como-funciona">
       <span class="eyebrow">SENCILLO Y TRANSPARENTE</span><h2>Cómo funciona</h2>
@@ -126,11 +127,21 @@
       <p class="guide-note">La facilidad para ciertos asalariados de un solo patrón tiene condiciones. Verifica tu caso en el SAT.</p>
     </section>
 
-    <div class="ad ad-content"><span>ANUNCIO</span><p>728 × 90</p></div>
+    <div class="ad-slot ad-content" hidden aria-hidden="true"></div>
 
     <section class="uses"><span class="eyebrow">ÚSALA PARA</span><h2>Tomar decisiones con más claridad</h2><div class="three-cols"><article><h3>Preparar tu anual</h3><p>Anticipa documentos e importes antes de entrar al portal del SAT.</p></article><article><h3>Revisar deducciones</h3><p>Identifica cuánto solicitaste y cuánto podría aplicar por límites.</p></article><article><h3>Proyectar 2026</h3><p>Estima el efecto anual de ingresos, retenciones y gastos deducibles.</p></article></div></section>
 
-    <div class="ad ad-content"><span>ANUNCIO</span><p>728 × 90</p></div>
+    <section class="sources" id="fuentes">
+      <span class="eyebrow">REFERENCIAS OFICIALES</span>
+      <h2>Fuentes utilizadas</h2>
+      <p>Las tarifas y reglas generales de esta herramienta se sustentan en publicaciones oficiales. La calculadora ofrece una estimación y no sustituye la información precargada del SAT ni la revisión de un profesional.</p>
+      <ul>
+        <li><a href="https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2025/rmf/anexos/Anexo8_RMF2025-30122024.pdf" target="_blank" rel="noopener noreferrer">SAT — Anexo 8 de la RMF 2025</a></li>
+        <li><a href="https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo-8-RMF-2026_DOF-28122025.pdf" target="_blank" rel="noopener noreferrer">SAT — Anexo 8 de la RMF 2026</a></li>
+        <li><a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf" target="_blank" rel="noopener noreferrer">Cámara de Diputados — Ley del Impuesto sobre la Renta</a></li>
+      </ul>
+      <p class="source-date"><strong>Última revisión del contenido:</strong> 31 de agosto de 2026.</p>
+    </section>
 
     <section class="faq" id="faq"><span class="eyebrow">PREGUNTAS FRECUENTES</span><h2>Lo importante, claro</h2>
       <details><summary>¿Esta calculadora presenta mi declaración?</summary><p>No. Estima el ISR y te ayuda a comprenderlo. La presentación se realiza en el portal oficial del SAT.</p></details>
@@ -140,7 +151,7 @@
     </section>
   </main>
 
-  <footer><div class="brand"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></div><p>Herramienta informativa independiente. No es un sitio del SAT.</p><a class="powered-link powered-footer" href="https://linkme.life/"><span class="linkme-icon">LM</span><span>Powered by <strong>linkme.life</strong></span></a><p>© 2026 · <a href="{{ url_for('calculadora_isr.privacy') }}">Privacidad</a> · <a href="{{ url_for('calculadora_isr.terms') }}">Términos</a> · <a href="{{ url_for('calculadora_isr.contact') }}">Contacto</a></p></footer>
-  <script src="{{ url_for('calculadora_isr.static', filename='js/app.js') }}"></script>
+  <footer><div class="brand"><span class="brand-mark">%</span><span>ISR<span>Claro</span></span></div><p>Herramienta de linkme.life operada por Altirum. No es un sitio del SAT.</p><a class="powered-link powered-footer" href="https://linkme.life/"><span class="linkme-icon">LM</span><span>Powered by <strong>linkme.life</strong></span></a><p>© 2026 · <a href="{{ url_for('calculadora_isr.privacy') }}">Privacidad</a> · <a href="{{ url_for('calculadora_isr.terms') }}">Términos</a> · <a href="{{ url_for('calculadora_isr.contact') }}">Contacto</a></p></footer>
+  <script src="{{ url_for('calculadora_isr.static', filename='js/app.js') }}?v=104"></script>
 </body>
 </html>
