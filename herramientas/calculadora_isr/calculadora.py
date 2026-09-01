@@ -159,22 +159,22 @@ def calculate(payload: dict) -> dict:
 
 @calculadora_isr_bp.get("/")
 def index():
-    return render_template("index.html")
+    return render_template("calculadora_isr/index.html")
 
 
 @calculadora_isr_bp.get("/privacidad")
 def privacy():
-    return render_template("legal.html", page="privacidad")
+    return render_template("calculadora_isr/legal.html", page="privacidad")
 
 
 @calculadora_isr_bp.get("/terminos")
 def terms():
-    return render_template("legal.html", page="terminos")
+    return render_template("calculadora_isr/legal.html", page="terminos")
 
 
 @calculadora_isr_bp.get("/contacto")
 def contact():
-    return render_template("legal.html", page="contacto")
+    return render_template("calculadora_isr/legal.html", page="contacto")
 
 
 @calculadora_isr_bp.get("/robots.txt")
@@ -298,4 +298,3 @@ def report_pdf():
     buffer.seek(0)
     return send_file(buffer, mimetype="application/pdf", as_attachment=True,
                      download_name=f"estimacion_isr_{result['year']}.pdf")
-
