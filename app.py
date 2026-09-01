@@ -1,3 +1,5 @@
+# v1.056 Landing LinkMe - burbuja flotante de LinkMe contigo siempre visible
+# v1.055 Landing LinkMe - LinkMe contigo conversacional
 # v1.054 Landing LinkMe - videos visibles con texto legible
 # v1.052 Landing LinkMe - reemplazo de videos 1 y 2
 # v1.051 Landing LinkMe - autoplay compatible con iPhone y Android
@@ -29,7 +31,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1054"
+ASSET_VERSION = "1056"
 
 @app.context_processor
 def inject_asset_version():
@@ -62,6 +64,10 @@ def add_cache_headers(response):
 # La landing vende. La app operativa crea/edita LinkMe.
 
 APP_CREATE_URL = "https://linkme-mvp.onrender.com/nuevo"  # temporal hasta activar DNS app.linkme.style
+LINKME_CHAT_API_URL = os.getenv(
+    "LINKME_CHAT_API_URL",
+    "https://linkme-mvp.onrender.com/s/linkme-contigo",
+).strip()
 
 @app.after_request
 def aplicar_headers_basicos(response):
@@ -76,7 +82,13 @@ def aplicar_headers_basicos(response):
 
 @app.route("/")
 def index():
-    return render_template("index.html", login_url="https://linkme-mvp.onrender.com/s/in", create_url="/nuevo", market=detectar_mercado())
+    return render_template(
+        "index.html",
+        login_url="https://linkme-mvp.onrender.com/s/in",
+        create_url="/nuevo",
+        market=detectar_mercado(),
+        chat_api_url=LINKME_CHAT_API_URL,
+    )
 
 @app.route("/crearmilinkme")
 def crearmilinkme():
