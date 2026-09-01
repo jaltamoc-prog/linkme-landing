@@ -1,3 +1,4 @@
+# v1.057 Landing LinkMe - chat movil compacto y cierre siempre accesible
 # v1.056 Landing LinkMe - burbuja flotante de LinkMe contigo siempre visible
 # v1.055 Landing LinkMe - LinkMe contigo conversacional
 # v1.054 Landing LinkMe - videos visibles con texto legible
@@ -31,7 +32,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1056"
+ASSET_VERSION = "1057"
 
 @app.context_processor
 def inject_asset_version():
