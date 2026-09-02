@@ -50,7 +50,8 @@
         <div class="lm-preview-field"><label for="lmName">Nombre</label><input id="lmName" maxlength="70" placeholder="Andrea Martínez" inputmode="text"></div>
         <div class="lm-preview-field"><label for="lmRole">Actividad o profesión</label><input id="lmRole" maxlength="80" placeholder="Asesora inmobiliaria" inputmode="text"></div>
         <div class="lm-preview-field wide"><label for="lmCompany">Empresa</label><input id="lmCompany" maxlength="90" placeholder="Inmobiliaria Horizonte" inputmode="text"></div>
-        <div class="lm-preview-field wide"><label for="lmPhoto">Fotografía</label><input id="lmPhoto" type="file" accept="image/*"><span class="lm-preview-photo-help"><strong>No se sube:</strong> permanece únicamente en tu dispositivo.</span></div>
+        <div class="lm-preview-field"><label for="lmPhoto">Fotografía de perfil</label><input id="lmPhoto" type="file" accept="image/*"><span class="lm-preview-photo-help"><strong>No se sube:</strong> permanece en tu dispositivo.</span></div>
+        <div class="lm-preview-field"><label for="lmBanner">Fotografía del banner</label><input id="lmBanner" type="file" accept="image/*"><span class="lm-preview-photo-help"><strong>No se sube:</strong> permanece en tu dispositivo.</span></div>
         <div class="lm-preview-field"><label for="lmWhatsapp">WhatsApp con código de país</label><input id="lmWhatsapp" type="tel" maxlength="18" inputmode="tel" placeholder="5215512345678"></div>
         <div class="lm-preview-field"><label for="lmPhone">Teléfono</label><input id="lmPhone" type="tel" maxlength="18" inputmode="tel" placeholder="5512345678"></div>
         <div class="lm-preview-field"><label for="lmEmail">Correo</label><input id="lmEmail" type="email" maxlength="100" inputmode="email" placeholder="andrea@correo.com"></div>
@@ -65,7 +66,7 @@
         <p class="lm-preview-mobile-title">Vista previa en vivo</p>
         <div class="lm-preview-phone" aria-label="Vista previa temporal de un perfil LinkMe">
           <div class="lm-preview-screen">
-            <div class="lm-preview-banner"><span class="lm-preview-stamp">VISTA PREVIA · NO PUBLICADA</span></div>
+            <div id="lmPreviewBanner" class="lm-preview-banner"><span class="lm-preview-stamp">VISTA PREVIA · NO PUBLICADA</span></div>
             <div class="lm-preview-profile">
               <div id="lmAvatar" class="lm-preview-avatar" aria-label="Fotografía de vista previa">AM</div>
               <div class="lm-preview-identity-card">
@@ -335,12 +336,12 @@
   const $=id=>document.getElementById(id);
   const form=$("lmPreviewForm");
   if(!form)return;
-  const fields={name:$("lmName"),role:$("lmRole"),company:$("lmCompany"),photo:$("lmPhoto"),whatsapp:$("lmWhatsapp"),phone:$("lmPhone"),email:$("lmEmail"),instagram:$("lmInstagram"),website:$("lmWebsite"),maps:$("lmMaps")};
+  const fields={name:$("lmName"),role:$("lmRole"),company:$("lmCompany"),photo:$("lmPhoto"),banner:$("lmBanner"),whatsapp:$("lmWhatsapp"),phone:$("lmPhone"),email:$("lmEmail"),instagram:$("lmInstagram"),website:$("lmWebsite"),maps:$("lmMaps")};
   const defaults={name:"Andrea Martínez",role:"Asesora inmobiliaria",company:"Inmobiliaria Horizonte"};
   const outputs={name:$("lmPreviewName"),role:$("lmPreviewRole"),company:$("lmPreviewCompany")};
   const actions={whatsapp:$("lmActionWhatsapp"),phone:$("lmActionPhone"),email:$("lmActionEmail"),instagram:$("lmActionInstagram"),website:$("lmActionWebsite"),maps:$("lmActionMaps"),vcard:$("lmActionVcard"),share:$("lmActionShare")};
   const values={whatsapp:$("lmValueWhatsapp"),phone:$("lmValuePhone"),email:$("lmValueEmail"),instagram:$("lmValueInstagram"),website:$("lmValueWebsite"),maps:$("lmValueMaps")};
-  let photoUrl="",vcardUrl="";
+  let photoUrl="",bannerUrl="",vcardUrl="";
   function text(value,fallback){return value.trim()||fallback}
   function digits(value){return value.replace(/[^0-9]/g,"")}
   function phoneValue(value){return value.trim().replace(/[^0-9+]/g,"")}
@@ -357,12 +358,13 @@
     setAction(actions.whatsapp,wa.length>=10?"https://wa.me/"+wa:"");setAction(actions.phone,phone.length>=7?"tel:"+phone:"");setAction(actions.email,email&&fields.email.validity.valid?"mailto:"+email:"");setAction(actions.instagram,insta);setAction(actions.website,site);setAction(actions.maps,maps?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(maps):"");setAction(actions.share,"");actions.share.title="Disponible cuando crees tu LinkMe real";
     values.whatsapp.textContent=fields.whatsapp.value.trim()||"Captura tu WhatsApp";values.phone.textContent=fields.phone.value.trim()||"Captura tu teléfono";values.email.textContent=email||"Captura tu correo";values.instagram.textContent=fields.instagram.value.trim()||"Captura tu Instagram";values.website.textContent=fields.website.value.trim()||"Captura tu sitio web";values.maps.textContent=maps||"Captura tu ubicación";updateVcard();
   }
-  Object.keys(fields).forEach(key=>{if(key!=="photo")fields[key].addEventListener("input",update)});
+  Object.keys(fields).forEach(key=>{if(key!=="photo"&&key!=="banner")fields[key].addEventListener("input",update)});
   fields.photo.addEventListener("change",function(){const file=this.files&&this.files[0];if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=""}const avatar=$("lmAvatar");if(file&&file.type.startsWith("image/")){photoUrl=URL.createObjectURL(file);avatar.textContent="";avatar.style.backgroundImage="url("+JSON.stringify(photoUrl)+")";avatar.style.backgroundSize="cover";avatar.style.backgroundPosition="center"}else{avatar.style.backgroundImage="";avatar.textContent=initials(text(fields.name.value,defaults.name))}});
+  fields.banner.addEventListener("change",function(){const file=this.files&&this.files[0];if(bannerUrl){URL.revokeObjectURL(bannerUrl);bannerUrl=""}const banner=$("lmPreviewBanner");if(file&&file.type.startsWith("image/")){bannerUrl=URL.createObjectURL(file);banner.style.backgroundImage="url("+JSON.stringify(bannerUrl)+")";banner.style.backgroundSize="cover";banner.style.backgroundPosition="center"}else{banner.style.backgroundImage=""}});
   Object.values(actions).forEach(node=>node.addEventListener("click",event=>{if(node.getAttribute("aria-disabled")==="true")event.preventDefault()}));
-  $("lmPreviewReset").addEventListener("click",function(){form.reset();if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=""}const avatar=$("lmAvatar");avatar.style.backgroundImage="";update()});
+  $("lmPreviewReset").addEventListener("click",function(){form.reset();if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=""}if(bannerUrl){URL.revokeObjectURL(bannerUrl);bannerUrl=""}const avatar=$("lmAvatar");avatar.style.backgroundImage="";$("lmPreviewBanner").style.backgroundImage="";update()});
   $("lmCreateReal").addEventListener("click",function(){if(window.confirm("Esta vista previa no está publicada y sus datos no se guardarán. ¿Quieres crear tu LinkMe real con perfil público, enlace y QR?"))window.location.href={{ create_url|tojson }}});
-  window.addEventListener("pagehide",function(){if(photoUrl)URL.revokeObjectURL(photoUrl);if(vcardUrl)URL.revokeObjectURL(vcardUrl)});
+  window.addEventListener("pagehide",function(){if(photoUrl)URL.revokeObjectURL(photoUrl);if(bannerUrl)URL.revokeObjectURL(bannerUrl);if(vcardUrl)URL.revokeObjectURL(vcardUrl)});
   update();
 })();
 </script>
