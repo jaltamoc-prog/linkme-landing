@@ -659,6 +659,44 @@ body{
   }
 }
 
+/* v1.064 - identidad LinkMe #00B1E7 y separación azul tenue */
+:root{
+  --brand:#00B1E7;
+  --brand-dark:#009CCB;
+  --brand-soft:#E8F9FE;
+  --premium-gradient:linear-gradient(135deg,#00B1E7 0%,#00B1E7 100%);
+}
+
+.button,
+.lm-btn,
+.lm-chip,
+.plan-card-cta,
+.plan-button,
+button:not(.menu-button){
+  border:1px solid rgba(36,72,255,.14) !important;
+  box-shadow:0 3px 12px rgba(36,72,255,.08);
+}
+
+.button,
+.lm-create,
+.plan-card-cta,
+.plan-button{
+  background:#00B1E7 !important;
+  color:#FFFFFF !important;
+}
+
+.button:hover,
+.lm-create:hover,
+.plan-card-cta:hover,
+.plan-button:hover{
+  background:#009CCB !important;
+}
+
+.lm-login,
+.lm-chip{
+  background:rgba(0,177,231,.055) !important;
+}
+
 @media(max-width:560px){
   .site-header{
     height:62px;
@@ -861,13 +899,13 @@ body{
   --ink:#0A0D14;
   --muted:#5D667A;
   --line:#DDE3F7;
-  --brand:#2448FF;
+  --brand:#00B1E7;
   --brand-dark:#1834D8;
   --brand-soft:#E9EDFF;
-  --violet:#7757FF;
+  --violet:#00B1E7;
   --white:#FFFFFF;
   --shadow:0 24px 70px rgba(10,13,20,.10);
-  --premium-gradient:linear-gradient(135deg,#2448FF 0%,#7757FF 100%);
+  --premium-gradient:linear-gradient(135deg,#00B1E7 0%,#00B1E7 100%);
 }
 
 html{
@@ -1286,7 +1324,7 @@ summary{
     justify-content: center;
     min-height: 54px;
     border-radius: 18px;
-    background: #2448FF;
+    background: #00B1E7;
     color: #FFFFFF;
     text-decoration: none;
     font-weight: 950;
@@ -1411,7 +1449,7 @@ html {
     z-index: 12000 !important;
     min-height: 58px !important;
     border-radius: 18px !important;
-    background: linear-gradient(135deg, #2448FF 0%, #7757FF 100%) !important;
+    background: linear-gradient(135deg, #00B1E7 0%, #00B1E7 100%) !important;
     color: #FFFFFF !important;
     font-size: 16px !important;
     font-weight: 950 !important;
@@ -1438,7 +1476,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2448FF;
+  background: #00B1E7;
   color: #FFFFFF;
   font-weight: 950;
   text-align: center;
@@ -1453,7 +1491,7 @@ html {
 
 .plan-card-link.featured .plan-card-cta,
 .plan-card-link.recommended .plan-card-cta {
-  background: linear-gradient(135deg, #2448FF 0%, #7757FF 100%);
+  background: linear-gradient(135deg, #00B1E7 0%, #00B1E7 100%);
   box-shadow: 0 18px 40px rgba(36, 72, 255, .34);
 }
 
@@ -1483,7 +1521,7 @@ html {
     justify-content: center;
     min-height: 42px;
     margin: 0;
-    background: #2448FF;
+    background: #00B1E7;
     color: #FFFFFF;
     text-decoration: none;
     font-weight: 950;
@@ -1557,7 +1595,7 @@ html {
     min-height: 38px;
     padding: 0 16px !important;
     border-radius: 999px;
-    background: #2448FF !important;
+    background: #00B1E7 !important;
     color: #FFFFFF !important;
     font-size: 13px !important;
     font-weight: 950 !important;
@@ -1630,7 +1668,7 @@ html {
     min-height: 34px !important;
     padding: 0 14px !important;
     border-radius: 999px !important;
-    background: #2448FF !important;
+    background: #00B1E7 !important;
     color: #FFFFFF !important;
     text-decoration: none !important;
     font-size: 12px !important;
@@ -1690,9 +1728,9 @@ html {
     min-height: 36px !important;
     padding: 0 14px !important;
     border-radius: 999px !important;
-    background: #2448FF !important;
+    background: #00B1E7 !important;
     color: #FFFFFF !important;
-    border: 1px solid #2448FF !important;
+    border: 1px solid #00B1E7 !important;
     text-decoration: none !important;
     font-size: 12px !important;
     font-weight: 900 !important;
@@ -1774,7 +1812,7 @@ html {
 }
 
 .header-link:hover {
-  color: #2448FF;
+  color: #00B1E7;
 }
 
 .header-login-btn,
@@ -1798,7 +1836,7 @@ html {
 }
 
 .header-create-btn {
-  background: linear-gradient(135deg, #2448FF 0%, #7757FF 100%);
+  background: linear-gradient(135deg, #00B1E7 0%, #00B1E7 100%);
   color: #FFFFFF;
   box-shadow: 0 14px 30px rgba(36, 72, 255, .24);
   animation: linkmeHeaderCreatePulse 2.1s ease-in-out infinite;
@@ -1941,13 +1979,13 @@ html {
 
 .header-login-btn {
   background: rgba(255,255,255,.82);
-  color: #2448FF;
+  color: #00B1E7;
   border: 1.5px solid rgba(36, 72, 255, .86);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 10px 24px rgba(36,72,255,.08);
 }
 
 .header-create-btn {
-  background: linear-gradient(135deg, #2448FF 0%, #1739F5 100%);
+  background: linear-gradient(135deg, #00B1E7 0%, #00A3D5 100%);
   color: #FFFFFF;
   border: 1.5px solid rgba(36,72,255,.95);
   box-shadow: 0 14px 28px rgba(36, 72, 255, .26);
@@ -1985,7 +2023,7 @@ html {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #2448FF;
+  color: #00B1E7;
   font-size: 13px;
   font-weight: 950;
 }
@@ -2186,8 +2224,8 @@ html {
 
   .header-create-btn {
     color: #ffffff !important;
-    background: linear-gradient(180deg, #3154ff 0%, #2448ff 100%) !important;
-    border: 1.5px solid #2448ff !important;
+    background: linear-gradient(180deg, #00b1e7 0%, #00b1e7 100%) !important;
+    border: 1.5px solid #00b1e7 !important;
     box-shadow: 0 10px 22px rgba(36, 72, 255, 0.24) !important;
   }
 
@@ -2323,8 +2361,8 @@ html {
 
   .header-create-btn {
     color: #fff !important;
-    background: linear-gradient(180deg, #3154ff 0%, #2448ff 100%) !important;
-    border: 1.5px solid #2448ff !important;
+    background: linear-gradient(180deg, #00b1e7 0%, #00b1e7 100%) !important;
+    border: 1.5px solid #00b1e7 !important;
     box-shadow: 0 10px 22px rgba(36, 72, 255, 0.16) !important;
   }
 
@@ -2421,7 +2459,7 @@ html {
   }
 
   .header-login-btn {
-    color: #2448FF !important;
+    color: #00B1E7 !important;
     background: #FFFFFF !important;
     border: 1.5px solid #8EA6FF !important;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.4) !important;
@@ -2429,8 +2467,8 @@ html {
 
   .header-create-btn {
     color: #FFFFFF !important;
-    background: linear-gradient(180deg, #3154FF 0%, #2448FF 100%) !important;
-    border: 1.5px solid #2448FF !important;
+    background: linear-gradient(180deg, #00B1E7 0%, #00B1E7 100%) !important;
+    border: 1.5px solid #00B1E7 !important;
     box-shadow: 0 10px 22px rgba(36, 72, 255, 0.24) !important;
   }
 
@@ -2578,7 +2616,7 @@ html {
   }
 
   .header-login-btn {
-    color: #2448FF !important;
+    color: #00B1E7 !important;
     background: #FFFFFF !important;
     border: 1.5px solid #8EA6FF !important;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.4) !important;
@@ -2586,8 +2624,8 @@ html {
 
   .header-create-btn {
     color: #FFFFFF !important;
-    background: linear-gradient(180deg, #3154FF 0%, #2448FF 100%) !important;
-    border: 1.5px solid #2448FF !important;
+    background: linear-gradient(180deg, #00B1E7 0%, #00B1E7 100%) !important;
+    border: 1.5px solid #00B1E7 !important;
     box-shadow: 0 10px 22px rgba(36, 72, 255, 0.22) !important;
   }
 
@@ -2768,15 +2806,15 @@ html {
   }
 
   .lm-login {
-    color: #2448FF !important;
+    color: #00B1E7 !important;
     background: #FFFFFF !important;
     border: 1.5px solid #8EA6FF !important;
   }
 
   .lm-create {
     color: #FFFFFF !important;
-    background: linear-gradient(180deg, #3154FF 0%, #2448FF 100%) !important;
-    border: 1.5px solid #2448FF !important;
+    background: linear-gradient(180deg, #00B1E7 0%, #00B1E7 100%) !important;
+    border: 1.5px solid #00B1E7 !important;
     box-shadow: 0 10px 22px rgba(36, 72, 255, 0.18) !important;
   }
 
@@ -2848,7 +2886,7 @@ html {
   }
 
   .lm-login {
-    color: #2448FF !important;
+    color: #00B1E7 !important;
     background: #FFFFFF !important;
     border: 1.4px solid #8EA6FF !important;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.4) !important;
@@ -2856,8 +2894,8 @@ html {
 
   .lm-create {
     color: #FFFFFF !important;
-    background: linear-gradient(180deg, #3154FF 0%, #2448FF 100%) !important;
-    border: 1.4px solid #2448FF !important;
+    background: linear-gradient(180deg, #00B1E7 0%, #00B1E7 100%) !important;
+    border: 1.4px solid #00B1E7 !important;
     box-shadow: 0 8px 18px rgba(36, 72, 255, 0.22) !important;
   }
 
@@ -3020,7 +3058,7 @@ body{
 }
 
 .hero .button{
-  background:linear-gradient(135deg,#3B65FF,#7757FF);
+  background:linear-gradient(135deg,#3B65FF,#00B1E7);
   box-shadow:0 18px 44px rgba(58,101,255,.34);
 }
 
@@ -3327,7 +3365,7 @@ body{
 }
 
 .hero.compact-hero .eyebrow{
-  color:#2448FF;
+  color:#00B1E7;
 }
 
 .hero.compact-hero h1{
@@ -3660,4 +3698,28 @@ body{
       0 2px 5px rgba(0,0,0,.92),
       0 8px 22px rgba(0,0,0,.58) !important;
   }
+}
+
+/* v1.064 ajuste final de botones, prevalece sobre versiones anteriores */
+.button,
+.lm-btn,
+.lm-chip,
+.plan-card-cta,
+.plan-button,
+button:not(.menu-button){
+  border:1px solid rgba(36,72,255,.14) !important;
+  box-shadow:0 3px 12px rgba(36,72,255,.08) !important;
+}
+
+.button,
+.lm-create,
+.plan-card-cta,
+.plan-button{
+  background:#00B1E7 !important;
+  color:#FFFFFF !important;
+}
+
+.lm-login,
+.lm-chip{
+  background:rgba(0,177,231,.055) !important;
 }
