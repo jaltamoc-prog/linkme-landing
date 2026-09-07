@@ -15,7 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const languages = (navigator.languages || [navigator.language || ""]).join(",").toUpperCase();
   const timezone = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").toUpperCase();
   const serverMarket = document.documentElement.dataset.market || "";
-  const mexico = serverMarket === "mxn" || languages.includes("-MX") || timezone.includes("MEXICO");
+  const mexico = serverMarket === "mxn"
+    ? true
+    : serverMarket === "usd"
+      ? false
+      : languages.includes("-MX") || timezone.includes("MEXICO");
   const market = mexico ? "mxn" : "usd";
 
   document.querySelectorAll(".localized-price").forEach(function (element) {
