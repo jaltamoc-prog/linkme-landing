@@ -3874,3 +3874,48 @@ h6,
   outline:3px solid rgba(184,182,197,.78) !important;
   outline-offset:3px !important;
 }
+
+/* v1.073: mensajes principales al doble, con ajuste seguro para pantallas pequeñas */
+.hero-fullbleed-stage .stage-copy h1{
+  font-size:clamp(84px,10vw,136px) !important;
+}
+.hero-fullbleed-stage .stage-copy .hero-text{
+  font-size:clamp(30px,3vw,38px) !important;
+  line-height:1.35 !important;
+}
+.hero-fullbleed-stage .hero-actions .button,
+.hero-fullbleed-stage .hero-actions .secondary-link{
+  font-size:28px !important;
+}
+.hero-fullbleed-stage .stage-copy .hero-trust{
+  font-size:28px !important;
+}
+.demo-fullbleed-stage .stage-copy h2,
+.benefits-fullbleed-stage .stage-copy h2{
+  font-size:clamp(68px,8vw,112px) !important;
+}
+.demo-fullbleed-stage .stage-copy p{
+  font-size:36px !important;
+  line-height:1.4 !important;
+}
+
+@media(max-width:760px){
+  .hero-fullbleed-stage .stage-copy h1{
+    font-size:clamp(58px,16vw,78px) !important;
+  }
+  .hero-fullbleed-stage .stage-copy .hero-text{
+    font-size:24px !important;
+  }
+  .hero-fullbleed-stage .hero-actions .button,
+  .hero-fullbleed-stage .hero-actions .secondary-link,
+  .hero-fullbleed-stage .stage-copy .hero-trust{
+    font-size:20px !important;
+  }
+  .demo-fullbleed-stage .stage-copy h2,
+  .benefits-fullbleed-stage .stage-copy h2{
+    font-size:48px !important;
+  }
+  .demo-fullbleed-stage .stage-copy p{
+    font-size:22px !important;
+  }
+}
