@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}LinkMe | Tu punto de contacto digital{% endblock %}
+{% block title %}linkme.life® | Tu punto de contacto digital{% endblock %}
 {% block description %}Cuando llegue una oportunidad importante, presenta quién eres con claridad y facilita que las personas guarden tu información y vuelvan a ti.{% endblock %}
 
 {% block content %}
@@ -8,7 +8,7 @@
 <!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
 
 <section id="inicio" class="hero compact-hero fullbleed-stage hero-fullbleed-stage">
-  <video class="motion-stage-video fullbleed-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_1_redes_cdmx_mty.jpg') }}?v={{ asset_version }}" aria-label="LinkMe conecta Ciudad de México con Monterrey">
+  <video class="motion-stage-video fullbleed-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_1_redes_cdmx_mty.jpg') }}?v={{ asset_version }}" aria-label="linkme.life® conecta Ciudad de México con Monterrey">
     <source src="{{ url_for('static', filename='video/motion/linkme_1_redes_cdmx_mty.mp4') }}?v={{ asset_version }}" type="video/mp4">
   </video>
   <div class="stage-shade" aria-hidden="true"></div>
@@ -16,10 +16,10 @@
     <div class="eyebrow">Tu información lista para compartir</div>
     <h1>Tu tarjeta digital</h1>
     <p class="hero-text">
-      Contacto, redes, WhatsApp, web, ubicación, formas de pago, CLABE, Stripe y todo lo importante de ti actualizado, en un solo lugar y listo para compartir.
+      Contacto, redes, WhatsApp, web, ubicación, formas de pago, CLABE, Stripe y todo lo importante de ti actualizado, en un solo lugar.
     </p>
     <div class="hero-actions">
-      <a class="button" href="{{ create_url }}">Crear mi LinkMe</a>
+      <a class="button" href="{{ create_url }}">Crear mi linkme.life®</a>
       <a class="secondary-link" href="#prueba-linkme">Mira cómo podría verse el tuyo</a>
     </div>
     <div class="hero-trust">Claridad para presentarte · Facilidad para contactarte · Confianza para continuar</div>
@@ -85,9 +85,10 @@
 <section id="prueba-linkme" class="lm-preview-section" aria-labelledby="lmPreviewTitle">
   <div class="lm-preview-wrap">
     <div class="lm-preview-heading">
-      <span class="lm-preview-badge">ASÍ PODRÁ SER TU LINKME</span>
+      <span class="lm-preview-badge">ASÍ PODRÁ SER TU linkme.life®</span>
       <h2 id="lmPreviewTitle">Pruébalo con tu propia información.</h2>
-      <p>Personaliza esta vista previa y descubre cómo podrían encontrarte y contactarte. Tus datos permanecen en este dispositivo y desaparecen al salir.</p>
+      <p class="lm-preview-intro">Personaliza esta vista previa del <strong>PERFIL PÚBLICO</strong> para que tu lead y/o cliente te guarden en su celular.</p>
+      <p class="lm-preview-disclaimer">Modo ilustrativo, los datos no se guardan, se pierden al salir.</p>
     </div>
     <div class="lm-preview-layout">
       <form id="lmPreviewForm" class="lm-preview-form" autocomplete="off" onsubmit="return false">
@@ -102,13 +103,13 @@
         <div class="lm-preview-field"><label for="lmInstagram">Instagram</label><input id="lmInstagram" maxlength="100" autocapitalize="none" placeholder="@tuusuario"></div>
         <div class="lm-preview-field"><label for="lmWebsite">Sitio web</label><input id="lmWebsite" type="url" maxlength="160" inputmode="url" autocapitalize="none" placeholder="www.misitio.com"></div>
         <div class="lm-preview-field"><label for="lmMaps">Ubicación</label><input id="lmMaps" maxlength="160" placeholder="Polanco, Ciudad de México"></div>
-        <p class="lm-preview-privacy"><strong>Vista previa temporal:</strong> no crea una cuenta, no publica un perfil y no guarda ni envía tu información a LinkMe.</p>
+        <p class="lm-preview-privacy"><strong>Vista previa temporal:</strong> no crea una cuenta, no publica un perfil y no guarda ni envía tu información a linkme.life®.</p>
         <button id="lmPreviewReset" class="lm-preview-reset" type="button">Restablecer ejemplo</button>
       </form>
 
       <div>
         <p class="lm-preview-mobile-title">Vista previa en vivo</p>
-        <div class="lm-preview-phone" aria-label="Vista previa temporal de un perfil LinkMe">
+        <div class="lm-preview-phone" aria-label="Vista previa temporal de un perfil linkme.life®">
           <div class="lm-preview-screen">
             <div id="lmPreviewBanner" class="lm-preview-banner"><span class="lm-preview-stamp">VISTA PREVIA · NO PUBLICADA</span></div>
             <div class="lm-preview-profile">
@@ -132,7 +133,7 @@
                 <a id="lmActionInstagram" class="lm-preview-action" href="#" aria-disabled="true"><span class="lm-preview-action-icon">IG</span><span class="lm-preview-action-copy"><strong>Instagram</strong><span id="lmValueInstagram">Captura tu Instagram</span></span><span class="lm-preview-arrow">›</span></a>
               </div>
             </div>
-            <button id="lmCreateReal" class="lm-preview-create" type="button">Quiero mi LinkMe</button>
+            <button id="lmCreateReal" class="lm-preview-create" type="button">Quiero mi linkme.life®</button>
             <div class="lm-preview-note">La vista previa no incluye un QR ni un enlace público.</div>
           </div>
         </div>
@@ -143,19 +144,14 @@
 
 <section id="demo" class="section compact-section demo-section">
   <div class="fullbleed-stage demo-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_2_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_2_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="LinkMe conecta Monterrey con Nueva York"></video>
-    <div class="stage-shade" aria-hidden="true"></div>
-    <div class="section-heading stage-copy">
-      <h2>Fácil para ti. Claro para quien te conoce.</h2>
-      <p>Comparte tu información con seguridad y permite que cada persona entienda, confíe y elija cómo continuar el contacto.</p>
-    </div>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_2_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_2_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="linkme.life® conecta Monterrey con Nueva York"></video>
   </div>
 
   <div class="section-after-stage">
    <div class="demo-grid compact-demo-grid demo-three-column">
     <!-- v1.009 DEMO 3 COLUMNAS: PRIVADO / TEXTO / PUBLICO -->
     <div class="demo-video-panel private-demo-panel">
-      <h3 class="video-label">Perfil privado</h3>
+      <h3 id="perfil-privado" class="video-label">Perfil privado</h3>
       <div class="device-frame demo-device-frame">
         <div class="device-screen">
           <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
@@ -167,16 +163,15 @@
     </div>
 
     <div class="demo-copy">
-      <h3>Una buena conversación merece una forma fácil de continuar.</h3>
       <p>
-        Tú mantienes tu información organizada y actualizada desde tu perfil privado. Quien recibe tu LinkMe
-        puede conocerte, guardar tus datos y elegir fácilmente cómo volver a contactarte.
+        Tú mantienes tu información organizada y actualizada desde tu <a class="profile-video-link" href="#perfil-privado">perfil privado</a>.
+        Y tu <a class="profile-video-link" href="#perfil-publico">perfil público</a> es para quien recibe tu linkme.life®, te guarde en su celular y elija sin fricción el siguiente paso.
       </p>
       <a class="button button-soft" href="#prueba-linkme">Probar con mis datos</a>
     </div>
 
     <div class="demo-video-panel public-demo-panel">
-      <h3 class="video-label">Perfil público</h3>
+      <h3 id="perfil-publico" class="video-label">Perfil público</h3>
       <div class="device-frame demo-device-frame">
         <div class="device-screen">
           <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
@@ -192,20 +187,20 @@
 
 <section id="como-funciona" class="section compact-section soft-section split-section benefits-motion-section">
   <div class="fullbleed-stage benefits-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="LinkMe facilita conexiones entre profesionales"></video>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="linkme.life® facilita conexiones entre profesionales"></video>
     <div class="stage-shade" aria-hidden="true"></div>
     <div class="section-heading stage-copy">
-      <h2>Preséntate con claridad. Haz fácil continuar.</h2>
+      <h2>Continúa la conversación que convierte.</h2>
     </div>
   </div>
 
   <div class="section-after-stage unified-value-section">
     <span id="caracteristicas" class="section-anchor" aria-hidden="true"></span>
     <div class="cards four compact-cards unified-value-cards">
-      <article class="card"><h3>Preséntate</h3><p>Quién eres y qué haces, listo para compartir.</p></article>
-      <article class="card"><h3>Facilita</h3><p>Facilítales que te llamen, te escriban, te paguen y te ubiquen en Maps.</p></article>
-      <article class="card"><h3>Actualiza</h3><p>Actualiza tus datos sin cambiar tu enlace ni tu QR.</p></article>
-      <article class="card"><h3>Fortalece</h3><p>Fortalece a tu equipo comercial, ya sea de forma individual o consolidando a sus integrantes.</p></article>
+      <article class="card"><h3>Preséntate</h3><p>Quién eres y qué haces.</p></article>
+      <article class="card"><h3>Facilítales</h3><p>Que te escriban, te paguen, te vean o te visiten.</p></article>
+      <article class="card"><h3>Actualiza</h3><p>Actualiza ilimitadamente tus datos sin que cambie tu QR ni tu enlace.</p></article>
+      <article class="card"><h3>Fortalece</h3><p>A tu equipo comercial, ya sea de forma individual o consolidando a sus integrantes.</p></article>
     </div>
   </div>
 </section>
@@ -220,7 +215,7 @@
   </div>
 
   <div class="pricing-grid compact-pricing-grid">
-    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
+    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi linkme.life® con este plan">
       <div class="plan-badge">Flexible</div>
       <h3>Mensual</h3>
       <p class="plan-price localized-price" data-mxn="MXN|$137" data-usd="USD|$9"><span>MXN</span> $137 <small>/ mes</small></p>
@@ -231,7 +226,7 @@
       <div class="plan-card-cta">Crear mensual</div>
     </a>
 
-    <a class="plan-card featured-plan plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con el plan anual recomendado">
+    <a class="plan-card featured-plan plan-card-link" href="{{ create_url }}" aria-label="Crear mi linkme.life® con el plan anual recomendado">
       <div class="plan-badge featured-badge">Mejor valor</div>
       <h3>Anual</h3>
       <p class="plan-price localized-price" data-mxn="MXN|$597" data-usd="USD|$47"><span>MXN</span> $597 <small>/ año</small></p>
@@ -247,7 +242,7 @@
       <div class="plan-card-cta">Crear anual</div>
     </a>
 
-    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi LinkMe con este plan">
+    <a class="plan-card plan-card-link" href="{{ create_url }}" aria-label="Crear mi linkme.life® con este plan">
       <div class="plan-badge">Eficiente</div>
       <h3>Semestral</h3>
       <p class="plan-price localized-price" data-mxn="MXN|$437" data-usd="USD|$37"><span>MXN</span> $437 <small>/ 6 meses</small></p>
@@ -267,7 +262,7 @@
 <section id="preguntas" class="section compact-section trust-faq-section">
   <div class="section-heading">
     <h2>Tu información, bajo tu control.</h2>
-    <p>Tú decides qué publicar y puedes actualizarlo cuando lo necesites. Tus clientes siempre encontrarán la versión más reciente de tu LinkMe.</p>
+    <p>Tú decides qué publicar y puedes actualizarlo cuando lo necesites. Tus clientes siempre encontrarán la versión más reciente de tu linkme.life®.</p>
   </div>
 
   <div class="trust-points">
@@ -286,42 +281,39 @@
     <!-- v1.067 FAQ REORDENADO POR RECORRIDO DEL USUARIO -->
     <details>
       <summary>¿Necesito descargar una app?</summary>
-      <p>Tus contactos no necesitan descargar nada. Solo escanean tu QR o abren tu enlace y ven tu perfil público desde el navegador.</p>
-      <p>Tú puedes guardar LinkMe en la pantalla de inicio de tu celular para entrar rápido a tu administrador, mostrar tu QR y actualizar tu información. Además, tienes libertad para iniciar sesión desde cualquier celular, tablet o computadora con tu cuenta de Gmail y recuperar tu perfil personal sin depender de un solo dispositivo.</p>
+      <p>Tus contactos no necesitan descargar nada. Solo escanean tu QR y con un clic pueden guardarte en su celular.</p>
+      <p>Tú puedes guardar linkme.life® en la pantalla de inicio de tu celular, además de consultarlo vía web con Gmail.</p>
     </details>
 
     <details>
       <summary>¿Cómo tengo mi QR a la mano para compartirlo?</summary>
-      <p>Guarda LinkMe en la pantalla de inicio de tu celular y entra con un toque.</p>
-      <p>Desde tu administrador tendrás siempre acceso a tu QR para mostrarlo cuantas veces quieras. También podrás editar tus datos y actualizar tu foto de perfil o banner.</p>
+      <p>Guarda linkme.life® en la pantalla de inicio de tu celular y entra con un clic, o accede desde cualquier dispositivo con Gmail <a href="{{ login_url }}">aquí</a>.</p>
     </details>
 
     <details>
       <summary>¿Pueden guardar mis datos en los contactos de su celular?</summary>
-      <p>Sí. Desde tu perfil público pueden guardar tus datos directamente en los contactos de su celular.</p>
-      <p>El contacto incluye el enlace a tu LinkMe público para que puedan volver a consultar tu perfil cuando quieran.</p>
+      <p>Sí. Con dos clics pueden guardarte en su celular, tableta y hasta en la PC.</p>
     </details>
 
     <details>
       <summary>Si cambio mis datos, ¿se actualiza también el contacto que alguien ya guardó?</summary>
       <p>Tu perfil público sí se actualiza automáticamente. El contacto que una persona ya guardó en su celular, no.</p>
-      <p>Si quiere tener también tus datos actualizados en su agenda, deberá entrar nuevamente a tu LinkMe público y guardar el contacto otra vez.</p>
+      <p>Si quiere tener también tus datos actualizados en su agenda, deberá entrar nuevamente a tu linkme.life® público y guardar el contacto otra vez.</p>
     </details>
 
     <details>
       <summary>¿Cuántas veces puedo actualizar mis datos?</summary>
-      <p>Todas las veces que lo necesites durante tu periodo contratado. No hay límite de cambios.</p>
-      <p>Actualizas tu información desde tu acceso privado y tu perfil público muestra automáticamente la versión más reciente. Tu QR y tu enlace siguen siendo los mismos.</p>
+      <p>Ilimitadamente durante el tiempo contratado. El único dato que no cambia es tu nombre.</p>
     </details>
 
     <details>
       <summary>¿Cómo se paga?</summary>
-      <p>Puedes pagar con tarjeta de crédito o débito a través de Stripe.</p>
+      <p>Con tarjeta de crédito o débito a través de Stripe.</p>
     </details>
 
     <details>
       <summary>¿Mi plan se renueva automáticamente?</summary>
-      <p>Solo si eliges y autorizas la renovación automática al contratar. Así puedes mantener tu LinkMe activo sin interrupciones.</p>
+      <p>Solo si eliges y autorizas la renovación automática al contratar. Así puedes mantener tu linkme.life® activo sin interrupciones.</p>
     </details>
 
     <details>
@@ -331,18 +323,18 @@
 
     <details>
       <summary>¿Qué ocurre cuando termina mi periodo?</summary>
-      <p>Si no renuevas, tu perfil público y tu QR dejan de estar disponibles. Tu acceso privado permanece para que puedas contratar nuevamente y reactivar el mismo LinkMe.</p>
+      <p>Si no renuevas, tu perfil público y tu QR dejan de ser públicos. Tu acceso privado permanece vigente para que puedas reactivarlo desde ahí.</p>
     </details>
 
     <details>
       <summary>¿Qué pasa con mi privacidad?</summary>
-      <p>Tú decides qué información quieres publicar. Tu perfil público solo muestra los datos que agregues a tu LinkMe, y tu acceso privado sirve para gestionar y actualizar tu tarjeta.</p>
+      <p>Tú decides qué información quieres publicar. Tu perfil público solo muestra los datos que agregues a tu linkme.life®.</p>
     </details>
   </div>
 
   <div class="compact-final-cta">
-    <h2>Cuando llegue el momento importante, ten tu LinkMe listo.</h2>
-    <a class="button" href="{{ create_url }}">Crear mi LinkMe</a>
+    <h2>Cuando llegue el momento importante, ten tu linkme.life® listo.</h2>
+    <a class="button" href="{{ create_url }}">Crear mi linkme.life®</a>
   </div>
 </section>
 
@@ -371,7 +363,7 @@
     outputs.name.textContent=text(fields.name.value,defaults.name);outputs.role.textContent=text(fields.role.value,defaults.role);outputs.company.textContent=text(fields.company.value,defaults.company);
     if(!photoUrl)$("lmAvatar").textContent=initials(text(fields.name.value,defaults.name));
     const wa=digits(fields.whatsapp.value),phone=phoneValue(fields.phone.value),email=fields.email.value.trim(),insta=instagramUrl(fields.instagram.value),site=webUrl(fields.website.value),maps=fields.maps.value.trim();
-    setAction(actions.whatsapp,wa.length>=10?"https://wa.me/"+wa:"");setAction(actions.phone,phone.length>=7?"tel:"+phone:"");setAction(actions.email,email&&fields.email.validity.valid?"mailto:"+email:"");setAction(actions.instagram,insta);setAction(actions.website,site);setAction(actions.maps,maps?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(maps):"");setAction(actions.share,"");actions.share.title="Disponible cuando crees tu LinkMe real";
+    setAction(actions.whatsapp,wa.length>=10?"https://wa.me/"+wa:"");setAction(actions.phone,phone.length>=7?"tel:"+phone:"");setAction(actions.email,email&&fields.email.validity.valid?"mailto:"+email:"");setAction(actions.instagram,insta);setAction(actions.website,site);setAction(actions.maps,maps?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(maps):"");setAction(actions.share,"");actions.share.title="Disponible cuando crees tu linkme.life® real";
     values.whatsapp.textContent=fields.whatsapp.value.trim()||"Captura tu WhatsApp";values.phone.textContent=fields.phone.value.trim()||"Captura tu teléfono";values.email.textContent=email||"Captura tu correo";values.instagram.textContent=fields.instagram.value.trim()||"Captura tu Instagram";values.website.textContent=fields.website.value.trim()||"Captura tu sitio web";values.maps.textContent=maps||"Captura tu ubicación";updateVcard();
   }
   function savePreview(){const saved={};Object.keys(fields).forEach(key=>{if(key!=="photo"&&key!=="banner")saved[key]=fields[key].value});try{sessionStorage.setItem(previewStorageKey,JSON.stringify(saved))}catch(error){}}
@@ -381,7 +373,7 @@
   fields.banner.addEventListener("change",function(){const file=this.files&&this.files[0];if(bannerUrl){URL.revokeObjectURL(bannerUrl);bannerUrl=""}const banner=$("lmPreviewBanner");if(file&&file.type.startsWith("image/")){bannerUrl=URL.createObjectURL(file);banner.style.backgroundImage="url("+JSON.stringify(bannerUrl)+")";banner.style.backgroundSize="cover";banner.style.backgroundPosition="center"}else{banner.style.backgroundImage=""}});
   Object.values(actions).forEach(node=>node.addEventListener("click",event=>{if(node.getAttribute("aria-disabled")==="true"){event.preventDefault();return}if(node===actions.vcard||node===actions.share)return;event.preventDefault();const popup=window.open(node.href,"linkmePreviewPopup","popup=yes,width=460,height=720");if(!popup){window.alert("Tu navegador bloqueó la ventana emergente. Permítela para probar esta liga sin salir de la landing.");return}try{popup.opener=null}catch(error){}}));
   $("lmPreviewReset").addEventListener("click",function(){form.reset();try{sessionStorage.removeItem(previewStorageKey)}catch(error){}if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=""}if(bannerUrl){URL.revokeObjectURL(bannerUrl);bannerUrl=""}const avatar=$("lmAvatar");avatar.style.backgroundImage="";$("lmPreviewBanner").style.backgroundImage="";update()});
-  $("lmCreateReal").addEventListener("click",function(){if(window.confirm("Esta vista previa no está publicada y sus datos no se guardarán. ¿Quieres crear tu LinkMe real con perfil público, enlace y QR?"))window.location.href={{ create_url|tojson }}});
+  $("lmCreateReal").addEventListener("click",function(){if(window.confirm("Esta vista previa no está publicada y sus datos no se guardarán. ¿Quieres crear tu linkme.life® real con perfil público, enlace y QR?"))window.location.href={{ create_url|tojson }}});
   window.addEventListener("pagehide",function(){if(photoUrl)URL.revokeObjectURL(photoUrl);if(bannerUrl)URL.revokeObjectURL(bannerUrl);if(vcardUrl)URL.revokeObjectURL(vcardUrl)});
   restorePreview();update();
 })();

@@ -1,3 +1,4 @@
+# v1.076 Landing linkme.life® - contenido, navegación audiovisual, legal e identidad
 # v1.058 Landing LinkMe - chat compacto, minimizable y sesión controlada
 # v1.057 Landing LinkMe - chat movil compacto y cierre siempre accesible
 # v1.056 Landing LinkMe - burbuja flotante de LinkMe contigo siempre visible
@@ -33,7 +34,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1074"
+ASSET_VERSION = "1076"
 
 @app.context_processor
 def inject_asset_version():
@@ -115,8 +116,7 @@ def reembolso():
 
 @app.route("/favicon.ico")
 def favicon():
-    svg = """<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#76bb40'/><text x='32' y='40' text-anchor='middle' font-size='24' font-family='Arial, sans-serif' font-weight='800' fill='white'>LM</text></svg>"""
-    return Response(svg, status=200, mimetype="image/svg+xml")
+    return app.send_static_file("img/linkme-life-icon.png")
 
 @app.route("/health")
 def health():
