@@ -33,7 +33,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1073"
+ASSET_VERSION = "1074"
 
 @app.context_processor
 def inject_asset_version():

@@ -3875,47 +3875,78 @@ h6,
   outline-offset:3px !important;
 }
 
-/* v1.073: mensajes principales al doble, con ajuste seguro para pantallas pequeñas */
+/* v1.074: jerarquia 30% menor, borde sutil sobre video y pie compacto */
 .hero-fullbleed-stage .stage-copy h1{
-  font-size:clamp(84px,10vw,136px) !important;
+  font-size:clamp(59px,7vw,95px) !important;
 }
 .hero-fullbleed-stage .stage-copy .hero-text{
-  font-size:clamp(30px,3vw,38px) !important;
+  font-size:clamp(21px,2.1vw,27px) !important;
   line-height:1.35 !important;
 }
 .hero-fullbleed-stage .hero-actions .button,
 .hero-fullbleed-stage .hero-actions .secondary-link{
-  font-size:28px !important;
+  font-size:20px !important;
 }
 .hero-fullbleed-stage .stage-copy .hero-trust{
-  font-size:28px !important;
+  font-size:20px !important;
 }
 .demo-fullbleed-stage .stage-copy h2,
 .benefits-fullbleed-stage .stage-copy h2{
-  font-size:clamp(68px,8vw,112px) !important;
+  font-size:clamp(48px,5.6vw,78px) !important;
 }
 .demo-fullbleed-stage .stage-copy p{
-  font-size:36px !important;
+  font-size:25px !important;
   line-height:1.4 !important;
+}
+.hero-fullbleed-stage .stage-copy,
+.demo-fullbleed-stage .stage-copy,
+.benefits-fullbleed-stage .stage-copy{
+  text-shadow:
+    -1px -1px 0 #13867e,
+     1px -1px 0 #13867e,
+    -1px  1px 0 #13867e,
+     1px  1px 0 #13867e;
+}
+.footer{
+  padding-top:27px !important;
+  padding-bottom:14px !important;
+}
+.footer-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  margin-top:18px !important;
+}
+.footer-bottom{
+  margin-top:21px !important;
+  padding-top:11px !important;
 }
 
 @media(max-width:760px){
   .hero-fullbleed-stage .stage-copy h1{
-    font-size:clamp(58px,16vw,78px) !important;
+    font-size:clamp(41px,11.2vw,55px) !important;
   }
   .hero-fullbleed-stage .stage-copy .hero-text{
-    font-size:24px !important;
+    font-size:17px !important;
   }
   .hero-fullbleed-stage .hero-actions .button,
   .hero-fullbleed-stage .hero-actions .secondary-link,
   .hero-fullbleed-stage .stage-copy .hero-trust{
-    font-size:20px !important;
+    font-size:14px !important;
   }
   .demo-fullbleed-stage .stage-copy h2,
   .benefits-fullbleed-stage .stage-copy h2{
-    font-size:48px !important;
+    font-size:34px !important;
   }
   .demo-fullbleed-stage .stage-copy p{
-    font-size:22px !important;
+    font-size:15px !important;
+  }
+  .footer{
+    padding:12px 14px 8px !important;
+  }
+  .footer-grid{
+    margin-top:10px !important;
+  }
+  .footer-bottom{
+    margin-top:9px !important;
+    padding-top:6px !important;
   }
 }
