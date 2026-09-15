@@ -1,4 +1,6 @@
-# v1.078 Chat CONVERTE colaborador comercial
+# v1.079 CTA clicable del chat y cero friccion
+# Convierte la liga oficial de creacion en el boton "Crear mi CONVERTE".
+# Base: v1.078 Chat CONVERTE colaborador comercial
 # Actualiza el saludo visible y la marca del chat; conserva su sesion y endpoint.
 # Base: v1.077 Landing CONVERTE.ONE - sustitución exclusiva de marca visible
 # Base: v1.076 Landing linkme.life® - contenido, navegación audiovisual, legal e identidad
@@ -37,7 +39,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1078"
+ASSET_VERSION = "1079"
 
 @app.context_processor
 def inject_asset_version():
