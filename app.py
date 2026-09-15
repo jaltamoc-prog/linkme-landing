@@ -1,4 +1,6 @@
-# v1.077 Landing CONVERTE.ONE - sustitución exclusiva de marca visible
+# v1.078 Chat CONVERTE colaborador comercial
+# Actualiza el saludo visible y la marca del chat; conserva su sesion y endpoint.
+# Base: v1.077 Landing CONVERTE.ONE - sustitución exclusiva de marca visible
 # Base: v1.076 Landing linkme.life® - contenido, navegación audiovisual, legal e identidad
 # v1.058 Landing LinkMe - chat compacto, minimizable y sesión controlada
 # v1.057 Landing LinkMe - chat movil compacto y cierre siempre accesible
@@ -35,7 +37,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1077"
+ASSET_VERSION = "1078"
 
 @app.context_processor
 def inject_asset_version():
