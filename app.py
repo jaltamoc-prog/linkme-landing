@@ -1,4 +1,7 @@
-# v1.079 CTA clicable del chat y cero friccion
+# v1.080 Google Wallet como ventaja de cero friccion
+# Comunica que el propietario puede llevar su QR en Google Wallet sin exigir
+# que sus prospectos descarguen una app o utilicen Wallet.
+# Base: v1.079 CTA clicable del chat y cero friccion
 # Convierte la liga oficial de creacion en el boton "Crear mi CONVERTE".
 # Base: v1.078 Chat CONVERTE colaborador comercial
 # Actualiza el saludo visible y la marca del chat; conserva su sesion y endpoint.
@@ -39,7 +42,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1079"
+ASSET_VERSION = "1080"
 
 @app.context_processor
 def inject_asset_version():

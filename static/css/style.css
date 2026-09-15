@@ -1228,6 +1228,36 @@ details,
   color:var(--brand);
 }
 
+/* v1.080 - Google Wallet como ventaja competitiva de cero friccion */
+.wallet-advantage{
+  max-width:1180px;
+  margin:18px auto 0;
+  padding:24px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  border:1px solid rgba(116,231,204,.75);
+  border-radius:28px;
+  background:linear-gradient(135deg,rgba(116,231,204,.20),rgba(255,255,255,.98));
+}
+.wallet-advantage-label{
+  display:inline-block;
+  margin-bottom:7px;
+  color:#13867e;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.wallet-advantage h3{margin:0 0 6px;font-size:clamp(24px,3vw,34px);letter-spacing:-.04em}
+.wallet-advantage p{max-width:720px;margin:0;color:var(--muted);font-size:16px}
+.wallet-advantage-cta{flex:0 0 auto;white-space:nowrap}
+@media(max-width:760px){
+  .wallet-advantage{align-items:stretch;flex-direction:column;padding:22px}
+  .wallet-advantage-cta{width:100%}
+}
+
 .step span{
   color:var(--brand);
 }
