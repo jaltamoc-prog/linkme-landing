@@ -204,9 +204,13 @@
     </div>
     <div class="wallet-advantage">
       <div>
-        <span class="wallet-advantage-label">Disponible en Google Wallet</span>
+        <div class="wallet-advantage-brand">
+          <img src="{{ url_for('static', filename='img/google-wallet-logo.svg') }}?v={{ asset_version }}" alt="Google Wallet">
+          <span class="wallet-advantage-label">Compatible</span>
+        </div>
         <h3>Tu QR listo cuando llega la oportunidad.</h3>
-        <p>Guarda tu Converte.one en Google Wallet y compártelo desde tu celular sin buscar enlaces ni entrar a tu administrador.</p>
+        <p>Guarda tu Converte.one en Google Wallet y abre tu QR desde un lugar familiar, sin buscar enlaces ni entrar a tu administrador. Tu prospecto solo escanea: no necesita Wallet ni descargar una app.</p>
+        <p class="wallet-coming-soon">Próximamente en Apple Wallet para iPhone.</p>
       </div>
       <a class="button wallet-advantage-cta" href="{{ create_url }}">Crear mi Converte.one</a>
     </div>

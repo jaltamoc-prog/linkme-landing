@@ -1228,7 +1228,7 @@ details,
   color:var(--brand);
 }
 
-/* v1.080 - Google Wallet como ventaja competitiva de cero friccion */
+/* v1.081 - Google Wallet visible sin competir con la propuesta principal */
 .wallet-advantage{
   max-width:1180px;
   margin:18px auto 0;
@@ -1241,17 +1241,34 @@ details,
   border-radius:28px;
   background:linear-gradient(135deg,rgba(116,231,204,.20),rgba(255,255,255,.98));
 }
+.wallet-advantage-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.wallet-advantage-brand img{
+  display:block;
+  width:clamp(132px,16vw,171px);
+  height:auto;
+}
 .wallet-advantage-label{
-  display:inline-block;
-  margin-bottom:7px;
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:0 10px;
+  border:1px solid rgba(19,134,126,.18);
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
   color:#13867e;
-  font-size:13px;
+  font-size:11px;
   font-weight:900;
   letter-spacing:.04em;
   text-transform:uppercase;
 }
 .wallet-advantage h3{margin:0 0 6px;font-size:clamp(24px,3vw,34px);letter-spacing:-.04em}
 .wallet-advantage p{max-width:720px;margin:0;color:var(--muted);font-size:16px}
+.wallet-advantage .wallet-coming-soon{margin-top:8px;color:#5c6788;font-size:13px;font-weight:700}
 .wallet-advantage-cta{flex:0 0 auto;white-space:nowrap}
 @media(max-width:760px){
   .wallet-advantage{align-items:stretch;flex-direction:column;padding:22px}
@@ -2851,6 +2868,24 @@ html {
   display: none;
 }
 
+.lm-wallet-mark{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:38px!important;
+  padding:5px 11px!important;
+  border:1px solid #E6E9F5!important;
+  border-radius:999px!important;
+  background:#FFFFFF!important;
+  box-shadow:0 4px 12px rgba(16,24,40,.04)!important;
+  text-decoration:none!important;
+}
+.lm-wallet-mark img{
+  display:block!important;
+  width:118px!important;
+  height:auto!important;
+}
+
 /* Desktop / tablet */
 @media (min-width: 769px) {
   .lm-header {
@@ -2948,10 +2983,21 @@ html {
     align-items: center !important;
   }
 
+  .lm-wallet-mark{
+    min-width:0!important;
+    width:100%!important;
+    min-height:28px!important;
+    padding:3px 6px!important;
+  }
+
+  .lm-wallet-mark img{
+    width:min(104px,100%)!important;
+  }
+
   .lm-secondary {
     width: 100% !important;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, .75fr) minmax(0, .75fr) !important;
     gap: 7px !important;
     align-items: center !important;
   }
@@ -3845,7 +3891,7 @@ button:not(.menu-button){
 @media(max-width:768px){
   .lm-header{padding:7px 10px 8px!important}
   .lm-nav{gap:6px!important}
-  .lm-secondary{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  .lm-secondary{grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(0,.75fr))!important;gap:7px!important}
   .lm-btn{min-height:33px!important}
   .lm-chip{min-height:28px!important}
   html{scroll-padding-top:78px!important}
