@@ -1,3 +1,11 @@
+# v1.085 Sitemap y robots para indexación pública de converte.uno
+# Añade exclusivamente /sitemap.xml y /robots.txt para Google Search Console.
+# v1.084 Redirección pública garantizada de linkme.life en el navegador
+# Conserva el intento de redirección HTTP y añade respaldo del lado del cliente
+# porque Render oculta el host original antes de entregar algunas solicitudes.
+# v1.083 Redirección reforzada de linkme.life a converte.uno detrás de Render
+# Reconoce el dominio público original enviado por el proxy sin cambiar rutas,
+# plantillas, DNS ni la arquitectura de la landing.
 # v1.082 CONVERTE™ en converte.uno, favicon y accesos móviles actualizados
 # Cambia exclusivamente la marca y los accesos públicos; conserva la arquitectura.
 # v1.081 Google Wallet visible y Apple Wallet proximamente
@@ -48,7 +56,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1082"
+ASSET_VERSION = "1084"
 
 @app.context_processor
 def inject_asset_version():
@@ -89,8 +97,19 @@ LINKME_CHAT_API_URL = os.getenv(
 @app.before_request
 def redirigir_dominio_publico_anterior():
     """Mantiene las URLs antiguas, pero presenta converte.uno como puerta de entrada."""
-    host = (request.host or "").split(":", 1)[0].lower()
-    if request.method in {"GET", "HEAD"} and host in {"linkme.life", "www.linkme.life"}:
+    hosts = {
+        (request.host or "").split(":", 1)[0].strip().lower(),
+        (request.headers.get("X-Forwarded-Host") or "").split(",", 1)[0].split(":", 1)[0].strip().lower(),
+        (request.headers.get("X-Original-Host") or "").split(",", 1)[0].split(":", 1)[0].strip().lower(),
+    }
+
+    forwarded = request.headers.get("Forwarded") or ""
+    for item in forwarded.split(";"):
+        key, separator, value = item.strip().partition("=")
+        if separator and key.lower() == "host":
+            hosts.add(value.strip().strip('"').split(":", 1)[0].lower())
+
+    if request.method in {"GET", "HEAD"} and hosts.intersection({"linkme.life", "www.linkme.life"}):
         query = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         return redirect(f"https://converte.uno{request.path}{query}", code=301)
 
@@ -134,6 +153,40 @@ def terminos():
 @app.route("/reembolso")
 def reembolso():
     return render_template("reembolso.html", create_url="/nuevo")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    contenido = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://converte.uno/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/privacidad</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/terminos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
+"""
+    return Response(contenido, status=200, mimetype="application/xml")
+
+
+@app.route("/robots.txt")
+def robots():
+    contenido = """User-agent: *
+Allow: /
+
+Sitemap: https://converte.uno/sitemap.xml
+"""
+    return Response(contenido, status=200, mimetype="text/plain")
 
 
 @app.route("/favicon.ico")
