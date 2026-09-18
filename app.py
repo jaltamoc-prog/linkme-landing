@@ -1,3 +1,5 @@
+# v1.086 Identidad SEO inequívoca de CONVERTE para Google
+# Define marca, sitio y aplicación; conserva sitemap, robots y redirecciones.
 # v1.085 Sitemap y robots para indexación pública de converte.uno
 # Añade exclusivamente /sitemap.xml y /robots.txt para Google Search Console.
 # v1.084 Redirección pública garantizada de linkme.life en el navegador
@@ -56,7 +58,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1084"
+ASSET_VERSION = "1086"
 
 @app.context_processor
 def inject_asset_version():

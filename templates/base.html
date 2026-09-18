@@ -1,11 +1,68 @@
 <!doctype html>
-<!-- v1.068: sistema tipográfico y hover plateado gris-lila -->
+<!-- v1.086: identidad SEO inequívoca de CONVERTE para Google -->
 <html lang="es" data-market="{{ market|default('usd') }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}CONVERTE™{% endblock %}</title>
   <meta name="description" content="{% block description %}CONVERTE™ organiza tu identidad profesional en una tarjeta digital clara, viva y siempre actualizada.{% endblock %}">
+  <meta name="application-name" content="CONVERTE">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://converte.uno/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_MX">
+  <meta property="og:site_name" content="CONVERTE">
+  <meta property="og:title" content="CONVERTE | Tarjeta digital con QR para contactos y ventas">
+  <meta property="og:description" content="CONVERTE es una tarjeta digital con QR para compartir contacto, WhatsApp, redes, ubicación y formas de pago desde un solo perfil actualizable.">
+  <meta property="og:url" content="https://converte.uno/">
+  <meta property="og:image" content="https://converte.uno/static/img/converte-uno-icon.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CONVERTE | Tarjeta digital con QR">
+  <meta name="twitter:description" content="Comparte tus datos y facilita que te contacten, te guarden y continúen la conversación.">
+  <meta name="twitter:image" content="https://converte.uno/static/img/converte-uno-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://converte.uno/#organization",
+        "name": "CONVERTE",
+        "alternateName": ["Converte.one", "Converte.uno"],
+        "url": "https://converte.uno/",
+        "logo": "https://converte.uno/static/img/converte-uno-icon.png",
+        "description": "CONVERTE ofrece una tarjeta digital con QR para organizar y compartir información profesional, contacto y formas de pago."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://converte.uno/#website",
+        "url": "https://converte.uno/",
+        "name": "CONVERTE",
+        "alternateName": ["Converte.one", "Converte.uno"],
+        "publisher": {"@id": "https://converte.uno/#organization"},
+        "inLanguage": "es-MX"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://converte.uno/#application",
+        "name": "CONVERTE",
+        "alternateName": "Converte.one",
+        "url": "https://converte.uno/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "brand": {"@id": "https://converte.uno/#organization"},
+        "description": "Tarjeta digital con QR para compartir contacto, WhatsApp, redes sociales, ubicación y formas de pago desde un perfil actualizable.",
+        "featureList": [
+          "Perfil público con QR",
+          "Contacto descargable",
+          "WhatsApp y redes sociales",
+          "Ubicación y formas de pago",
+          "Información actualizable sin cambiar el QR"
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='img/converte-uno-icon.png') }}?v={{ asset_version }}">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/converte-uno-icon.png') }}?v={{ asset_version }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
