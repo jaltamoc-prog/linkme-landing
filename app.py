@@ -1,3 +1,5 @@
+# v1.082 CONVERTE™ en converte.uno, favicon y accesos móviles actualizados
+# Cambia exclusivamente la marca y los accesos públicos; conserva la arquitectura.
 # v1.081 Google Wallet visible y Apple Wallet proximamente
 # Integra el logotipo oficial de Google Wallet como respaldo secundario en el
 # encabezado y en su bloque de beneficio; anuncia Apple Wallet sin presentarlo
@@ -9,7 +11,7 @@
 # Convierte la liga oficial de creacion en el boton "Crear mi CONVERTE".
 # Base: v1.078 Chat CONVERTE colaborador comercial
 # Actualiza el saludo visible y la marca del chat; conserva su sesion y endpoint.
-# Base: v1.077 Landing CONVERTE.ONE - sustitución exclusiva de marca visible
+# Base: v1.077 Landing CONVERTE™ - sustitución exclusiva de marca visible
 # Base: v1.076 Landing linkme.life® - contenido, navegación audiovisual, legal e identidad
 # v1.058 Landing LinkMe - chat compacto, minimizable y sesión controlada
 # v1.057 Landing LinkMe - chat movil compacto y cierre siempre accesible
@@ -46,7 +48,7 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1081"
+ASSET_VERSION = "1082"
 
 @app.context_processor
 def inject_asset_version():
@@ -78,11 +80,19 @@ def add_cache_headers(response):
 # Dominio comercial: https://www.linkme.style
 # La landing vende. La app operativa crea/edita LinkMe.
 
-APP_CREATE_URL = "https://linkme-mvp.onrender.com/nuevo"  # temporal hasta activar DNS app.linkme.style
+APP_CREATE_URL = os.getenv("LINKME_APP_CREATE_URL", "https://app.converte.uno/nuevo").strip()
 LINKME_CHAT_API_URL = os.getenv(
     "LINKME_CHAT_API_URL",
-    "https://linkme-mvp.onrender.com/s/linkme-contigo",
+    "https://app.converte.uno/s/linkme-contigo",
 ).strip()
+
+@app.before_request
+def redirigir_dominio_publico_anterior():
+    """Mantiene las URLs antiguas, pero presenta converte.uno como puerta de entrada."""
+    host = (request.host or "").split(":", 1)[0].lower()
+    if request.method in {"GET", "HEAD"} and host in {"linkme.life", "www.linkme.life"}:
+        query = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"https://converte.uno{request.path}{query}", code=301)
 
 @app.after_request
 def aplicar_headers_basicos(response):
@@ -99,7 +109,7 @@ def aplicar_headers_basicos(response):
 def index():
     return render_template(
         "index.html",
-        login_url="https://linkme-mvp.onrender.com/s/in",
+        login_url="https://app.converte.uno/s/in",
         create_url="/nuevo",
         market=detectar_mercado(),
         chat_api_url=LINKME_CHAT_API_URL,
@@ -128,7 +138,7 @@ def reembolso():
 
 @app.route("/favicon.ico")
 def favicon():
-    return app.send_static_file("img/linkme-life-icon.png")
+    return app.send_static_file("img/converte-uno-icon.png")
 
 @app.route("/health")
 def health():
