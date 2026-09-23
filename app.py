@@ -111,7 +111,7 @@ def redirigir_dominio_publico_anterior():
         if separator and key.lower() == "host":
             hosts.add(value.strip().strip('"').split(":", 1)[0].lower())
 
-    if request.method in {"GET", "HEAD"} and hosts.intersection({"linkme.life", "www.linkme.life"}):
+    if request.method in {"GET", "HEAD"} and request.path != "/ads.txt" and hosts.intersection({"linkme.life", "www.linkme.life"}):
         query = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         return redirect(f"https://converte.uno{request.path}{query}", code=301)
 
@@ -184,6 +184,9 @@ def sitemap():
 @app.route("/ads.txt")
 def ads_txt():
     contenido = "google.com, pub-5139860234831712, DIRECT, f08c47fec0942fa0\n"
+    host = (request.host or "").split(":", 1)[0].lower()
+    if host in {"linkme.life", "www.linkme.life"}:
+        contenido += "subdomain=generaqr.linkme.life\n"
     return Response(contenido, status=200, mimetype="text/plain")
 
 
