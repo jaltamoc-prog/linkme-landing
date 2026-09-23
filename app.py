@@ -181,6 +181,12 @@ def sitemap():
     return Response(contenido, status=200, mimetype="application/xml")
 
 
+@app.route("/ads.txt")
+def ads_txt():
+    contenido = "google.com, pub-5139860234831712, DIRECT, f08c47fec0942fa0\n"
+    return Response(contenido, status=200, mimetype="text/plain")
+
+
 @app.route("/robots.txt")
 def robots():
     contenido = """User-agent: *
