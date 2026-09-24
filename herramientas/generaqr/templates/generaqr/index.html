@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="Genera gratis un código QR para tu página web y personalízalo con una foto desde tu galería o cámara.">
+  <title>GeneraQR con foto</title>
+  <link rel="canonical" href="https://converte.uno/generaqr/">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5139860234831712" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{{ url_for('generaqr.static', filename='styles.css', v=app_version) }}">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <a class="brand" href="https://converte.uno/" aria-label="Ir a Converte">CONVERTE</a>
+      <div class="eyebrow">GENERADOR GRATUITO</div>
+      <h1>Tu página web en un QR con foto.</h1>
+      <p class="hero-copy">Escribe la dirección de tu página, elige una foto y descarga tu código QR en segundos.</p>
+      <div class="trust-row">
+        <span>Sin registro</span>
+        <span>Una página por QR</span>
+        <span>Descarga inmediata</span>
+      </div>
+    </section>
+
+    <aside class="ad-slot ad-slot--leaderboard" aria-label="Espacio publicitario" data-ad-slot="superior">
+      <span>Publicidad</span>
+      <!-- ADSENSE: insertar aquí el bloque responsive superior cuando existan el ID de editor y el slot. -->
+    </aside>
+
+    <section class="generator-card" aria-labelledby="generator-title">
+      <div class="card-heading">
+        <p class="step-kicker">UN QR A LA VEZ</p>
+        <h2 id="generator-title">Genera tu QR</h2>
+        <p>La foto se coloca automáticamente en el centro del código.</p>
+      </div>
+
+      {% if error %}
+      <div class="error-box" role="alert">{{ error }}</div>
+      {% endif %}
+      <div id="form-error" class="error-box" role="alert" hidden></div>
+
+      <form id="qr-form" action="{{ url_for('generaqr.generate') }}" method="post" enctype="multipart/form-data">
+        <div class="field-block">
+          <label class="field-title" for="website-url"><span class="number">1</span> Página web</label>
+          <p class="field-help">Puedes escribirla con o sin <strong>www</strong> y con o sin <strong>https://</strong>.</p>
+          <div class="url-control">
+            <span aria-hidden="true">🌐</span>
+            <input
+              id="website-url"
+              type="text"
+              name="website_url"
+              inputmode="url"
+              autocomplete="url"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="ejemplo.com"
+              maxlength="2048"
+              required
+            >
+          </div>
+        </div>
+
+        <fieldset class="photo-fieldset">
+          <legend><span class="number">2</span> Elige o toma una foto</legend>
+          <p class="field-help">JPG, PNG o WebP de hasta 15 MB. Usaremos únicamente una foto.</p>
+          <div class="photo-actions">
+            <label class="photo-action">
+              <input id="photo-file" type="file" name="photo_file" accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff">
+              <span class="photo-icon" aria-hidden="true">▧</span>
+              <strong>Subir una foto</strong>
+              <small>Desde tu dispositivo</small>
+            </label>
+            <label class="photo-action">
+              <input id="photo-camera" type="file" name="photo_camera" accept="image/*" capture="environment">
+              <span class="photo-icon" aria-hidden="true">●</span>
+              <strong>Tomar una foto</strong>
+              <small>Usar la cámara</small>
+            </label>
+          </div>
+          <div id="photo-preview-wrap" class="photo-preview-wrap" hidden>
+            <img id="photo-preview" alt="Vista previa de la fotografía seleccionada">
+            <div>
+              <strong id="photo-status">Foto seleccionada</strong>
+              <button id="remove-photo" type="button">Cambiar foto</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="styles-fieldset">
+          <legend><span class="number">3</span> Elige un diseño</legend>
+          <div class="styles-grid">
+            {% for key, label in style_labels.items() %}
+            <label class="style-option">
+              <input type="radio" name="style" value="{{ key }}" {% if key == 'clasico' %}checked{% endif %}>
+              <span class="style-symbol style-{{ key }}" aria-hidden="true"></span>
+              <span>{{ label }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+
+        <div id="custom-shape-wrap" class="custom-wrap" hidden>
+          <label for="custom-shape" class="field-title">PNG de tu figura personalizada</label>
+          <p class="field-help">Usa una silueta oscura sobre fondo transparente.</p>
+          <input id="custom-shape" type="file" name="custom_shape" accept=".png,image/png">
+        </div>
+
+        <div class="color-row">
+          <div>
+            <label class="field-title" for="qr-color"><span class="number">4</span> Color del QR</label>
+            <p class="field-help">Un color oscuro facilita la lectura.</p>
+          </div>
+          <div class="color-control">
+            <input id="qr-color" type="color" name="qr_color" value="#000000">
+            <output id="color-value" for="qr-color">#000000</output>
+          </div>
+        </div>
+
+        <button id="submit-button" class="submit-button" type="submit">
+          <span class="button-label">Generar mi QR</span>
+          <span class="button-working" hidden>Generando…</span>
+        </button>
+        <p class="privacy-note">La foto se usa solamente para generar el QR y no se guarda en el servidor.</p>
+      </form>
+    </section>
+
+    <aside class="ad-slot ad-slot--rectangle" aria-label="Espacio publicitario" data-ad-slot="inferior">
+      <span>Publicidad</span>
+      <!-- ADSENSE: insertar aquí el bloque responsive inferior cuando existan el ID de editor y el slot. -->
+    </aside>
+
+    <section class="how-it-works">
+      <h2>Listo en tres pasos</h2>
+      <div class="steps-grid">
+        <article><strong>1</strong><span>Escribe tu página web</span></article>
+        <article><strong>2</strong><span>Sube o toma una foto</span></article>
+        <article><strong>3</strong><span>Genera y descarga</span></article>
+      </div>
+    </section>
+  </main>
+
+  <div id="result-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel">
+      <button class="modal-close" type="button" aria-label="Cerrar resultado" data-close-modal>×</button>
+      <div class="result-content">
+        <p class="step-kicker">QR GENERADO</p>
+        <h2 id="result-title">Tu QR está listo</h2>
+        <p id="result-url" class="result-url"></p>
+        <img id="result-image" class="result-image" alt="Código QR generado">
+        <a id="download-button" class="download-button" href="#" download>Descargar QR</a>
+      </div>
+      <aside id="modal-ad" class="modal-ad" aria-label="Espacio publicitario">
+        <button id="close-ad" class="ad-close" type="button" aria-label="Cerrar espacio publicitario">×</button>
+        <span>Publicidad</span>
+        <div class="ad-placeholder">Espacio publicitario</div>
+        <!-- ADSENSE: insertar aquí el bloque del resultado sin modificar el botón de cierre. -->
+      </aside>
+    </section>
+  </div>
+
+  <footer>Herramienta de <a href="https://converte.uno/">CONVERTE</a> © 2026</footer>
+  <script src="{{ url_for('generaqr.static', filename='app.js', v=app_version) }}" defer></script>
+</body>
+</html>

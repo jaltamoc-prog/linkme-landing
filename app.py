@@ -1,3 +1,7 @@
+# v1.089 Calculadora ISR y generaQR bajo converte.uno
+# Integra generaQR en /generaqr/, conserva la calculadora en /calculadora-isr/,
+# publica ads.txt y declara ambas herramientas en el sitemap.
+# Base: v1.088 Landing sin referencias a Google Wallet
 # v1.086 Identidad SEO inequívoca de CONVERTE para Google
 # Define marca, sitio y aplicación; conserva sitemap, robots y redirecciones.
 # v1.085 Sitemap y robots para indexación pública de converte.uno
@@ -46,12 +50,14 @@ from flask import Flask, render_template, redirect, Response, request
 import os
 
 from herramientas.calculadora_isr import calculadora_isr_bp
+from herramientas.generaqr import generaqr_bp
 
 app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
+app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1086"
+ASSET_VERSION = "1089"
 
 @app.context_processor
 def inject_asset_version():
@@ -150,6 +156,18 @@ def reembolso():
     return render_template("reembolso.html", create_url="/nuevo")
 
 
+@app.route("/generaQR")
+@app.route("/generaQR/")
+def generaqr_compatibilidad():
+    return redirect("/generaqr/", code=301)
+
+
+@app.route("/ads.txt")
+def ads_txt():
+    contenido = "google.com, pub-5139860234831712, DIRECT, f08c47fec0942fa0\n"
+    return Response(contenido, status=200, mimetype="text/plain")
+
+
 @app.route("/sitemap.xml")
 def sitemap():
     contenido = """<?xml version="1.0" encoding="UTF-8"?>
@@ -168,6 +186,16 @@ def sitemap():
     <loc>https://converte.uno/terminos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/calculadora-isr/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/generaqr/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
 """
