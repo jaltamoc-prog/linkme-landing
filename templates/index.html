@@ -203,6 +203,17 @@
       <article class="card"><h3>Actualiza</h3><p>Actualiza ilimitadamente tus datos sin que cambie tu QR ni tu enlace.</p></article>
       <article class="card"><h3>Fortalece</h3><p>A tu equipo comercial, ya sea de forma individual o consolidando a sus integrantes.</p></article>
     </div>
+    <div class="wallet-advantage">
+      <div>
+        <div class="wallet-advantage-brand">
+          <img src="{{ url_for('static', filename='img/google-wallet-logo.svg') }}?v={{ asset_version }}" alt="Google Wallet">
+          <span class="wallet-advantage-label">Compatible en Android</span>
+        </div>
+        <h3>Tu QR listo cuando llega la oportunidad.</h3>
+        <p>Guarda tu Converte.uno en Google Wallet desde tu perfil privado y abre tu QR desde un lugar familiar en Android, sin buscar enlaces ni entrar a tu administrador. Tu prospecto solo escanea: no necesita Wallet ni descargar una app.</p>
+      </div>
+      <a class="button wallet-advantage-cta" href="{{ create_url }}">Crear mi Converte.uno</a>
+    </div>
   </div>
 </section>
 
@@ -270,6 +281,7 @@
     <span>Sin letras chiquitas</span>
     <span>Pago seguro con Stripe</span>
     <span>QR activo durante tu periodo contratado</span>
+    <span>Compatible con Google Wallet en Android</span>
     <span>Información editable desde tu acceso privado</span>
   </div>
 
@@ -288,7 +300,12 @@
 
     <details>
       <summary>¿Cómo tengo mi QR a la mano para compartirlo?</summary>
-      <p>Puedes guardar Converte.uno en la pantalla de inicio de tu celular o acceder desde cualquier dispositivo con Gmail <a href="{{ login_url }}">aquí</a>.</p>
+      <p>En Android puedes agregar tu Converte.uno a Google Wallet desde tu perfil privado y abrir desde ahí tu QR cuando necesites compartirlo. También puedes guardarlo en la pantalla de inicio de tu celular o acceder desde cualquier dispositivo con Gmail <a href="{{ login_url }}">aquí</a>.</p>
+    </details>
+
+    <details>
+      <summary>¿La otra persona necesita Google Wallet?</summary>
+      <p>No. Google Wallet es una facilidad para que el propietario tenga su QR a la mano en Android. El prospecto solo lo escanea y abre el perfil público desde el navegador, sin descargar una app.</p>
     </details>
 
     <details>
