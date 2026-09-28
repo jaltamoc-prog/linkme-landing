@@ -1,27 +1,27 @@
-# v1.094 Optimización de carga: videos diferidos, caché versionada y assets estáticos
+﻿# v1.094 OptimizaciÃ³n de carga: videos diferidos, cachÃ© versionada y assets estÃ¡ticos
 # v1.089 Calculadora ISR y generaQR bajo converte.uno
 # Integra generaQR en /generaqr/, conserva la calculadora en /calculadora-isr/,
 # publica ads.txt y declara ambas herramientas en el sitemap.
 # Base: v1.088 Landing sin referencias a Google Wallet
-# v1.086 Identidad SEO inequívoca de CONVERTE para Google
-# Define marca, sitio y aplicación; conserva sitemap, robots y redirecciones.
-# v1.085 Sitemap y robots para indexación pública de converte.uno
-# Añade exclusivamente /sitemap.xml y /robots.txt para Google Search Console.
-# v1.084 Redirección pública garantizada de linkme.life en el navegador
-# Conserva el intento de redirección HTTP y añade respaldo del lado del cliente
+# v1.086 Identidad SEO inequÃ­voca de CONVERTE para Google
+# Define marca, sitio y aplicaciÃ³n; conserva sitemap, robots y redirecciones.
+# v1.085 Sitemap y robots para indexaciÃ³n pÃºblica de converte.uno
+# AÃ±ade exclusivamente /sitemap.xml y /robots.txt para Google Search Console.
+# v1.084 RedirecciÃ³n pÃºblica garantizada de linkme.life en el navegador
+# Conserva el intento de redirecciÃ³n HTTP y aÃ±ade respaldo del lado del cliente
 # porque Render oculta el host original antes de entregar algunas solicitudes.
-# v1.083 Redirección reforzada de linkme.life a converte.uno detrás de Render
-# Reconoce el dominio público original enviado por el proxy sin cambiar rutas,
+# v1.083 RedirecciÃ³n reforzada de linkme.life a converte.uno detrÃ¡s de Render
+# Reconoce el dominio pÃºblico original enviado por el proxy sin cambiar rutas,
 # plantillas, DNS ni la arquitectura de la landing.
-# v1.082 CONVERTE™ en converte.uno, favicon y accesos móviles actualizados
-# Cambia exclusivamente la marca y los accesos públicos; conserva la arquitectura.
+# v1.082 CONVERTEâ„¢ en converte.uno, favicon y accesos mÃ³viles actualizados
+# Cambia exclusivamente la marca y los accesos pÃºblicos; conserva la arquitectura.
 # Base: v1.079 CTA clicable del chat y cero friccion
 # Convierte la liga oficial de creacion en el boton "Crear mi CONVERTE".
 # Base: v1.078 Chat CONVERTE colaborador comercial
 # Actualiza el saludo visible y la marca del chat; conserva su sesion y endpoint.
-# Base: v1.077 Landing CONVERTE™ - sustitución exclusiva de marca visible
-# Base: v1.076 Landing linkme.life® - contenido, navegación audiovisual, legal e identidad
-# v1.058 Landing LinkMe - chat compacto, minimizable y sesión controlada
+# Base: v1.077 Landing CONVERTEâ„¢ - sustituciÃ³n exclusiva de marca visible
+# Base: v1.076 Landing linkme.lifeÂ® - contenido, navegaciÃ³n audiovisual, legal e identidad
+# v1.058 Landing LinkMe - chat compacto, minimizable y sesiÃ³n controlada
 # v1.057 Landing LinkMe - chat movil compacto y cierre siempre accesible
 # v1.056 Landing LinkMe - burbuja flotante de LinkMe contigo siempre visible
 # v1.055 Landing LinkMe - LinkMe contigo conversacional
@@ -29,12 +29,12 @@
 # v1.052 Landing LinkMe - reemplazo de videos 1 y 2
 # v1.051 Landing LinkMe - autoplay compatible con iPhone y Android
 # v1.050 Landing LinkMe - texto limpio visible sobre video
-# v1.049 Landing LinkMe - videos full-screen por sección
+# v1.049 Landing LinkMe - videos full-screen por secciÃ³n
 # v1.048 Landing LinkMe - videos protagonistas y contraste editorial
 # v1.047 Landing LinkMe - motion-first con videos originales de LinkMe
-# v1.046 Landing LinkMe - diseño editorial inmersivo motion-first
-# v1.045 Landing LinkMe - marco único responsivo sin SVG superpuesto
-# v1.044 Landing LinkMe - pantalla ajustada detrás del notch
+# v1.046 Landing LinkMe - diseÃ±o editorial inmersivo motion-first
+# v1.045 Landing LinkMe - marco Ãºnico responsivo sin SVG superpuesto
+# v1.044 Landing LinkMe - pantalla ajustada detrÃ¡s del notch
 # v1.043 Landing LinkMe - encaje exacto dentro del contorno original
 # v1.042 Landing LinkMe - medios ajustados a la pantalla del celular
 # v1.041 Landing LinkMe - recorte inferior dentro del celular
@@ -43,9 +43,9 @@
 # v1.038 Landing LinkMe - pantallas dentro del contorno de celular
 # v1.037 Landing LinkMe - contorno de celular en imagen y videos
 # v1.036 Landing LinkMe - propuesta de valor centrada en el beneficio
-# v1.035 Landing LinkMe - ajustes de redacción y estructura
-# v1.034 Landing LinkMe - precios México/internacional
-# Reemplaza la imagen principal y los videos de perfil privado y público.
+# v1.035 Landing LinkMe - ajustes de redacciÃ³n y estructura
+# v1.034 Landing LinkMe - precios MÃ©xico/internacional
+# Reemplaza la imagen principal y los videos de perfil privado y pÃºblico.
 # v1.032 Landing LinkMe - FAQ acceso desde cualquier dispositivo
 from flask import Flask, render_template, redirect, Response, request
 import os
@@ -57,8 +57,8 @@ app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 
-# v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1090"
+# v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
+ASSET_VERSION = 1091"
 
 @app.context_processor
 def inject_asset_version():
@@ -121,7 +121,7 @@ def aplicar_headers_basicos(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     if request.path.startswith("/static/"):
-        # Los assets con ?v=... son inmutables: si cambia la versión, cambia la URL.
+        # Los assets con ?v=... son inmutables: si cambia la versiÃ³n, cambia la URL.
         if request.args.get("v"):
             response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
         else:
@@ -227,3 +227,4 @@ def health():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+
