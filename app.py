@@ -1,3 +1,4 @@
+# v1.094 Optimización de carga: videos diferidos, caché versionada y assets estáticos
 # v1.089 Calculadora ISR y generaQR bajo converte.uno
 # Integra generaQR en /generaqr/, conserva la calculadora en /calculadora-isr/,
 # publica ads.txt y declara ambas herramientas en el sitemap.
@@ -57,7 +58,7 @@ app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 
 # v1.027 - Cache busting para que celular cargue última versión de CSS/JS
-ASSET_VERSION = "1089"
+ASSET_VERSION = "1090"
 
 @app.context_processor
 def inject_asset_version():
@@ -120,7 +121,11 @@ def aplicar_headers_basicos(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     if request.path.startswith("/static/"):
-        response.headers["Cache-Control"] = "public, max-age=604800"
+        # Los assets con ?v=... son inmutables: si cambia la versión, cambia la URL.
+        if request.args.get("v"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "public, max-age=86400"
     else:
         response.headers["Cache-Control"] = "no-store"
     return response

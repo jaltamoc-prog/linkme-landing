@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<!-- v1.094: optimización de carga de videos sin cambios visuales -->
+
 <!-- v1.086: identidad SEO inequívoca de CONVERTE para Google -->
 <!-- v1.067: navegación, preguntas y cierre móvil compactos -->
 <!-- v1.006 LANDING COMPACTA 6 SECCIONES -->
@@ -145,7 +147,7 @@
 
 <section id="demo" class="section compact-section demo-section">
   <div class="fullbleed-stage demo-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_2_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_2_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="Converte.uno conecta Monterrey con Nueva York"></video>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_2_monterrey_nueva_york.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_2_monterrey_nueva_york.mp4') }}?v={{ asset_version }}" aria-label="Converte.uno conecta Monterrey con Nueva York"></video>
   </div>
 
   <div class="section-after-stage">
@@ -155,9 +157,7 @@
       <h3 id="perfil-privado" class="video-label">Perfil privado</h3>
       <div class="device-frame demo-device-frame">
         <div class="device-screen">
-          <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
-            <source src="{{ url_for('static', filename='video/linkme_mockup_privado.mp4') }}?v={{ asset_version }}" type="video/mp4">
-          </video>
+          <video class="device-content video-phone demo-video-phone lazy-demo-video" autoplay muted loop playsinline webkit-playsinline preload="none" data-src="{{ url_for('static', filename='video/linkme_mockup_privado.mp4') }}?v={{ asset_version }}" aria-label="Vista del perfil privado de Converte"></video>
         </div>
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
@@ -175,9 +175,7 @@
       <h3 id="perfil-publico" class="video-label">Perfil público</h3>
       <div class="device-frame demo-device-frame">
         <div class="device-screen">
-          <video class="device-content video-phone demo-video-phone" autoplay muted loop playsinline preload="metadata">
-            <source src="{{ url_for('static', filename='video/linkme_mockup_publico.mp4') }}?v={{ asset_version }}" type="video/mp4">
-          </video>
+          <video class="device-content video-phone demo-video-phone lazy-demo-video" autoplay muted loop playsinline webkit-playsinline preload="none" data-src="{{ url_for('static', filename='video/linkme_mockup_publico.mp4') }}?v={{ asset_version }}" aria-label="Vista del perfil público de Converte"></video>
         </div>
         <img class="device-outline" src="{{ url_for('static', filename='img/celular_sin_fondo.svg') }}?v={{ asset_version }}" alt="" aria-hidden="true">
       </div>
@@ -188,7 +186,7 @@
 
 <section id="como-funciona" class="section compact-section soft-section split-section benefits-motion-section">
   <div class="fullbleed-stage benefits-fullbleed-stage">
-    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="Converte.uno facilita conexiones entre profesionales"></video>
+    <video class="motion-stage-video fullbleed-video lazy-motion-video" autoplay muted loop playsinline webkit-playsinline preload="none" poster="{{ url_for('static', filename='img/motion/linkme_medico_convencion.jpg') }}?v={{ asset_version }}" data-src="{{ url_for('static', filename='video/motion/linkme_medico_convencion.mp4') }}?v={{ asset_version }}" aria-label="Converte.uno facilita conexiones entre profesionales"></video>
     <div class="stage-shade" aria-hidden="true"></div>
     <div class="section-heading stage-copy">
       <h2>Continúa la conversación que convierte.</h2>
