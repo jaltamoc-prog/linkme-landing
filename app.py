@@ -1,4 +1,4 @@
-﻿# v1.094 OptimizaciÃ³n de carga: videos diferidos, cachÃ© versionada y assets estÃ¡ticos
+# v1.094 OptimizaciÃ³n de carga: videos diferidos, cachÃ© versionada y assets estÃ¡ticos
 # v1.089 Calculadora ISR y generaQR bajo converte.uno
 # Integra generaQR en /generaqr/, conserva la calculadora en /calculadora-isr/,
 # publica ads.txt y declara ambas herramientas en el sitemap.
@@ -58,7 +58,7 @@ app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
-ASSET_VERSION = 1091"
+ASSET_VERSION = "1091"
 
 @app.context_processor
 def inject_asset_version():
