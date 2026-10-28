@@ -386,7 +386,8 @@ class DiagnosticSmokeTests(unittest.TestCase):
         metadata = dw.audit_snapshot(audited)
         self.assertTrue(all(len(value) <= 500 for value in metadata.values()))
         recovered = dw.restored_snapshot(metadata, "https://ejemplo.com/")
-        self.assertEqual(audited, recovered)
+        self.assertEqual({k:v for k,v in audited.items() if k != "page_text"}, recovered)
+        self.assertNotIn("page_text", recovered)
         tampered = copy.deepcopy(metadata)
         tampered["audit_0"] = "not_valid"
         with self.assertRaises(ValueError):
@@ -404,7 +405,8 @@ class DiagnosticSmokeTests(unittest.TestCase):
             audited = dw.analyse("https://ejemplo.com/")
             with patch.object(dw, "verify_purchase", return_value=(
                 "https://ejemplo.com/", "ventas", audited
-            )), patch.object(dw, "fetch_html", side_effect=RuntimeError("Site offline")):
+            )), patch.object(dw, "purchased_progress", return_value=None), \
+                 patch.object(dw, "fetch_html", side_effect=RuntimeError("Site offline")):
                 pdf = self.client.get("/diagnostico-web/descargar?session_id="+sid)
         self.assertEqual(pdf.status_code, 200)
         self.assertTrue(pdf.data.startswith(b"%PDF-"))
@@ -419,7 +421,8 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with patch.dict("os.environ", context), patch.object(
             dw, "verify_purchase", return_value=("https://ejemplo.com/", "ventas", None)
         ), patch.object(dw, "fetch_html",
-                        return_value=("https://ejemplo.com/", HTML, {})):
+                        return_value=("https://ejemplo.com/", HTML, {})), patch.object(
+            dw, "purchased_progress", return_value=None):
             webpage = self.client.get("/diagnostico-web/informe?session_id=" + sid)
             pdf = self.client.get("/diagnostico-web/descargar?session_id=" + sid)
         self.assertEqual(webpage.status_code, 200)
