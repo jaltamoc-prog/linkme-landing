@@ -4,28 +4,44 @@ on:
   push:
     paths:
       - '.github/workflows/diagnostico-web-limites.yml'
+      - 'herramientas/diagnostico_web.py'
   workflow_dispatch:
 
 jobs:
   cached-analysis:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - name: Repetir analisis valido mas de seis veces con mismo cliente
         shell: bash
         run: |
           set -euo pipefail
+          # Verificar que Render YA publico la revision de limites.
+          for n in $(seq 1 24); do
+            curl --silent --show-error -L --max-time 15 -D /tmp/cabeceras.txt \
+              -o /dev/null https://converte.uno/diagnostico-web/ || true
+            if grep -Fiq 'X-Diagnostico-Revision: 2026-10-28-limites-v2' /tmp/cabeceras.txt; then
+              echo 'La version corregida ya esta publicada.'
+              break
+            fi
+            if [ "$n" -eq 24 ]; then
+              echo '::error::La version corregida aun NO esta publicada por Render.'
+              exit 1
+            fi
+            sleep 10
+          done
           # Un solo objetivo y sitio, para reutilizar el resultado y no agotar recursos.
           for i in $(seq 1 8); do
             code=$(curl --silent --show-error -L --max-time 45 \
-              -o /tmp/reporte.html -w '%{http_code}' \
+              -D /tmp/encabezados.html -o /tmp/reporte.html -w '%{http_code}' \
               --data-urlencode 'url=https://example.com/' \
               --data-urlencode 'objetivo=ventas' \
               https://converte.uno/diagnostico-web/)
             echo "Consulta $i: HTTP $code"
+            grep -Fiq "X-Diagnostico-Revision: 2026-10-28-limites-v2" /tmp/encabezados.html || { echo "::error::Una instancia esta sirviendo codigo antiguo"; exit 1; }
             if [ "$code" != "200" ]; then
               echo "::error::Analisis repetido fue bloqueado."
-              head -c 700 /tmp/reporte.html
+              grep -o 'Limite temporal de analisis alcanzado\|Se alcanzó temporalmente el límite' /tmp/reporte.html || true
               exit 1
             fi
             grep -Fq 'Qué conviene hacer primero' /tmp/reporte.html
