@@ -10,8 +10,9 @@ import json
 import re
 import zlib
 
-PRICE_ID = "price_1UVcyeFHNcj4CFU195mIQ9kE"
-AMOUNT = 34900
+PRICE_ID = "price_1UVfXDFHNcj4CFU1FfiyRnO7"
+AMOUNT = 59700
+LEGACY_PRICES = {"price_1UVcyeFHNcj4CFU195mIQ9kE": 34900}
 PORTAL = "https://billing.stripe.com/p/login/28EaEXfqN1xc0r120L6J200"
 BASE_FIELDS = ("checked", "title", "description", "canonical", "h1", "noalt",
                "noindex", "viewport", "jsonld", "contact", "booking", "purchase", "forms")
