@@ -31,8 +31,8 @@
 </section>
 <section class="card"><h2>Qué conviene hacer ahora</h2><p class="muted">Recomendaciones prácticas con base en lo encontrado en tu última revisión.</p>
 {% for point in action_items %}<article class="action"><span class="status">{{point.status_label}}</span><strong>{{point.title}}</strong><p><b>Qué detectamos:</b> {{point.evidence}}</p><p><b>Tu siguiente paso:</b> {{point.action}}</p></article>{% else %}<p class="notice">No detectamos barreras básicas. Hay que comprobar el rendimiento real y las conversiones con las cuentas del propietario.</p>{% endfor %}
-<details><summary>Ver los 10 puntos esenciales revisados</summary>
-{% for point in overview.checks[:10] %}<div class="action"><strong>{{point.title}} — {{point.status_label}}</strong><p>{{point.action}}</p></div>{% endfor %}
+<details><summary>Ver los 14 aspectos de esta revisión</summary>
+{% for point in overview.checks %}<div class="action"><strong>{{point.title}} — {{point.status_label}}</strong><p><b>Qué encontramos:</b> {{point.evidence}}</p><p><b>Qué hacer:</b> {{point.action}}</p></div>{% endfor %}
 </details>
 </section>
 <section class="card"><h2>Qué cambió desde el comienzo</h2>
