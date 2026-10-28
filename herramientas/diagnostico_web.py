@@ -602,13 +602,18 @@ def verify_purchase(session_id):
 
 
 def view(url="", goal="contactos", audit=None, summary=None, error="", paid=False,
-         code=200, session_id=""):
+         code=200, session_id="", keyword="", city="", comparison=None,
+         compare_days=0):
     if goal not in GOALS:
         goal = "contactos"
     download_url = url_for(".descargar", session_id=session_id) if paid and session_id else ""
     page = render_template(
         "diagnostico_web.html", url=url, goal=goal, goals=GOALS,
         audit=audit, summary=summary, error=error, paid=paid,
+        keyword=keyword or (audit.get("keyword", "") if audit else ""),
+        city=city or (audit.get("city", "") if audit else ""),
+        seo_overview=business.overview(audit, goal) if paid and audit else None,
+        comparison=comparison, compare_days=compare_days,
         expanded_checks=expanded_plan(audit, goal) if paid and audit else [],
         checkout_enabled=payments_enabled(),
         price_label="$199 MXN",
@@ -639,18 +644,23 @@ def index():
         return view(error="La solicitud es demasiado grande.", code=413)
     raw = request.form.get("url", "")
     goal = request.form.get("objetivo", "contactos")
+    keyword = request.form.get("keyword", "")
+    city = request.form.get("city", "")
     try:
         url = public_url(raw)
+        keyword = context_text(keyword)
+        city = context_text(city)
         if not cache_exists(url) and limited(visitor_ip()):
             response = view(url, goal, error="Se alcanzó temporalmente el límite de sitios nuevos. Puedes volver a revisar una página analizada hace poco, o intentar con otra más tarde.", code=429)
             response.headers["Retry-After"] = "600"
             return response
-        result = cached(url)
-        return view(url, goal, result, report_for(result, goal))
+        result = with_context(cached(url), keyword, city, goal)
+        return view(url, goal, result, report_for(result, goal),keyword=keyword,city=city)
     except (ValueError, urllib3.exceptions.HTTPError, TimeoutError, OSError) as exc:
         current_app.logger.info("Auditoria web no completada (%s)", type(exc).__name__)
         err = str(exc) if isinstance(exc, ValueError) else "No se pudo acceder a esa web en este momento."
-        return view(raw[:350], goal, error=err, code=422)
+        return view(raw[:350], goal, error=err, code=422,
+                    keyword=keyword, city=city)
 
 
 @bp.route("/comprar", methods=["POST"])
@@ -664,7 +674,8 @@ def comprar():
         goal = request.form.get("objetivo", "contactos")
         if goal not in GOALS:
             goal = "contactos"
-        audit = cached(url)
+        audit = with_context(cached(url), request.form.get("keyword",""),
+                             request.form.get("city",""), goal)
         snapshot = audit_snapshot(audit)
         import requests as http
         metadata = {"service": "diagnostico-web-informe",
@@ -792,6 +803,10 @@ def _followup_view(sid, sub, url, goal, baseline, message=""):
     page = render_template("diagnostico_seguimiento.html", url=url, goal=GOALS[goal],
         session_id=sid, baseline=baseline, last=last, history=saved,
         changes=monitor.differences(baseline, last),
+        overview=business.overview(last, goal),
+        action_items=business.overview(last, goal)["actionable"][:6],
+        progress=business.progress(baseline, last, goal),
+        progress_history=business.history_progress(baseline, saved, goal),
         portal_url=monitor.PORTAL, message=message,
         status_label=monitor.customer_visible_status(sub))
     response = make_response(page)
@@ -815,8 +830,8 @@ def suscribir():
         goal = request.form.get("objetivo", "contactos")
         if goal not in GOALS:
             abort(400)
-        baseline = cached(url)
-        baseline["goal"] = goal
+        baseline = with_context(cached(url), request.form.get("keyword",""),
+                                request.form.get("city",""), goal)
         data = {
             "mode": "subscription",
             "line_items[0][price]": monitor.PRICE_ID,
@@ -861,7 +876,8 @@ def seguimiento_revisar():
         abort(429)
     try:
         sub, url, goal, baseline = _monthly_subscription(sid)
-        current = analyse(url)
+        current = with_context(analyse(url), baseline.get("keyword") or "",
+                               baseline.get("city") or "", goal)
         updates = monitor.month_updates(sub.get("metadata") or {}, current)
         saved = _billing_request("POST", "subscriptions/" + quote(sub["id"]),
             {"metadata[" + key + "]": value for key, value in updates.items()})
