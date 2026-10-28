@@ -31,7 +31,7 @@ button:hover,.button:hover{background:#07545d}.button.alt{background:#eaf3f2;col
 .finding p{line-height:1.65;margin:7px 0}.action{padding:13px;border-radius:10px;background:#eef7f3;color:#155341}.proof{color:#667b82;font-size:12px}
 .positive{background:#eef8f3;border-left:4px solid #398e72;padding:11px 15px;border-radius:5px;margin:11px 0;line-height:1.5}
 .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.tier{border:1px solid #dce8e6;border-radius:12px;padding:18px}.tier p{font-size:14px;color:#536e73;line-height:1.65}
-.price{font-weight:900;font-size:23px;margin:7px 0}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
+.price{font-weight:900;font-size:23px;margin:7px 0}.tier.popular{border:2px solid #12717a;background:#f4fbfa}.tier .button,.tier button{width:100%;text-align:center}.disabled-note{border:1px dashed #a5bcb8;border-radius:9px;background:#f6f9f8;padding:10px;color:#526a6f;font-size:12px;line-height:1.5}.result-cta{padding:20px;border-radius:13px;background:#edf8f5;border:1px solid #b6ddd5}.result-cta h3{margin:0 0 6px}.result-cta p{margin:4px 0 13px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
 details{border:1px solid #dce6e4;border-radius:11px;margin-top:18px}summary{padding:12px;cursor:pointer;font-weight:700}
 table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-top:1px solid #e1eae7;overflow-wrap:anywhere}td:first-child{font-weight:700;width:40%}
 .foot{font-size:12px;line-height:1.7;color:#536a70;margin-bottom:35px}.foot a{margin-right:14px}
@@ -49,7 +49,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <p>Descubre qué está bien, qué conviene revisar y cuáles son las tres primeras acciones que pueden facilitar que te contacten, compren o reserven. Sin jerga técnica ni promesas inventadas.</p>
 </div></section>
 <main class="wrap">
-<section class="card formcard">
+<section class="card formcard" id="analizar">
 <h2>Analiza tu página gratis</h2>
 <form method="post" action="/diagnostico-web/" class="grid">
 <div><label for="url">Dirección de tu página</label><input id="url" name="url" value="{{url}}" placeholder="www.tunegocio.com" required maxlength="350" autocomplete="url"></div>
@@ -97,30 +97,64 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 {% elif summary.count > 3 %}
 <p class="note">También detectamos {{summary.count-3}} observaciones adicionales. El informe ampliado incluye todas las acciones y sus evidencias.</p>
 {% endif %}
+<div class="result-cta" aria-label="Siguiente paso para mejorar tu página">
+<h3>{{"¿Quieres ayuda para llevar estas mejoras a la práctica?" if paid else "¿Quieres saber qué corregir después?"}}</h3>
+<p>{{"Puedes solicitar ayuda para implementar las acciones." if paid else "El informe ampliado reúne todas las observaciones detectadas y un listado para tu desarrollador. También podrás conocer el seguimiento mensual cuando esté disponible."}}</p>
 <div class="actions">
-{% if paid %}<span class="note"><strong>Guardar PDF:</strong> en el navegador utiliza Imprimir → Guardar como PDF.</span>{% else %}<span class="note">Puedes guardar el resultado con Imprimir → Guardar como PDF.</span>{% endif %}
-{% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Pedir ayuda con las mejoras</a>{% endif %}
-</div>
-</section>
-{% endif %}
-{% if checkout_enabled or contact_url %}
-<section class="card tierscard">
-<div class="label">Una herramienta útil, no otra tabla incomprensible</div>
-<h2>El siguiente paso depende de lo que quieras mejorar</h2>
-<div class="tiers">
-<div class="tier"><strong>Diagnóstico gratuito</strong><div class="price">$0</div><p>Tres acciones prioritarias, sus razones y recomendaciones prácticas. Sin cuenta obligatoria.</p></div>
-{% if checkout_enabled %}<div class="tier"><strong>Informe ampliado</strong><div class="price">{{price_label or "Pago único"}}</div><p>Todas las observaciones, evidencias y pasos para resolverlas. Ideal para compartir con tu diseñador web.</p>
 {% if checkout_enabled and audit and not paid %}
-<form method="post" action="/diagnostico-web/comprar"><input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><button type="submit">Comprar informe</button></form>
-{% elif not checkout_enabled %}<p class="note">Pago todavía no habilitado. No se realiza ningún cobro.</p>{% endif %}
+<form method="post" action="/diagnostico-web/comprar">
+<input type="hidden" name="url" value="{{audit.url}}">
+<input type="hidden" name="objetivo" value="{{goal}}">
+<button type="submit">Comprar informe ampliado · {{price_label}}</button>
+</form>
+{% elif not paid %}<a class="button" href="#planes">Ver cómo continuar con las mejoras</a>{% endif %}
+{% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Pedir ayuda para implementar</a>{% endif %}
 </div>
-{% endif %}
-{% if contact_url %}<div class="tier"><strong>Ayuda para implementar</strong><div class="price">Por cotización</div><p>Servicio opcional para que un especialista revise e implemente los cambios.</p>
-{% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Solicitar propuesta</a>
-{% else %}<p class="note">Canal comercial pendiente de habilitación.</p>{% endif %}
-</div>{% endif %}</div>
+</div>
+<p class="note">Para guardar este análisis inicial como PDF: abre Imprimir y elige “Guardar como PDF”.</p>
 </section>
 {% endif %}
+<section class="card tierscard" id="planes">
+<div class="label">Opciones para transformar el diagnóstico en acciones</div>
+<h2>Decide cuánto quieres avanzar</h2>
+<p class="note">Primero puedes revisar gratis tu página. Los servicios de pago no están incluidos en el diagnóstico gratuito.</p>
+<div class="tiers">
+<div class="tier">
+<strong>Diagnóstico inicial</strong>
+<div class="price">Gratis</div>
+<p>Tres prioridades, lo que encontramos y qué debes revisar primero.</p>
+<a class="button alt" href="#analizar">Analizar otra página</a>
+</div>
+<div class="tier popular">
+<strong>Informe completo</strong>
+<div class="price">{{price_label if checkout_enabled else "Pago único"}}</div>
+<p>Incluye todas las observaciones detectadas y evidencias para que puedas planear o encargar las correcciones.</p>
+{% if checkout_enabled and audit and not paid %}
+<form method="post" action="/diagnostico-web/comprar">
+<input type="hidden" name="url" value="{{audit.url}}">
+<input type="hidden" name="objetivo" value="{{goal}}">
+<button type="submit">Comprar informe completo</button>
+</form>
+{% elif checkout_enabled %}
+<a class="button" href="#analizar">Primero analiza tu página</a>
+{% elif contact_url %}
+<a class="button" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Consultar informe completo</a>
+{% else %}
+<div class="disabled-note">Estamos habilitando el pago seguro. Por ahora no podemos cobrar ni entregar este informe como producto de pago.</div>
+{% endif %}
+</div>
+<div class="tier">
+<strong>Seguimiento de mejoras</strong>
+<div class="price">Suscripción mensual</div>
+<p>La propuesta comercial es comparar avances y recomendar las siguientes mejoras periódicamente. Este servicio aún no está habilitado.</p>
+{% if contact_url %}
+<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Consultar seguimiento</a>
+{% else %}
+<div class="disabled-note">Suscripción en preparación. No se solicita tarjeta ni se activa una renovación.</div>
+{% endif %}
+</div>
+</div>
+</section>
 <section class="card">
 <h2>Qué podemos comprobar y qué no</h2>
 <p>Revisamos títulos, descripciones, estructura, enlaces visibles y señales de indexabilidad en el HTML público. No podemos conocer las ventas, visitas, conversiones, posiciones en Google ni la indexación efectiva sin acceso autorizado a las cuentas del propietario. Algunos elementos que aparecen mediante JavaScript podrían no detectarse.</p>
