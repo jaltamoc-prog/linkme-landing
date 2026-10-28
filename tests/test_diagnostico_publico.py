@@ -115,6 +115,90 @@ class DiagnosticSmokeTests(unittest.TestCase):
                                      "DIAGNOSTICO_STRIPE_PRICE_ID": ""}):
             self.assertEqual(self.client.post("/diagnostico-web/comprar").status_code, 503)
 
+    def test_paid_pdf_is_readable_and_contains_all_findings(self):
+        from herramientas.diagnostico_pdf import build_pdf
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            audit = dw.analyse("https://ejemplo.com/")
+        report = dw.report_for(audit, "ventas")
+        self.assertGreaterEqual(report["count"], 4)
+        pdf = build_pdf(audit, report, "Facilitar compras y pedidos")
+        content = pdf.getvalue()
+        self.assertTrue(content.startswith(b"%PDF-"))
+        self.assertGreater(len(content), 3000)
+
+    def test_paid_session_requires_paid_live_price_and_matching_service(self):
+        from unittest.mock import Mock
+        from werkzeug.exceptions import Forbidden
+        sid = "cs_live_" + "A" * 24
+        context = {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+        }
+        valid = {
+            "id": sid, "livemode": True, "mode": "payment", "currency": "mxn",
+            "payment_status": "paid", "status": "complete", "amount_total": 19900,
+            "metadata": {"service": "diagnostico-web-informe",
+                         "url": "https://ejemplo.com/", "goal": "ventas"},
+        }
+        lines = {"data": [{"price": {"id": dw.REPORT_PRICE_ID},
+                           "quantity": 1, "amount_total": 19900}]}
+        def response(body):
+            obj = Mock()
+            obj.json.return_value = body
+            return obj
+        with app.test_request_context("/diagnostico-web/informe"), patch.dict(
+            "os.environ", context
+        ), patch("requests.get", side_effect=[response(valid), response(lines)]):
+            self.assertEqual(dw.verify_purchase(sid), ("https://ejemplo.com/", "ventas"))
+        with app.test_request_context("/diagnostico-web/informe"), patch.dict(
+            "os.environ", context
+        ), patch("requests.get", side_effect=[response({
+            **valid, "payment_status": "unpaid",
+        })]):
+            with self.assertRaises(Forbidden):
+                dw.verify_purchase(sid)
+        with app.test_request_context("/diagnostico-web/informe"), patch.dict(
+            "os.environ", context
+        ), patch("requests.get", side_effect=[
+            response(valid), response({"data": [{"price": {"id": "price_other"},
+                                                 "quantity": 1, "amount_total": 19900}]}),
+        ]):
+            with self.assertRaises(Forbidden):
+                dw.verify_purchase(sid)
+
+    def test_paid_page_has_real_pdf_download_and_no_messaging_service(self):
+        context = {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "",
+        }
+        sid = "cs_live_" + "A" * 24
+        with patch.dict("os.environ", context), patch.object(
+            dw, "verify_purchase", return_value=("https://ejemplo.com/", "ventas")
+        ), patch.object(dw, "fetch_html",
+                        return_value=("https://ejemplo.com/", HTML, {})):
+            webpage = self.client.get("/diagnostico-web/informe?session_id=" + sid)
+            pdf = self.client.get("/diagnostico-web/descargar?session_id=" + sid)
+        self.assertEqual(webpage.status_code, 200)
+        self.assertIn("Descargar mi informe completo".encode(), webpage.data)
+        self.assertNotIn(b"wa.me", webpage.data)
+        self.assertEqual(pdf.status_code, 200)
+        self.assertEqual(pdf.mimetype, "application/pdf")
+        self.assertTrue(pdf.data.startswith(b"%PDF-"))
+        self.assertIn("no-store", pdf.headers.get("Cache-Control", ""))
+        self.assertEqual(pdf.headers.get("X-Robots-Tag"), "noindex, nofollow")
+
+    def test_paid_checkout_disabled_by_default_even_if_stripe_keys_exist(self):
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "",
+        }):
+            self.assertFalse(dw.payments_enabled())
+            self.assertEqual(self.client.post("/diagnostico-web/comprar").status_code, 503)
+
     def test_redirect_network_with_private_address_is_blocked(self):
         with patch.object(dw.socket, "getaddrinfo",
                           return_value=[(None, None, None, None, ("127.0.0.1", 443))]):
