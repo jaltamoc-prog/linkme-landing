@@ -11,7 +11,28 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, KeepTogether, HRFlowable
 
 
-def build_pdf(audit, report, goal_label, checks=None):
+
+def progress_drawing(comparison):
+    """Show measured signals only. Not a Google ranking."""
+    from reportlab.graphics.shapes import Drawing, Rect, String
+    drawing = Drawing(460, 100)
+    dark = colors.HexColor("#173741")
+    teal = colors.HexColor("#188379")
+    background = colors.HexColor("#e5efec")
+    for label, key, pct, y in (
+        ("Primera revision", "start", "start_pct", 58),
+        ("Nueva revision", "end", "end_pct", 19),
+    ):
+        drawing.add(String(6, y+6, label, fontName="Helvetica", fontSize=9, fillColor=dark))
+        drawing.add(Rect(150, y, 241, 20, rx=3, ry=3,
+                         fillColor=background, strokeColor=None))
+        drawing.add(Rect(150, y, 241*max(0,min(100,comparison[pct]))/100, 20,
+                         rx=3, ry=3, fillColor=teal, strokeColor=None))
+        drawing.add(String(398, y+6, str(comparison[key])+"/"+str(comparison["total"]),
+                           fontName="Helvetica-Bold", fontSize=9, fillColor=dark))
+    return drawing
+
+def build_pdf(audit, report, goal_label, checks=None, seo_checks=None, comparison=None):
     """Produce un PDF con observaciones respaldadas por HTML publico."""
     buffer = BytesIO()
     navy = colors.HexColor("#173741")
