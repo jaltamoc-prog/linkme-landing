@@ -262,40 +262,20 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertTrue(any(item["id"]=="keyword_title" for item in comparison["regressed"]))
         self.assertNotIn("search_console", [item["id"] for item in comparison["regressed"]])
 
-    def test_paid_single_purchase_can_save_one_followup_without_new_charge(self):
-        sid="cs_live_"+"C"*24
-        with patch.object(dw,"fetch_html",
-                          return_value=("https://ejemplo.com/",HTML,{})):
-            previous=dw.with_context(dw.analyse("https://ejemplo.com/"),
-                                     "ejemplo","CDMX","ventas")
-        previous["checked"]="01/09/2026 10:00 UTC"
-        updated=dict(previous)
-        updated["checked"]="28/10/2026 11:00 UTC"
-        updated["title"]="Nuevo título de negocio"
-        updates={}
-        def post_stripe(method,path,fields=None):
-            self.assertEqual(method,"POST")
-            self.assertTrue(path.startswith("checkout/sessions/cs_live_"))
-            self.assertTrue(any("metadata[followup_0]"==k for k in fields))
-            updates.update(fields)
-            return {"id":sid}
-        with patch.dict("os.environ",{
-            "DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
-            "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID,
-        }),patch.object(dw,"verify_purchase",
-                        return_value=(previous["url"],"ventas",previous)), \
-            patch.object(dw,"purchased_progress",return_value=None), \
-            patch.object(dw,"analyse",return_value=updated), \
-            patch.object(dw,"_billing_request",side_effect=post_stripe):
-            response=self.client.post("/diagnostico-web/comparar",
-                                      data={"session_id":sid})
+    def test_one_time_report_has_no_second_review_or_comparison(self):
+        self.assertEqual(self.client.post("/diagnostico-web/comparar").status_code, 404)
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            a = dw.analyse("https://ejemplo.com/")
+        with patch.object(dw, "verify_purchase",
+                          return_value=("https://ejemplo.com/","ventas",a)), \
+             patch.dict("os.environ", {"DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_test_key",
+                                       "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID}):
+            response=self.client.get("/diagnostico-web/informe?session_id=cs_live_"+"A"*24)
         self.assertEqual(response.status_code,200)
-        self.assertIn("Primera revisión".encode(),response.data)
-        self.assertIn("Revisión posterior".encode(),response.data)
-        self.assertIn("Tu evolución".encode(),response.data)
-        meta={key[len("metadata["):-1]:value for key,value in updates.items()}
-        recovered=dw.restored_snapshot(meta,previous["url"],prefix="followup")
-        self.assertEqual(recovered["title"],updated["title"])
+        self.assertNotIn(b"/diagnostico-web/comparar",response.data)
+        self.assertNotIn("28 días".encode(),response.data)
+        self.assertIn("Pago confirmado por Stripe".encode(),response.data)
 
     def test_monthly_pdf_includes_comparison_and_recommendations(self):
         from herramientas import diagnostico_seguimiento as mon
@@ -504,8 +484,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
             audited = dw.analyse("https://ejemplo.com/")
             with patch.object(dw, "verify_purchase", return_value=(
                 "https://ejemplo.com/", "ventas", audited
-            )), patch.object(dw, "purchased_progress", return_value=None), \
-                 patch.object(dw, "fetch_html", side_effect=RuntimeError("Site offline")):
+            )), patch.object(dw, "fetch_html", side_effect=RuntimeError("Site offline")):
                 pdf = self.client.get("/diagnostico-web/descargar?session_id="+sid)
         self.assertEqual(pdf.status_code, 200)
         self.assertTrue(pdf.data.startswith(b"%PDF-"))
@@ -520,8 +499,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with patch.dict("os.environ", context), patch.object(
             dw, "verify_purchase", return_value=("https://ejemplo.com/", "ventas", None)
         ), patch.object(dw, "fetch_html",
-                        return_value=("https://ejemplo.com/", HTML, {})), patch.object(
-            dw, "purchased_progress", return_value=None):
+                        return_value=("https://ejemplo.com/", HTML, {})):
             webpage = self.client.get("/diagnostico-web/informe?session_id=" + sid)
             pdf = self.client.get("/diagnostico-web/descargar?session_id=" + sid)
         self.assertEqual(webpage.status_code, 200)
