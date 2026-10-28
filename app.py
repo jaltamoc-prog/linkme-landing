@@ -221,6 +221,11 @@ Sitemap: https://converte.uno/sitemap.xml
 def favicon():
     return app.send_static_file("img/converte-uno-icon.png")
 
+@app.route("/googlefe683d4cd36add9e.html")
+def google_search_console_verification():
+    return Response("google-site-verification: googlefe683d4cd36add9e.html\n", status=200, mimetype="text/html")
+
+
 @app.route("/health")
 def health():
     return Response("OK", status=200, mimetype="text/plain")
