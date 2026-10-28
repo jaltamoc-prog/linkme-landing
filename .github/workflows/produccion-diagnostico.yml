@@ -63,7 +63,7 @@ jobs:
             if [ "$code" = "200" ] && \
                grep -Fq 'Ver cómo continuar con las mejoras' /tmp/reporte-cta.html && \
                grep -Fq 'id="planes"' /tmp/reporte-cta.html && \
-               grep -Fq 'Suscripción mensual' /tmp/reporte-cta.html; then
+               grep -Fq 'Seguimiento de mejoras' /tmp/reporte-cta.html; then
               echo "OK: diagnostico y CTA comercial funcional en produccion"
               exit 0
             fi
