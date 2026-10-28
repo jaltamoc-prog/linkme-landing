@@ -474,7 +474,7 @@ def comprar():
         snapshot = audit_snapshot(audit)
         import requests as http
         metadata = {"service": "diagnostico-web-informe",
-                    "url": url, "goal": goal, **snapshot}
+                    "url": audit["url"], "goal": goal, **snapshot}
         data = {
             "mode": "payment",
             "line_items[0][price]": REPORT_PRICE_ID,
