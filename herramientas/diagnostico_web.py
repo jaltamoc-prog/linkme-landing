@@ -222,17 +222,44 @@ def report_for(a, goal):
     return {"findings": findings, "top": findings[:3], "positives": good[:3], "count": len(findings)}
 
 
+def visitor_ip():
+    """Distingue visitantes detras del proxy confiable de Render.
+
+    El ultimo salto X-Forwarded-For es el que agrega el proxy mas cercano.
+    Nunca se confia en la primera IP enviada por un cliente.
+    """
+    if os.getenv("RENDER") == "true":
+        forwarded = request.headers.get("X-Forwarded-For", "")
+        if forwarded:
+            candidate = forwarded.rsplit(",", 1)[-1].strip()
+            try:
+                address = ipaddress.ip_address(candidate)
+                if address.is_global:
+                    return address.compressed
+            except ValueError:
+                pass
+    return request.remote_addr or "desconocido"
+
+
+def cache_exists(url):
+    with _lock:
+        item = _cache.get(url)
+        return bool(item and item[0] > time.monotonic())
+
+
 def limited(remote_ip):
+    """Limita solo auditorias nuevas; resultados en cache no cuestan otra consulta."""
     now = time.monotonic()
     with _lock:
         if len(_by_ip) > 2500:
+            # El limite global sigue protegiendo el servicio.
             _by_ip.clear()
         q = _by_ip[remote_ip]
-        while q and q[0] < now - 600:
+        while q and q[0] <= now - 600:
             q.popleft()
-        while _global and _global[0] < now - 3600:
+        while _global and _global[0] <= now - 3600:
             _global.popleft()
-        if len(q) >= 6 or len(_global) >= 120:
+        if len(q) >= 20 or len(_global) >= 180:
             return True
         q.append(now)
         _global.append(now)
@@ -298,12 +325,14 @@ def index():
         return view()
     if len(request.get_data(cache=True)) > 4096:
         return view(error="La solicitud es demasiado grande.", code=413)
-    if limited(request.remote_addr or "desconocido"):
-        return view(error="Limite temporal de analisis alcanzado. Intenta mas tarde.", code=429)
     raw = request.form.get("url", "")
     goal = request.form.get("objetivo", "contactos")
     try:
         url = public_url(raw)
+        if not cache_exists(url) and limited(visitor_ip()):
+            response = view(url, goal, error="Se alcanzó temporalmente el límite de sitios nuevos. Puedes volver a revisar una página analizada hace poco, o intentar con otra más tarde.", code=429)
+            response.headers["Retry-After"] = "600"
+            return response
         result = cached(url)
         return view(url, goal, result, report_for(result, goal))
     except (ValueError, urllib3.exceptions.HTTPError, TimeoutError, OSError) as exc:
