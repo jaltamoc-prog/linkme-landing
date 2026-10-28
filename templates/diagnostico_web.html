@@ -7,6 +7,7 @@
 <meta name="description" content="Analiza tu página gratis y descubre qué mejorar. Informe completo $199 MXN o seguimiento mensual $349 MXN.">
 <link rel="canonical" href="https://converte.uno/diagnostico-web/">
 <meta name="robots" content="index,follow,max-image-preview:large">
+{% if paid and download_url %}<meta http-equiv="refresh" content="4;url={{download_url}}">{% endif %}
 <meta property="og:type" content="website">
 <meta property="og:title" content="Diagnóstico Web | Mejora tu página">
 <meta property="og:description" content="Tres recomendaciones claras, un informe completo y seguimiento mensual.">
@@ -58,6 +59,18 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 .price{font-size:18px;font-weight:900;line-height:1.1;white-space:nowrap;margin-left:auto}
 .price small{font-size:10px;font-weight:600;color:#5d7779}
 .tier-copy{display:block;font-size:12px;line-height:1.45;color:#557075;margin:10px 0 11px;min-height:34px}
+.tier-features{display:grid;gap:4px;margin-bottom:10px;color:#375f62;font-size:11px;line-height:1.35;text-align:left}
+.tier-features span{display:block}
+.tiers > button.tier{appearance:none;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0}
+.tiers > button.tier .tier-inner{cursor:pointer}
+.tiers > button.tier:focus-visible{outline:3px solid #4fb8ad;outline-offset:3px}
+.tier .tier-cta{margin-top:auto}
+.checklist{margin-top:12px;border:1px solid #c9dfdb;background:#fbfefc;padding:10px 14px;border-radius:11px}
+.checklist summary{font-size:13px;color:#16636a;font-weight:800}
+.checklist ol{columns:2;column-gap:30px;padding-left:20px;margin:10px 0}
+.checklist li{break-inside:avoid;font-size:12px;line-height:1.45;margin:0 0 7px}
+@media(max-width:760px){.checklist ol{columns:1}.tier-features{gap:3px}.tier-copy{min-height:0;margin:7px 0 9px}}
+
 .tier-cta{font-size:12px;font-weight:850;color:#0b696e;display:inline-flex;align-items:center;gap:5px}
 .tier.popular .tier-cta{color:#0a5e63}
 .tier-disabled .tier-cta{color:#596d73}
@@ -77,7 +90,7 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 <main class="wrap">
 <section class="card formcard" id="analizar">
 <h2>Analiza tu página gratis</h2>
-<form method="post" action="/diagnostico-web/" class="form-grid">
+<form id="audit-form" method="post" action="/diagnostico-web/" class="form-grid">
 <div><label for="url">Dirección de tu página</label><input id="url" name="url" value="{{url}}" placeholder="www.tunegocio.com" required maxlength="350" autocomplete="url"></div>
 <div><label for="objetivo">Tu objetivo principal</label><select id="objetivo" name="objetivo">{% for k,label in goals.items() %}<option value="{{k}}" {% if goal==k %}selected{% endif %}>{{label}}</option>{% endfor %}</select></div>
 <button type="submit" class="primary">Analizar gratis</button>
@@ -123,23 +136,6 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 {% for point in seo_overview.checks[10:] %}<li><strong>{{point.title}}</strong><span class="state {{point.status}}">{{point.status_label}}</span><p class="note">{{point.action}}</p></li>{% endfor %}
 </ol></details></div>
 {% endif %}
-{% if paid %}
-<div class="chart-wrap">
-<h3>Tu evolución: hoy y el próximo mes</h3>
-{% if comparison %}
-<p class="chart-foot">Comparamos exactamente las señales verificables en ambas fechas, no supuestas visitas ni posiciones en Google.</p>
-{% if comparison.total %}
-<div class="chart-row"><span class="chart-label">Primera revisión</span><div class="chart-track"><div class="chart-bar" style="width:{{comparison.start_pct}}%"></div></div><span class="chart-value">{{comparison.start}}/{{comparison.total}}</span></div>
-<div class="chart-row"><span class="chart-label">Revisión posterior</span><div class="chart-track"><div class="chart-bar" style="width:{{comparison.end_pct}}%"></div></div><span class="chart-value">{{comparison.end}}/{{comparison.total}}</span></div>
-{% else %}<p class="note">Las revisiones utilizan versiones distintas y no hay señales equivalentes suficientes para dibujar una comparación fiable.</p>{% endif %}
-<p class="chart-foot">Señales que mejoraron: {{comparison.improved|length}} · Señales que requieren atención: {{comparison.regressed|length}}.</p>
-{% else %}
-<p class="chart-foot">Tu primera revisión ya quedó guardada como punto de partida. La comparación incluida en esta compra estará disponible una vez transcurridos 28 días.</p>
-{% if compare_days > 0 %}<p class="note">Faltan aproximadamente {{compare_days}} días para comparar los cambios de tu misma página. Conserva este enlace privado.</p>
-{% else %}<form method="post" action="/diagnostico-web/comparar"><input type="hidden" name="session_id" value="{{request.args.get('session_id','')}}"><button type="submit" class="comparison-btn">Comparar mi página ahora, sin volver a pagar</button></form>{% endif %}
-{% endif %}
-</div>
-{% endif %}
 {% if paid and expanded_checks %}
 <details><summary>Revisión técnica adicional: {{expanded_checks|length}} comprobaciones</summary><div class="paid-checks">
 {% for check in expanded_checks %}<div class="check"><strong>{{loop.index}}. {{check.area}} · {{check.status}}</strong><small><strong>Evidencia:</strong> {{check.evidence}}</small><small><strong>Acción:</strong> {{check.action}}</small></div>{% endfor %}
@@ -147,7 +143,7 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 <details><summary>Datos técnicos para tu desarrollador</summary><p>Título: {{audit.title or "Ausente"}}</p><p>Descripción: {{audit.description or "Ausente"}}</p><p>Canónica: {{audit.canonical or "No declarada"}}</p><p>H1: {{audit.h1}} · Imágenes sin alt: {{audit.noalt}} · Formularios: {{audit.forms}}</p></details>
 {% elif summary.count > 3 %}<p class="note">El informe completo incorpora {{summary.count-3}} observaciones adicionales y 10 comprobaciones.</p>{% endif %}
 <div class="result-next">
-<p>{{"Tu informe está listo para descargar." if paid else "¿Quieres todas las recomendaciones? Elige un paquete."}}</p>
+<p>{% if paid %}<strong>Pago confirmado por Stripe.</strong> Tu PDF se descargará automáticamente. Si no ocurre, utiliza el botón.{% else %}¿Quieres saber qué corregir y por dónde empezar? Elige un paquete.{% endif %}</p>
 {% if paid and download_url %}<a href="{{download_url}}" class="link-btn">Descargar mi informe completo (PDF)</a>
 {% elif checkout_enabled %}<a href="#planes" class="link-btn">Ver planes y continuar</a>
 {% else %}<a href="#planes" class="link-btn">Ver cómo continuar con las mejoras</a>{% endif %}
@@ -156,48 +152,81 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 {% endif %}
 
 <section class="card tierscard" id="planes">
-<div class="plan-head"><h2>¿Qué puedes descubrir sobre tu negocio?</h2><p class="note">Elige el nivel de ayuda que necesitas · Sin llamadas ni WhatsApp</p></div>
+<div class="plan-head"><h2>¿Qué le falta a tu web para conseguir clientes?</h2><p class="note">Escribe la dirección arriba y elige. Puedes comprar sin hacer primero la prueba gratuita.</p></div>
 <div class="tiers">
 
-<a class="tier tier-clickable" href="#analizar" aria-label="Diagnóstico gratuito. Analizar mi página">
+<button form="audit-form" type="submit" class="tier tier-clickable" aria-label="Analizar gratis una página web y mostrar hasta tres recomendaciones">
 <span class="tier-inner">
-<span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/><path d="m8 11 2 2 4-4"/></svg></span><span class="tier-name">Diagnóstico inicial</span><span class="price">Gratis</span></span>
-<span class="tier-copy">Detecta hasta 3 obstáculos visibles que podrían frenar consultas o pedidos.</span>
-<span class="tier-cta">Analizar otra página →</span>
+<span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/><path d="m8 11 2 2 4-4"/></svg></span><span class="tier-name">Descubre qué puede fallar</span><span class="price">Gratis</span></span>
+<span class="tier-copy">Detecta hasta tres problemas que podrían impedir que te encuentren o te contacten.</span>
+<span class="tier-features">
+<span>✓ Acceso y mensaje principal</span>
+<span>✓ Señales de Google y celulares</span>
+<span>✓ Contacto o forma de comprar</span>
 </span>
-</a>
+<span class="tier-cta">Ver mi diagnóstico gratis →</span>
+</span></button>
 
-{% if checkout_enabled and audit and not paid %}
-<form class="tier popular tier-clickable" method="post" action="/diagnostico-web/comprar">
-<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><input type="hidden" name="keyword" value="{{audit.keyword or ''}}"><input type="hidden" name="city" value="{{audit.city or ''}}">
-<button class="tier-inner" type="submit" aria-label="Comprar informe completo por {{price_label}}">
-<span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span>
-<span class="tier-copy">Detecta problemas poco visibles: 10 puntos clave, soluciones y PDF. Compara en 28 días.</span>
-<span class="tier-cta">Comprar informe completo →</span>
-</button></form>
+{% if checkout_enabled and paid and download_url %}
+<a class="tier popular tier-clickable" href="{{download_url}}" aria-label="Descargar mi informe PDF de pago único">
+<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span>
+<span class="tier-copy">Tu pago único está confirmado. Descarga el diagnóstico de hoy con recomendaciones específicas.</span>
+<span class="tier-features"><span>✓ Diez temas principales</span><span>✓ Cuatro comprobaciones extra</span><span>✓ PDF para aplicar mejoras</span></span>
+<span class="tier-cta">Descargar mi PDF →</span></span></a>
 {% elif checkout_enabled %}
-<a class="tier popular tier-clickable" href="{{download_url if paid and download_url else '#analizar'}}" aria-label="Informe completo por {{price_label}}. {{'Descargar mi PDF' if paid else 'Analizar primero la página'}}">
-<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">Detecta problemas poco visibles: 10 puntos clave, soluciones y PDF. Compara en 28 días.</span><span class="tier-cta">{{"Descargar mi PDF →" if paid else "Analiza tu página primero →"}}</span></span></a>
+<button form="audit-form" formaction="/diagnostico-web/comprar" formmethod="post" type="submit" class="tier popular tier-clickable" aria-label="Comprar una sola revisión completa por {{price_label}} y descargar el informe PDF">
+<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Descubre qué debes corregir</span><span class="price">{{price_label}}</span></span>
+<span class="tier-copy">Una revisión completa de hoy. Identifica problemas que podrían costarte consultas, con evidencia y pasos para corregirlos.</span>
+<span class="tier-features">
+<span>✓ 10 temas: Google, visibilidad e imágenes</span>
+<span>✓ 4 señales extra: celular y contacto</span>
+<span>✓ Informe PDF con prioridades</span>
+</span>
+<span class="tier-cta">Comprar una revisión y PDF →</span></span>
+</button>
 {% else %}
-<div class="tier popular tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">10 puntos clave, soluciones y PDF. Incluye comparación posterior.</span><span class="tier-cta">Estamos habilitando el pago seguro</span></div></div>
+<div class="tier popular tier-disabled"><div class="tier-inner">
+<span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span>
+<span class="tier-copy">Una revisión única, diez temas esenciales y cuatro señales adicionales, con PDF. Sin renovación.</span>
+<span class="tier-cta">Pago temporalmente no disponible</span></div></div>
 {% endif %}
 
-{% if subscription_enabled and audit %}
-<form class="tier tier-clickable" method="post" action="/diagnostico-web/suscribir">
-<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><input type="hidden" name="keyword" value="{{audit.keyword or ''}}"><input type="hidden" name="city" value="{{audit.city or ''}}">
-<button class="tier-inner" type="submit" aria-label="Suscribirme al seguimiento por {{subscription_label}}">
-<span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/><path d="M17 6h4v4"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span>
-<span class="tier-copy">Comprueba qué cambió mes a mes: gráficas, recomendaciones y PDF.</span>
-<span class="tier-cta">Suscribirme al seguimiento →</span>
-</button></form>
-{% elif subscription_enabled %}
-<a class="tier tier-clickable" href="#analizar" aria-label="Seguimiento mensual de $349 MXN. Analizar primero la página">
-<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Comprueba qué cambió mes a mes: gráficas, recomendaciones y PDF.</span><span class="tier-cta">Analiza tu página primero →</span></span></a>
+{% if subscription_enabled %}
+<button form="audit-form" formaction="/diagnostico-web/suscribir" formmethod="post" type="submit" class="tier tier-clickable" aria-label="Suscribirme por {{subscription_label}} y consultar revisiones mensuales con gráficos">
+<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/><path d="M17 6h4v4"/></svg></span><span class="tier-name">Comprueba si estás mejorando</span><span class="price">$349 <small>/mes</small></span></span>
+<span class="tier-copy">No te quedes con una revisión: vuelve a analizar tu web y descubre qué cambió y qué debes mejorar después.</span>
+<span class="tier-features">
+<span>✓ Los mismos 10 temas + 4 señales extra</span>
+<span>✓ Gráficas e historial de hasta 12 meses</span>
+<span>✓ Nuevas prioridades y PDF mensual</span>
+</span>
+<span class="tier-cta">Iniciar mi seguimiento mensual →</span></span>
+</button>
 {% else %}
-<div class="tier tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Gráficas por mes, recomendaciones y PDF para una web.</span><span class="tier-cta">Suscripción en preparación</span></div></div>
+<div class="tier tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento mensual</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Revisiones a solicitud, gráficas comparativas, nuevas acciones y PDF.</span><span class="tier-cta">Pago temporalmente no disponible</span></div></div>
 {% endif %}
 </div>
-<p class="plan-note">El seguimiento es mensual, se renueva automáticamente y puedes cancelar desde Stripe. Las revisiones se realizan cuando las solicitas en tu panel. El análisis no mide visitas, ventas o posiciones reales sin acceso autorizado.</p>
+<details class="checklist"><summary>Ver exactamente qué revisan los informes de $199 y $349 (14 temas)</summary>
+<p class="note"><strong>Ambos planes incluyen esta misma lista.</strong> El de $199 la evalúa una sola vez; el de $349 permite repetirla y comparar señales observables.</p>
+<ol>
+<li>Google Search Console — indicaciones para comprobar si la página está registrada.</li>
+<li>Sitemap — señales públicas y cómo confirmar que lo recibió Google.</li>
+<li>Google Analytics — etiquetas visibles y cómo verificar que se reciben visitas.</li>
+<li>Google Maps — señales del perfil del negocio y qué revisar en él.</li>
+<li>Palabra clave principal — si se refleja en el título de tu página.</li>
+<li>Ciudad objetivo — si aparece donde corresponde.</li>
+<li>Descripción para buscadores — si comunica correctamente tu oferta.</li>
+<li>Enlaces entre páginas — si facilitan encontrar tus otros servicios.</li>
+<li>Imágenes y carga — formatos detectables y guía para medir velocidad real.</li>
+<li>Enlaces desde otras webs — cómo revisar las menciones reales de tu negocio.</li>
+<li>Bloqueos para aparecer en Google — señales de noindex.</li>
+<li>Adaptación básica a celulares — etiqueta de configuración móvil.</li>
+<li>Mensaje principal — si la estructura ayuda a entender qué vendes.</li>
+<li>Ruta para contactarte o comprar — si existen enlaces reconocibles.</li>
+</ol>
+<p class="note">Se revisa el HTML público de la URL indicada. Search Console, Analytics, indexación real, backlinks y velocidad completa necesitan comprobación adicional o acceso del propietario; no los presentamos como medidos sin evidencia.</p>
+</details>
+<p class="plan-note"><strong>$199:</strong> un solo análisis, sin segunda revisión y sin suscripción. <strong>$349/mes:</strong> renovación automática cancelable en Stripe; las revisiones se hacen cuando las solicitas, no en segundo plano. Ambos planes analizan una página, sin cambios automáticos a tu sitio.</p>
 </section>
 </main>
 <footer class="wrap foot">Diagnóstico Web · <a href="https://converte.uno/privacidad">Privacidad</a><a href="https://converte.uno/terminos">Términos</a><details><summary>Qué analizamos y qué no</summary><p>Revisamos el HTML público de la página, títulos, descripciones, encabezados, enlaces y señales de indexabilidad. No accedemos a Google Analytics, ventas ni a datos privados, ni ejecutamos elementos cargados mediante JavaScript.</p></details></footer>
