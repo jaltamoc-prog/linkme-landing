@@ -724,3 +724,75 @@ def _followup_view(sid, sub, url, goal, baseline, message=""):
         "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; "
         "base-uri 'none'; frame-ancestors 'none'")
     return response
+
+
+@bp.route("/suscribir", methods=["POST"])
+def suscribir():
+    if not subscriptions_enabled():
+        abort(503)
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        url = public_url(request.form.get("url", ""))
+        goal = request.form.get("objetivo", "contactos")
+        if goal not in GOALS:
+            abort(400)
+        baseline = cached(url)
+        baseline["goal"] = goal
+        data = {
+            "mode": "subscription",
+            "line_items[0][price]": monitor.PRICE_ID,
+            "line_items[0][quantity]": "1",
+            "success_url": "https://converte.uno/diagnostico-web/seguimiento?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://converte.uno/diagnostico-web/",
+            "metadata[service]": "diagnostico-web-seguimiento",
+        }
+        for key, value in monitor.baseline_metadata(baseline).items():
+            data["subscription_data[metadata][" + key + "]"] = value
+        checkout = _billing_request("POST", "checkout/sessions", data)
+        destination = checkout.get("url", "")
+        if not destination.startswith("https://checkout.stripe.com/"):
+            raise ValueError("Stripe no devolvió una dirección de Checkout válida.")
+        return redirect(destination, code=303)
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("Falló el inicio del seguimiento mensual")
+        return view(error="No fue posible iniciar la suscripción. No se efectuó ningún cobro.", code=503)
+
+
+@bp.route("/seguimiento", methods=["GET"])
+def seguimiento():
+    sid = request.args.get("session_id", "")
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        sub, url, goal, baseline = _monthly_subscription(sid)
+        return _followup_view(sid, sub, url, goal, baseline)
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("Falló la apertura del seguimiento")
+        return view(error="No pudimos recuperar tu seguimiento. Conserva el enlace de Stripe.", code=503)
+
+
+@bp.route("/seguimiento/revisar", methods=["POST"])
+def seguimiento_revisar():
+    sid = request.form.get("session_id", "")
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        sub, url, goal, baseline = _monthly_subscription(sid)
+        current = analyse(url)
+        updates = monitor.month_updates(sub.get("metadata") or {}, current)
+        saved = _billing_request("POST", "subscriptions/" + quote(sub["id"]),
+            {"metadata[" + key + "]": value for key, value in updates.items()})
+        if saved.get("id") != sub["id"]:
+            raise ValueError("No se confirmó el guardado en Stripe.")
+        return _followup_view(sid, saved, url, goal, baseline,
+            "Revisión guardada. Puedes comparar los avances con el diagnóstico original.")
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("Falló la revisión del seguimiento")
+        return view(error="No se pudo guardar la revisión. No se produjo ningún cobro adicional.", code=503)
