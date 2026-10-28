@@ -130,3 +130,72 @@ def customer_visible_status(subscription):
     return {"past_due": "Pago pendiente; acceso temporalmente suspendido",
             "canceled": "Cancelada", "unpaid": "Sin pago",
             "incomplete": "Pendiente de primer pago"}.get(status, status)
+
+
+
+def comparison_pdf(url, goal_label, baseline, latest, previous):
+    """PDF comparativo de las señales publicas, sin atribuciones de ventas."""
+    from io import BytesIO
+    from xml.sax.saxutils import escape
+    from reportlab.lib import colors
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+
+    out = BytesIO()
+    dark = colors.HexColor("#163b40")
+    teal = colors.HexColor("#14767c")
+    styles = getSampleStyleSheet()
+    t = ParagraphStyle("MTitle", parent=styles["Title"], textColor=dark,
+                       fontName="Helvetica-Bold", fontSize=20, leading=25, spaceAfter=15)
+    h = ParagraphStyle("MHeading", parent=styles["Heading2"], textColor=teal,
+                       fontName="Helvetica-Bold", fontSize=12, leading=16, spaceBefore=13)
+    body = ParagraphStyle("MBody", parent=styles["Normal"], textColor=dark,
+                          fontSize=9.5, leading=15, spaceAfter=6)
+    doc = SimpleDocTemplate(out, pagesize=A4, topMargin=20*mm, bottomMargin=20*mm,
+                            leftMargin=19*mm, rightMargin=19*mm,
+                            title="Seguimiento Mensual Diagnostico Web",
+                            author="Diagnostico Web por Converte")
+    story = [
+        Paragraph("Seguimiento mensual de tu página web", t),
+        Paragraph("<b>Dirección:</b> " + escape(str(url)), body),
+        Paragraph("<b>Objetivo:</b> " + escape(str(goal_label)), body),
+        Paragraph("<b>Primera revisión:</b> " + escape(str(baseline["checked"])), body),
+        Paragraph("<b>Revisión más reciente:</b> " + escape(str(latest["checked"])), body),
+        HRFlowable(width="100%", thickness=1, color=teal),
+        Paragraph("Cambios observables desde el primer diagnóstico", h),
+    ]
+    changes = differences(baseline, latest)
+    if changes:
+        for item in changes:
+            story.append(Paragraph("<b>" + escape(item["field"]) + "</b>", body))
+            story.append(Paragraph("Antes: " + escape(item["previous"]), body))
+            story.append(Paragraph("Ahora: " + escape(item["current"]), body))
+    else:
+        story.append(Paragraph(
+            "No se detectaron cambios en los indicadores HTML que esta herramienta registra.", body))
+    story.append(Paragraph("Cambios desde la última revisión guardada", h))
+    recent = differences(previous, latest)
+    if recent:
+        for item in recent:
+            story.append(Paragraph(
+                "<b>" + escape(item["field"]) + "</b>: " +
+                escape(item["previous"]) + " → " + escape(item["current"]), body))
+    else:
+        story.append(Paragraph("No se detectaron diferencias adicionales.", body))
+    story += [
+        Paragraph("Alcance", h),
+        Paragraph(
+            "El seguimiento compara señales comprobables del HTML público. "
+            "No demuestra cambios en posicionamiento, visitas, conversiones o ventas. "
+            "Algunos componentes JavaScript no pueden detectarse; "
+            "las mejoras deben comprobarse con el responsable web.",
+            body,
+        ),
+        Spacer(1, 10),
+        Paragraph("Diagnóstico Web · converte.uno/diagnostico-web/", body),
+    ]
+    doc.build(story)
+    out.seek(0)
+    return out
