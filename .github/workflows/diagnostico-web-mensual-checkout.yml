@@ -1,0 +1,48 @@
+name: Diagnostico Web - Checkout mensual real sin cobro
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-web-mensual-checkout.yml'
+  workflow_dispatch:
+
+jobs:
+  verifica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Confirmar plan habilitado y Stripe Checkout sin realizar cargos
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in $(seq 1 30); do
+            code=$(curl -sSL --max-time 35 -o /tmp/plan.html -w '%{http_code}' \
+              --data-urlencode 'url=https://example.com/' \
+              --data-urlencode 'objetivo=ventas' \
+              https://converte.uno/diagnostico-web/ || true)
+            if [ "$code" = "200" ] && grep -Fq 'action="/diagnostico-web/suscribir"' /tmp/plan.html; then
+              echo "Plan mensual visible con formulario de Stripe."
+              break
+            fi
+            if [ "$n" -eq 30 ]; then
+              echo "::error::El plan mensual no fue habilitado en producción."
+              exit 1
+            fi
+            sleep 10
+          done
+          code=$(curl -sS --max-time 45 -D /tmp/checkout.headers -o /tmp/checkout.body -w '%{http_code}' \
+            --data-urlencode 'url=https://example.com/' \
+            --data-urlencode 'objetivo=ventas' \
+            https://converte.uno/diagnostico-web/suscribir || true)
+          echo "Creacion de Checkout mensual: HTTP $code"
+          if [ "$code" != "303" ]; then
+            echo "::error::Stripe no generó Checkout mensual."
+            exit 1
+          fi
+          grep -Eiq '^location: https://checkout\.stripe\.com/' /tmp/checkout.headers || {
+            echo "::error::Destino de Checkout no coincide con Stripe."
+            exit 1
+          }
+          code=$(curl -sS --max-time 15 -o /dev/null -w '%{http_code}' \
+            'https://converte.uno/diagnostico-web/seguimiento?session_id=cs_live_INVALID' || true)
+          test "$code" = "404" || { echo "::error::Panel accesible sin una compra legítima."; exit 1; }
+          echo 'OK: cobro recurrente preparado, Checkout creado SIN PAGAR y panel protegido.'
