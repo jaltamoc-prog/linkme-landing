@@ -260,7 +260,9 @@ class DiagnosticSmokeTests(unittest.TestCase):
             with patch("requests.post", return_value=mock) as stripe:
                 result = self.client.post("/diagnostico-web/suscribir",
                     data={"url": "https://ejemplo.com/", "objetivo": "ventas"})
-        self.assertEqual(result.status_code, 303)
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(b'<meta http-equiv="refresh"', result.data)
+        self.assertIn(b'https://checkout.stripe.com/c/pay/example', result.data)
         data = stripe.call_args.kwargs["data"]
         self.assertEqual(data["mode"], "subscription")
         self.assertEqual(data["line_items[0][price]"], dw.monitor.PRICE_ID)
@@ -444,8 +446,11 @@ class DiagnosticSmokeTests(unittest.TestCase):
                 response = self.client.post("/diagnostico-web/comprar", data={
                     "url": "https://ejemplo.com/", "objetivo": "ventas",
                 })
-        self.assertEqual(response.status_code, 303)
-        self.assertEqual(response.location, "https://checkout.stripe.com/c/pay/test")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'https://checkout.stripe.com/c/pay/test', response.data)
+        self.assertIn(b'<meta http-equiv="refresh"', response.data)
+        self.assertIn(b'Continuar al pago seguro', response.data)
+        self.assertIn("no-store", response.headers.get("Cache-Control", ""))
         form = call.call_args.kwargs["data"]
         self.assertEqual(form["line_items[0][price]"], dw.REPORT_PRICE_ID)
         self.assertEqual(form["metadata[service]"], "diagnostico-web-informe")
@@ -473,8 +478,28 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn("base-uri 'none'", csp)
         self.assertIn("tier popular tier-clickable", result.get_data(as_text=True))
         self.assertIn('action="/diagnostico-web/comprar"', result.get_data(as_text=True))
-        self.assertIn(".tier-clickable button::after", result.get_data(as_text=True))
+        self.assertIn('<button class="tier-inner" type="submit"', result.get_data(as_text=True))
+        self.assertIn('<svg viewBox="0 0 24 24"', result.get_data(as_text=True))
+        self.assertIn("form-grid", result.get_data(as_text=True))
+        self.assertIn('class="tier popular tier-clickable"', result.get_data(as_text=True))
         self.assertIn('type="hidden" name="url"', result.get_data(as_text=True))
+
+    def test_checkout_transition_never_redirects_to_untrusted_domain(self):
+        with app.test_request_context("/diagnostico-web/comprar"):
+            for bad in (
+                "https://checkout.stripe.com.evil.example/x",
+                "http://checkout.stripe.com/x",
+                "https://evil.example/x",
+                "https://user:password@checkout.stripe.com/x",
+            ):
+                with self.assertRaises(ValueError):
+                    dw.checkout_handoff(bad)
+            good = dw.checkout_handoff("https://checkout.stripe.com/c/pay/example")
+            self.assertEqual(good.status_code, 200)
+            self.assertIn(b'<meta http-equiv="refresh"', good.data)
+            self.assertIn(b'href="https://checkout.stripe.com/c/pay/example"', good.data)
+            self.assertIn("no-store", good.headers["Cache-Control"])
+            self.assertEqual(good.headers["Referrer-Policy"], "no-referrer")
 
     def test_paid_checkout_disabled_by_default_even_if_stripe_keys_exist(self):
         with patch.dict("os.environ", {
