@@ -36,3 +36,24 @@ jobs:
           curl --silent --show-error --fail --max-time 20 https://converte.uno/health | grep -Fq 'OK'
           curl --silent --show-error --fail --max-time 20 https://converte.uno/sitemap.xml | grep -Fq 'https://converte.uno/diagnostico-web/'
           echo 'OK: health, ruta publica y sitemap'
+      - name: Verificar CTA comercial del informe en produccion
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://converte.uno/diagnostico-web/"
+          for i in $(seq 1 18); do
+            code=$(curl -LsS --max-time 40 -o /tmp/reporte-cta.html -w '%{http_code}' \
+              --data-urlencode 'url=https://example.com/' \
+              --data-urlencode 'objetivo=ventas' "$url" || true)
+            if [ "$code" = "200" ] && \
+               grep -Fq 'Ver cómo continuar con las mejoras' /tmp/reporte-cta.html && \
+               grep -Fq 'id="planes"' /tmp/reporte-cta.html && \
+               grep -Fq 'Suscripción mensual' /tmp/reporte-cta.html; then
+              echo "OK: diagnostico y CTA comercial funcional en produccion"
+              exit 0
+            fi
+            echo "Intento $i: HTTP $code, esperando la version con CTA..."
+            sleep 12
+          done
+          echo "::error::La version publicada no muestra el nuevo CTA."
+          exit 1
