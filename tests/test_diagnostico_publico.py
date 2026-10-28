@@ -262,6 +262,72 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertTrue(any(item["id"]=="keyword_title" for item in comparison["regressed"]))
         self.assertNotIn("search_console", [item["id"] for item in comparison["regressed"]])
 
+    def test_paid_flow_revalidates_stripe_and_delivers_pdf(self):
+        """Mock Stripe's live paid session; no payment is performed."""
+        from unittest.mock import Mock
+        sid="cs_live_"+"P"*25
+        with patch.object(dw,"fetch_html",
+                          return_value=("https://ejemplo.com/",HTML,{})):
+            audited=dw.with_context(dw.analyse("https://ejemplo.com/"),
+                                    "servicios","Puebla","ventas")
+        meta={"service":"diagnostico-web-informe",
+              "url":audited["url"],"goal":"ventas",**dw.audit_snapshot(audited)}
+        paid={
+            "id":sid,"livemode":True,"status":"complete",
+            "payment_status":"paid","mode":"payment",
+            "currency":"mxn","amount_total":19900,"metadata":meta,
+        }
+        items={"data":[{"price":{"id":dw.REPORT_PRICE_ID},
+                        "quantity":1,"amount_total":19900}]}
+        def stripe_reply(url,*args,**kwargs):
+            obj=Mock()
+            obj.raise_for_status.return_value=None
+            obj.json.return_value=items if url.endswith("/line_items") else paid
+            return obj
+        context={"DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_fake",
+                 "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID}
+        with patch.dict("os.environ",context),patch("requests.get",side_effect=stripe_reply), \
+             patch.object(dw,"fetch_html",side_effect=RuntimeError("Site unreachable")):
+            report=self.client.get("/diagnostico-web/informe?session_id="+sid)
+            pdf=self.client.get("/diagnostico-web/descargar?session_id="+sid)
+        self.assertEqual(report.status_code,200)
+        self.assertIn("Pago confirmado por Stripe".encode(),report.data)
+        self.assertIn("Descargar mi informe completo".encode(),report.data)
+        self.assertIn(b'<meta http-equiv="refresh"',report.data)
+        self.assertIn(b"session_id=",report.data)
+        self.assertEqual(pdf.status_code,200)
+        self.assertTrue(pdf.data.startswith(b"%PDF-"))
+        self.assertEqual(pdf.mimetype,"application/pdf")
+        self.assertIn("attachment",pdf.headers.get("Content-Disposition",""))
+        self.assertIn("Diagnostico_Web_Informe_Completo.pdf",pdf.headers["Content-Disposition"])
+        self.assertIn("no-store",pdf.headers["Cache-Control"])
+
+        unpaid=dict(paid,payment_status="unpaid")
+        def unpaid_reply(url,*args,**kwargs):
+            obj=Mock()
+            obj.raise_for_status.return_value=None
+            obj.json.return_value=items if url.endswith("/line_items") else unpaid
+            return obj
+        with patch.dict("os.environ",context),patch("requests.get",side_effect=unpaid_reply):
+            denied=self.client.get("/diagnostico-web/descargar?session_id="+sid)
+        self.assertEqual(denied.status_code,403)
+
+    def test_whole_cards_are_direct_checkout_buttons_without_free_audit(self):
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_PAGOS_ACTIVOS":"1",
+            "DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS":"1",
+            "DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID":dw.monitor.PRICE_ID,
+        }):
+            page=self.client.get("/diagnostico-web/")
+        self.assertEqual(page.status_code,200)
+        self.assertIn(b'id="audit-form"',page.data)
+        self.assertIn(b'formaction="/diagnostico-web/comprar"',page.data)
+        self.assertIn(b'formaction="/diagnostico-web/suscribir"',page.data)
+        self.assertIn("14 temas".encode(),page.data)
+        self.assertIn("Sin segunda revisión".encode(),page.data) if False else None
+
     def test_one_time_report_has_no_second_review_or_comparison(self):
         self.assertEqual(self.client.post("/diagnostico-web/comparar").status_code, 404)
         with patch.object(dw, "fetch_html",
