@@ -257,8 +257,10 @@ def _main_one_time(c, audit, goal, rows):
         _kpi(c, PAD+i*((WIDTH-20)/3+10), H-174, n, label,
              STATES[key][1], STATES[key][2])
     _distribution(c, H-267, stats)
-    _line(c, PAD, H-295, "%d aspectos revisados · No es una calificación SEO" % len(rows),
-          WIDTH, 9, color=MUTED)
+    _line(c, PAD, H-292, "Tu página se presenta como: " + str(audit.get("title") or "Sin título visible"),
+          WIDTH, 9, color=DARK)
+    _line(c, PAD, H-307, "%d aspectos revisados · No es una calificación SEO" % len(rows),
+          WIDTH, 8.5, color=MUTED)
     _line(c, PAD, H-331, "Empieza por estas 3 acciones", WIDTH, 15, bold=True)
     prioritized = [r for r in rows if r["status"]=="issue"]+[r for r in rows if r["status"]=="review"]
     if not prioritized:
@@ -327,7 +329,7 @@ def _history_chart(c, top, baseline, history, goal):
 
 def _main_monthly(c, url, goal, baseline, latest, history, rows):
     _header(c, "Seguimiento mensual de tu página web",
-            "Antes y ahora, sin palabras técnicas",
+            "Antes y ahora: " + str(latest.get("title") or "tu negocio"),
             url, latest.get("checked",""),1,"Mensual")
     prog=business.progress(baseline,latest,goal)
     stats=(len(prog["improved"]),len(prog["regressed"]),
