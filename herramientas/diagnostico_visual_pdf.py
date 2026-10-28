@@ -48,6 +48,74 @@ LABELS = {
 }
 
 
+
+# Frases comerciales cortas, derivadas SOLO del estado observado.
+# Cuando Google exige acceso privado, nunca se afirma que funcionó.
+QUICK = {
+ "search_console": ("No tenemos acceso a esa cuenta", "Mira tus páginas en Search Console"),
+ "sitemap": ("Encontramos una referencia al mapa", "Confirma que Google recibió tu mapa"),
+ "analytics": ("Vimos una señal de medición", "Comprueba las visitas en Google Analytics"),
+ "business_profile": ("Vimos un enlace a Google Maps", "Revisa datos y horarios en Google Maps"),
+ "keyword_title": ("Tu frase aparece en el título", "Revisa que tu título diga qué ofreces"),
+ "city": ("Tu ciudad aparece en esta página", "Incluye tu ciudad si atiendes una zona"),
+ "description": ("Vimos una descripción de tu oferta", "Resume qué vendes en una frase"),
+ "internal_links": ("Hay enlaces a más páginas", "Enlaza con tus productos o servicios"),
+ "images_speed": ("Detectamos imágenes modernas", "Mide la carga en PageSpeed Insights"),
+ "backlinks": ("Requiere datos de tu cuenta Google", "Revisa quién enlaza tu web en Google"),
+ "noindex": ("No vimos bloqueo 'noindex'", "Consulta si la página debe ser pública"),
+ "mobile": ("Hay una señal básica para móvil", "Prueba botones y texto en tu celular"),
+ "heading": ("Encontramos un título principal", "Pon tu oferta en el título principal"),
+ "action_path": ("Detectamos una forma de contacto", "Prueba tu botón de contacto o compra"),
+}
+ISSUE = {
+ "sitemap": "No vimos una referencia al mapa",
+ "analytics": "No vimos la etiqueta en el HTML",
+ "keyword_title": "La frase elegida no está en el título",
+ "city": "La ciudad elegida no aparece",
+ "description": "Falta la descripción de tu oferta",
+ "internal_links": "No vimos enlaces a otros servicios",
+ "noindex": "Detectamos una orden de bloqueo",
+ "mobile": "No vimos señal básica para móvil",
+ "heading": "Revisa el título principal de tu web",
+ "action_path": "No vimos una forma clara de contacto",
+}
+UNCERTAIN = {
+ "search_console": "Solo tú puedes confirmar esa cuenta",
+ "sitemap": "Puede existir aunque no lo vimos aquí",
+ "analytics": "Puede cargarse después en el navegador",
+ "business_profile": "No vimos enlace; el perfil puede existir",
+ "keyword_title": "Falta indicar qué buscaría tu cliente",
+ "city": "No indicaste una ciudad objetivo",
+ "images_speed": "No medimos cuánto tarda en cargar",
+ "backlinks": "No conocemos tus enlaces externos",
+ "noindex": "Falta información para comprobarlo",
+ "mobile": "Falta revisar cómo se ve en celular",
+}
+IMPACT = {
+ "analytics": "Sin medir visitas, cuesta decidir qué mejorar.",
+ "keyword_title": "Puede ser más difícil que te encuentre tu cliente.",
+ "city": "Quien busca cerca podría no identificar tu zona.",
+ "description": "Tu oferta podría verse poco clara en los resultados.",
+ "internal_links": "Quizá el visitante no descubra tus otros servicios.",
+ "noindex": "Google podría no mostrar esta página.",
+ "mobile": "La experiencia en celular podría dificultar el contacto.",
+ "action_path": "Un interesado podría irse sin preguntar.",
+ "heading": "Tal vez no se entienda en segundos qué vendes.",
+ "images_speed": "Una carga lenta puede hacer perder interesados.",
+}
+def _plain(item):
+    key=item.get("id")
+    status=item.get("status","review")
+    positive,action=QUICK.get(key,("Detectamos una señal pública","Revisa este punto en tu página"))
+    if status=="issue":
+        evidence=ISSUE.get(key,"No vimos una señal esperada")
+    elif status=="review":
+        evidence=UNCERTAIN.get(key,"Necesita confirmación del negocio")
+    else:
+        evidence=positive
+    return evidence,action,IMPACT.get(key,"Conviene comprobarlo para facilitar tus consultas.")
+
+
 def _line(c, x, y, value, width, size=10, bold=False, color=DARK, max_lines=1):
     """Write bounded lines. Never let long customer URLs or content overlap."""
     value = " ".join(str(value or "").replace("\n", " ").split())
@@ -138,14 +206,14 @@ def _action(c, number, item, top, height=115):
     _line(c, PAD+42, top-21, title, WIDTH-174, 12, bold=True)
     _state(c, RIGHT-117, top-22, item.get("status", "review"), small=True)
     is_compact = height < 100
-    _line(c, PAD+17, top-(44 if is_compact else 47),
-          "Qué encontramos: " + str(item.get("evidence","")),
-          WIDTH-33, 9.0 if is_compact else 9.2,
-          max_lines=1 if is_compact else 2, color=MUTED)
-    _line(c, PAD+17, top-(65 if is_compact else 78),
-          "Que corregir: " + str(item.get("action","")),
-          WIDTH-33, 9.0 if is_compact else 9.4,
-          max_lines=1 if is_compact else 2, color=DARK)
+    evidence, action, impact = _plain(item)
+    if is_compact:
+        _line(c, PAD+17, top-44, "Detectamos: " + evidence, WIDTH-33, 9.0, color=MUTED)
+        _line(c, PAD+17, top-65, "Haz esto: " + action, WIDTH-33, 9.0, color=DARK)
+    else:
+        _line(c, PAD+17, top-46, "Detectamos: " + evidence, WIDTH-33, 9.3, color=MUTED)
+        _line(c, PAD+17, top-65, "Te puede afectar: " + impact, WIDTH-33, 9.3, color=MUTED)
+        _line(c, PAD+17, top-87, "Haz esto: " + action, WIDTH-33, 9.5, bold=True, color=DARK)
 
 
 def _audit_grid(c, rows, title, subtitle, url, date, plan):
@@ -167,14 +235,9 @@ def _audit_grid(c, rows, title, subtitle, url, date, plan):
         title = LABELS.get(item.get("id"), str(item.get("title", "")))
         _line(c, x+32, y-17, title, cw-43, 10, bold=True)
         _state(c, x+11, y-35, item.get("status", "review"), small=True)
-        _line(c, x+11, y-52, "Vimos: " + str(item.get("evidence", "")),
-              cw-22, 8.3, color=MUTED)
-        _line(c, x+11, y-68, "Sigue: " + str(item.get("action", "")),
-              cw-22, 8.3, color=DARK)
-    c.setFillColor(MUTED)
-    _line(c, PAD, 72,
-          "Por confirmar significa que hacen falta tus datos de Google o una revisión humana.",
-          WIDTH, 8.5, color=MUTED)
+        evidence, action, _ = _plain(item)
+        _line(c, x+11, y-52, "Vimos: " + evidence, cw-22, 8.3, color=MUTED)
+        _line(c, x+11, y-68, "Haz esto: " + action, cw-22, 8.3, color=DARK)
     c.showPage()
 
 
@@ -279,8 +342,6 @@ def _main_monthly(c, url, goal, baseline, latest, history, rows):
     if not prioritized:prioritized=rows[:3]
     for i, item in enumerate(prioritized[:2]):
         _action(c,i+1,item,H-596-i*97,89)
-    _line(c,PAD,75,"Siguiente página: los 14 aspectos revisados y qué puedes hacer.",
-          WIDTH,9,bold=True,color=TEAL)
     c.showPage()
 
 
