@@ -34,11 +34,15 @@ jobs:
             --data-urlencode 'objetivo=ventas' \
             https://converte.uno/diagnostico-web/suscribir || true)
           echo "Creacion de Checkout mensual: HTTP $code"
-          if [ "$code" != "303" ]; then
-            echo "::error::Stripe no generó Checkout mensual."
+          if [ "$code" != "200" ]; then
+            echo "::error::Stripe no generó la página de transición mensual."
             exit 1
           fi
-          grep -Eiq '^location: https://checkout\.stripe\.com/' /tmp/checkout.headers || {
+          grep -Fq '<meta http-equiv="refresh"' /tmp/checkout.body || {
+            echo "::error::Falta navegación automática a Stripe."
+            exit 1
+          }
+          grep -Fq 'href="https://checkout.stripe.com/' /tmp/checkout.body || {
             echo "::error::Destino de Checkout no coincide con Stripe."
             exit 1
           }
