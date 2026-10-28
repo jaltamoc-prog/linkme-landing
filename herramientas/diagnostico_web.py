@@ -661,3 +661,66 @@ def descargar():
         current_app.logger.exception("No se pudo descargar el informe pagado")
         return view(error="No se pudo generar el PDF ahora. El pago no se repite: "
                           "conserva el enlace y vuelve a intentarlo.", code=503)
+
+
+def _billing_request(method, path, fields=None):
+    import requests
+    url = "https://api.stripe.com/v1/" + path
+    args = {"auth": (os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], ""), "timeout": 12}
+    if method == "GET":
+        args["params"] = fields
+        response = requests.get(url, **args)
+    else:
+        args["data"] = fields
+        response = requests.post(url, **args)
+    response.raise_for_status()
+    return response.json()
+
+
+def _monthly_subscription(sid):
+    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+        abort(404)
+    checkout = _billing_request("GET", "checkout/sessions/" + quote(sid))
+    if (checkout.get("id") != sid or checkout.get("mode") != "subscription"
+        or checkout.get("status") != "complete" or checkout.get("payment_status") != "paid"
+        or not checkout.get("livemode") or checkout.get("currency") != "mxn"
+        or checkout.get("amount_total") != monitor.AMOUNT
+        or (checkout.get("metadata") or {}).get("service") != "diagnostico-web-seguimiento"):
+        abort(403)
+    sub_id = checkout.get("subscription", "")
+    if not isinstance(sub_id, str) or not re.fullmatch(r"sub_[A-Za-z0-9]{12,250}", sub_id):
+        abort(403)
+    sub = _billing_request("GET", "subscriptions/" + quote(sub_id))
+    if (sub.get("id") != sub_id or not sub.get("livemode")
+        or sub.get("status") != "active"
+        or (sub.get("metadata") or {}).get("monitor_service") != "diagnostico-web-seguimiento"):
+        abort(403)
+    items = (sub.get("items") or {}).get("data") or []
+    if len(items) != 1 or items[0].get("price", {}).get("id") != monitor.PRICE_ID or items[0].get("quantity") != 1:
+        abort(403)
+    meta = sub.get("metadata") or {}
+    url = public_url(meta.get("monitor_url", ""))
+    goal = meta.get("monitor_goal", "")
+    if goal not in GOALS or url != meta.get("monitor_url"):
+        abort(403)
+    return sub, url, goal, monitor.read_baseline(meta)
+
+
+def _followup_view(sid, sub, url, goal, baseline, message=""):
+    saved = monitor.history(sub.get("metadata") or {})
+    for row in saved:
+        row["change_count"] = len(monitor.differences(baseline, row["audit"]))
+    last = saved[-1]["audit"] if saved else baseline
+    page = render_template("diagnostico_seguimiento.html", url=url, goal=GOALS[goal],
+        session_id=sid, baseline=baseline, last=last, history=saved,
+        changes=monitor.differences(baseline, last),
+        portal_url=monitor.PORTAL, message=message,
+        status_label=monitor.customer_visible_status(sub))
+    response = make_response(page)
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; "
+        "base-uri 'none'; frame-ancestors 'none'")
+    return response
