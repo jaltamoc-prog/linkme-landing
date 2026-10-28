@@ -262,7 +262,8 @@ def payments_enabled():
     """Los cobros solo se habilitan tras autorización explícita en Render."""
     return (os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS", "") == "1"
             and os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_live_")
-            and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID", "").startswith("price_"))
+            and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID", "").startswith("price_")
+            and bool(os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip()))
 
 
 def contact_link(url):
