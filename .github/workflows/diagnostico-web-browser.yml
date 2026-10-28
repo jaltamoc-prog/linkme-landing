@@ -32,8 +32,8 @@ jobs:
             const browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
             try {
               for (const [action, label] of [
-                ['/diagnostico-web/comprar', 'informe $199'],
-                ['/diagnostico-web/suscribir', 'seguimiento $349'],
+                ['/diagnostico-web/comprar', 'informe $387'],
+                ['/diagnostico-web/suscribir', 'seguimiento $597'],
               ]) {
                 const page = await browser.newPage({
                   viewport: {width: 390, height: 844}, deviceScaleFactor: 1,
