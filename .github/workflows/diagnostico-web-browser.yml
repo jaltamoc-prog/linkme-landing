@@ -1,0 +1,67 @@
+name: Diagnostico Web - Chrome real, móvil y ambos Checkout
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-web-browser.yml'
+  workflow_dispatch:
+
+jobs:
+  mobile-and-checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar navegador de pruebas
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install chromium --with-deps
+      - name: Abrir pagina en Chrome móvil y comprobar ambas tarjetas
+        shell: bash
+        run: |
+          cat > /tmp/diagnostico-browser.cjs <<'NODE'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          (async () => {
+            const browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
+            try {
+              for (const [action, label] of [
+                ['/diagnostico-web/comprar', 'informe $199'],
+                ['/diagnostico-web/suscribir', 'seguimiento $349'],
+              ]) {
+                const page = await browser.newPage({
+                  viewport: {width: 390, height: 844}, deviceScaleFactor: 1,
+                  isMobile: true, hasTouch: true
+                });
+                await page.goto('https://converte.uno/diagnostico-web/', {
+                  waitUntil:'domcontentloaded', timeout: 50000
+                });
+                await page.locator('input[name="url"]').fill('https://example.com/');
+                await page.locator('select[name="objetivo"]').selectOption('ventas');
+                await page.locator('button[type="submit"]:has-text("Analizar gratis")').click();
+                await page.locator('form[action="' + action + '"] .tier-name').waitFor({timeout:30000});
+                const geometry = await page.evaluate(() => ({
+                  width: document.documentElement.clientWidth,
+                  scroll: document.documentElement.scrollWidth,
+                  cards: document.querySelectorAll('.tiers > .tier').length,
+                  icons: document.querySelectorAll('.tiers .tier-icon svg').length,
+                }));
+                if (geometry.scroll > geometry.width+2) throw Error('Desborde en movil: ' + JSON.stringify(geometry));
+                if (geometry.cards !== 3 || geometry.icons !== 3) throw Error('Tarjetas/iconos incorrectos: ' + JSON.stringify(geometry));
+                // Clic intencionalmente en el NOMBRE de la tarjeta, no en un CTA interno.
+                await page.locator('form[action="' + action + '"] .tier-name').click();
+                await page.waitForURL(url => url.hostname === 'checkout.stripe.com', {timeout:45000});
+                console.log('OK ' + label + ': clic en cualquier parte del cuadro abre Stripe Checkout');
+                await page.close();
+              }
+              const desktop = await browser.newPage({viewport:{width:1280,height:800}});
+              await desktop.goto('https://converte.uno/diagnostico-web/', {waitUntil:'domcontentloaded'});
+              const columns = await desktop.locator('.tiers').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
+              if(columns!==3)throw Error('Diseño desktop no tiene 3 columnas: '+columns);
+              console.log('OK desktop: tres planes en columnas');
+              await desktop.close();
+            } finally { await browser.close(); }
+          })().catch(e=>{console.error(e.message);process.exit(1)});
+          NODE
+          node /tmp/diagnostico-browser.cjs
