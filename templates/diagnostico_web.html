@@ -64,15 +64,16 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 .plan-note{font-size:11px;color:#607478;line-height:1.45;margin:8px 0 0}
 .paid-checks{max-height:420px;overflow-y:auto}.check{padding:8px 0;border-bottom:1px solid #e3edeb}.check strong{font-size:12px}.check small{display:block;color:#547077;font-size:11px;line-height:1.45;margin-top:3px}
 .foot{font-size:11px;color:#526c70;line-height:1.55;padding-bottom:22px}.foot a{margin-right:13px}
-@media(max-width:760px){.form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.form-grid .primary{grid-column:1/-1}.tiers{grid-template-columns:1fr}.tier-inner{min-height:0;padding:12px}.tier-copy{min-height:0;margin:6px 0 7px}.plan-head{display:block}.plan-head .note{margin-top:4px}.card{padding:15px}.hero{padding:20px 0}.result-next{align-items:stretch}}
-@media(max-width:470px){.wrap{width:calc(100% - 22px)}.top .wrap{min-height:45px}.hero{padding:16px 0 18px}h1{font-size:27px}.hero p{font-size:12px}.form-grid{grid-template-columns:1fr;gap:8px}.form-grid .primary{grid-column:auto}.form-grid label{margin-bottom:3px}.card{padding:13px;margin-bottom:9px}.tier-inner{padding:10px 12px}.tier-icon{width:32px;height:32px;flex-basis:32px}.tier-icon svg{width:19px;height:19px}.price{font-size:17px}.tier-copy{font-size:11.5px;margin:5px 0}.result-head{display:block}.meta{font-size:11px}}
+ .optional-fields{grid-column:1/-1;border:0;padding:0;margin:0}.optional-fields summary{font-size:12px;font-weight:750;color:#147278;cursor:pointer}.optional-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}.chart-row{display:grid;grid-template-columns:150px 1fr auto;align-items:center;gap:10px;margin:9px 0}.chart-label{font-size:12px;font-weight:700}.chart-track{height:20px;background:#e7f0ee;border-radius:5px;overflow:hidden}.chart-bar{height:100%;background:#238579;border-radius:5px}.chart-value{font-size:12px;font-weight:800;min-width:45px;text-align:right}.chart-wrap{border:1px solid #cbded9;border-radius:11px;padding:13px;margin:12px 0;background:#f8fcfb}.chart-wrap h3{margin-bottom:4px}.chart-foot{font-size:11px;color:#5c7476;line-height:1.5}.action-list{padding:0;margin:0;list-style:none}.action-list li{padding:8px 0;border-bottom:1px solid #e6edeb;font-size:12px}.action-list li:last-child{border:0}.state{display:inline-block;font-size:10px;padding:3px 7px;border-radius:7px;background:#eef3f1;color:#345f62;font-weight:800;margin-left:5px}.state.issue{background:#fff1df;color:#875624}.state.ok{background:#e9f7ed;color:#206b45}.state.review{background:#eff1f4;color:#526572}.comparison-btn{font:inherit;border:0;cursor:pointer;border-radius:8px;background:#126e74;color:#fff;font-weight:800;padding:10px 13px}.comparison-btn:hover{background:#0d5056}
+@media(max-width:760px){.form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.form-grid .primary{grid-column:1/-1}.optional-fields{grid-column:1/-1}.tiers{grid-template-columns:1fr}.tier-inner{min-height:0;padding:12px}.tier-copy{min-height:0;margin:6px 0 7px}.plan-head{display:block}.plan-head .note{margin-top:4px}.card{padding:15px}.hero{padding:20px 0}.result-next{align-items:stretch}}
+@media(max-width:470px){.wrap{width:calc(100% - 22px)}.top .wrap{min-height:45px}.hero{padding:16px 0 18px}h1{font-size:27px}.hero p{font-size:12px}.form-grid{grid-template-columns:1fr;gap:8px}.form-grid .primary{grid-column:auto}.optional-grid{grid-template-columns:1fr}.chart-row{grid-template-columns:102px 1fr 38px;gap:6px}.chart-label,.chart-value{font-size:11px}.form-grid label{margin-bottom:3px}.card{padding:13px;margin-bottom:9px}.tier-inner{padding:10px 12px}.tier-icon{width:32px;height:32px;flex-basis:32px}.tier-icon svg{width:19px;height:19px}.price{font-size:17px}.tier-copy{font-size:11.5px;margin:5px 0}.result-head{display:block}.meta{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.tier{transition:none}}
 @media print{.top,.hero,.formcard,.tierscard,.foot,.result-next{display:none!important}main{padding:0}.card{border:0;box-shadow:none}details{display:block}.finding{break-inside:avoid}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap"><a class="logo" href="/diagnostico-web/">DIAGNÓSTICO WEB <span style="font-weight:450;font-size:11px"> · CONVERTE</span></a><a href="https://converte.uno/">Volver a Converte</a></div></header>
-<section class="hero"><div class="wrap"><span class="kicker">Tu web, oportunidades más claras</span><h1>Descubre qué mejorar en tu página</h1><p>Un diagnóstico gratis y acciones claras para atraer más clientes.</p></div></section>
+<section class="hero"><div class="wrap"><span class="kicker">Tu web debería ayudarte a vender</span><h1>¿Tu página está perdiendo oportunidades de negocio?</h1><p>Revisa qué puede impedir que te encuentren, entiendan tu oferta o te contacten. Con soluciones claras, sin tecnicismos.</p></div></section>
 <main class="wrap">
 <section class="card formcard" id="analizar">
 <h2>Analiza tu página gratis</h2>
@@ -80,6 +81,11 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 <div><label for="url">Dirección de tu página</label><input id="url" name="url" value="{{url}}" placeholder="www.tunegocio.com" required maxlength="350" autocomplete="url"></div>
 <div><label for="objetivo">Tu objetivo principal</label><select id="objetivo" name="objetivo">{% for k,label in goals.items() %}<option value="{{k}}" {% if goal==k %}selected{% endif %}>{{label}}</option>{% endfor %}</select></div>
 <button type="submit" class="primary">Analizar gratis</button>
+<details class="optional-fields"><summary>Hacer el informe más preciso: servicio y ciudad (opcional)</summary>
+<div class="optional-grid">
+<div><label for="keyword">¿Qué buscaría tu cliente?</label><input id="keyword" name="keyword" maxlength="70" value="{{keyword}}" placeholder="Ej. contador para empresas"></div>
+<div><label for="city">¿En qué ciudad trabajas?</label><input id="city" name="city" maxlength="70" value="{{city}}" placeholder="Ej. Querétaro"></div>
+</div><p class="note">Nos ayuda a comprobar si tus palabras y tu ciudad aparecen en esta página. No necesitamos entrar a tus cuentas.</p></details>
 </form>
 <p class="note">Sin registro ni tarjeta. Revisamos únicamente información pública.</p>
 {% if error %}<p class="notice-error" role="alert">{{error}}</p>{% endif %}
@@ -100,8 +106,36 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 {% else %}<p class="positive">No detectamos problemas básicos. Esto no garantiza indexación ni ventas.</p>{% endfor %}
 </div>
 {% if summary.positives %}<details><summary>Lo que encontramos bien ({{summary.positives|length}})</summary>{% for item in summary.positives %}<p class="positive">{{item}}</p>{% endfor %}</details>{% endif %}
+{% if paid and seo_overview %}
+<div class="chart-wrap"><h3>10 puntos para saber qué frena tu web</h3>
+<p class="chart-foot">Señales encontradas: {{seo_overview.ok}} · Conviene revisar: {{seo_overview.issue}} · Por confirmar con el propietario: {{seo_overview.review}}. No es una calificación de Google.</p>
+<details><summary>Ver los 10 puntos y las recomendaciones concretas</summary>
+<ol class="action-list">{% for point in seo_overview.checks[:10] %}
+<li><strong>{{point.title}}</strong><span class="state {{point.status}}">{{point.status_label}}</span><p class="note"><b>Por qué importa:</b> {{point.why}}</p><p class="note"><b>Qué encontramos:</b> {{point.evidence}}</p><p class="note"><b>Qué hacer:</b> {{point.action}}</p></li>
+{% endfor %}</ol></details>
+<details><summary>Otros 4 puntos importantes para tus clientes</summary><ol class="action-list">
+{% for point in seo_overview.checks[10:] %}<li><strong>{{point.title}}</strong><span class="state {{point.status}}">{{point.status_label}}</span><p class="note">{{point.action}}</p></li>{% endfor %}
+</ol></details></div>
+{% endif %}
+{% if paid %}
+<div class="chart-wrap">
+<h3>Tu evolución: hoy y el próximo mes</h3>
+{% if comparison %}
+<p class="chart-foot">Comparamos exactamente las señales verificables en ambas fechas, no supuestas visitas ni posiciones en Google.</p>
+{% if comparison.total %}
+<div class="chart-row"><span class="chart-label">Primera revisión</span><div class="chart-track"><div class="chart-bar" style="width:{{comparison.start_pct}}%"></div></div><span class="chart-value">{{comparison.start}}/{{comparison.total}}</span></div>
+<div class="chart-row"><span class="chart-label">Revisión posterior</span><div class="chart-track"><div class="chart-bar" style="width:{{comparison.end_pct}}%"></div></div><span class="chart-value">{{comparison.end}}/{{comparison.total}}</span></div>
+{% else %}<p class="note">Las revisiones utilizan versiones distintas y no hay señales equivalentes suficientes para dibujar una comparación fiable.</p>{% endif %}
+<p class="chart-foot">Señales que mejoraron: {{comparison.improved|length}} · Señales que requieren atención: {{comparison.regressed|length}}.</p>
+{% else %}
+<p class="chart-foot">Tu primera revisión ya quedó guardada como punto de partida. La comparación incluida en esta compra estará disponible una vez transcurridos 28 días.</p>
+{% if compare_days > 0 %}<p class="note">Faltan aproximadamente {{compare_days}} días para comparar los cambios de tu misma página. Conserva este enlace privado.</p>
+{% else %}<form method="post" action="/diagnostico-web/comparar"><input type="hidden" name="session_id" value="{{request.args.get('session_id','')}}"><button type="submit" class="comparison-btn">Comparar mi página ahora, sin volver a pagar</button></form>{% endif %}
+{% endif %}
+</div>
+{% endif %}
 {% if paid and expanded_checks %}
-<details><summary>Plan completo: {{expanded_checks|length}} comprobaciones y acciones</summary><div class="paid-checks">
+<details><summary>Revisión técnica adicional: {{expanded_checks|length}} comprobaciones</summary><div class="paid-checks">
 {% for check in expanded_checks %}<div class="check"><strong>{{loop.index}}. {{check.area}} · {{check.status}}</strong><small><strong>Evidencia:</strong> {{check.evidence}}</small><small><strong>Acción:</strong> {{check.action}}</small></div>{% endfor %}
 </div></details>
 <details><summary>Datos técnicos para tu desarrollador</summary><p>Título: {{audit.title or "Ausente"}}</p><p>Descripción: {{audit.description or "Ausente"}}</p><p>Canónica: {{audit.canonical or "No declarada"}}</p><p>H1: {{audit.h1}} · Imágenes sin alt: {{audit.noalt}} · Formularios: {{audit.forms}}</p></details>
@@ -116,45 +150,45 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 {% endif %}
 
 <section class="card tierscard" id="planes">
-<div class="plan-head"><h2>Elige cómo avanzar</h2><p class="note">Tres opciones · Sin llamadas ni WhatsApp</p></div>
+<div class="plan-head"><h2>¿Qué puedes descubrir sobre tu negocio?</h2><p class="note">Elige el nivel de ayuda que necesitas · Sin llamadas ni WhatsApp</p></div>
 <div class="tiers">
 
 <a class="tier tier-clickable" href="#analizar" aria-label="Diagnóstico gratuito. Analizar mi página">
 <span class="tier-inner">
 <span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/><path d="m8 11 2 2 4-4"/></svg></span><span class="tier-name">Diagnóstico inicial</span><span class="price">Gratis</span></span>
-<span class="tier-copy">3 acciones prioritarias para tu página, sin registro.</span>
+<span class="tier-copy">Detecta hasta 3 obstáculos visibles que podrían frenar consultas o pedidos.</span>
 <span class="tier-cta">Analizar otra página →</span>
 </span>
 </a>
 
 {% if checkout_enabled and audit and not paid %}
 <form class="tier popular tier-clickable" method="post" action="/diagnostico-web/comprar">
-<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}">
+<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><input type="hidden" name="keyword" value="{{audit.keyword or ''}}"><input type="hidden" name="city" value="{{audit.city or ''}}">
 <button class="tier-inner" type="submit" aria-label="Comprar informe completo por {{price_label}}">
 <span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span>
-<span class="tier-copy">10 comprobaciones, acciones y PDF descargable.</span>
+<span class="tier-copy">Detecta problemas poco visibles: 10 puntos clave, soluciones y PDF. Compara en 28 días.</span>
 <span class="tier-cta">Comprar informe completo →</span>
 </button></form>
 {% elif checkout_enabled %}
 <a class="tier popular tier-clickable" href="{{download_url if paid and download_url else '#analizar'}}" aria-label="Informe completo por {{price_label}}. {{'Descargar mi PDF' if paid else 'Analizar primero la página'}}">
-<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">10 comprobaciones, acciones y PDF descargable.</span><span class="tier-cta">{{"Descargar mi PDF →" if paid else "Analiza tu página primero →"}}</span></span></a>
+<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/><path d="M11 13h6m-6 4h6"/><path d="M4 7v14"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">Detecta problemas poco visibles: 10 puntos clave, soluciones y PDF. Compara en 28 días.</span><span class="tier-cta">{{"Descargar mi PDF →" if paid else "Analiza tu página primero →"}}</span></span></a>
 {% else %}
-<div class="tier popular tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">10 comprobaciones y PDF descargable.</span><span class="tier-cta">Estamos habilitando el pago seguro</span></div></div>
+<div class="tier popular tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l5 5v13H8z"/><path d="M15 3v6h5"/></svg></span><span class="tier-name">Informe completo</span><span class="price">{{price_label}}</span></span><span class="tier-copy">10 puntos clave, soluciones y PDF. Incluye comparación posterior.</span><span class="tier-cta">Estamos habilitando el pago seguro</span></div></div>
 {% endif %}
 
 {% if subscription_enabled and audit %}
 <form class="tier tier-clickable" method="post" action="/diagnostico-web/suscribir">
-<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}">
+<input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><input type="hidden" name="keyword" value="{{audit.keyword or ''}}"><input type="hidden" name="city" value="{{audit.city or ''}}">
 <button class="tier-inner" type="submit" aria-label="Suscribirme al seguimiento por {{subscription_label}}">
 <span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/><path d="M17 6h4v4"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span>
-<span class="tier-copy">Historial, comparaciones y PDF para una web.</span>
+<span class="tier-copy">Comprueba qué cambió mes a mes: gráficas, recomendaciones y PDF.</span>
 <span class="tier-cta">Suscribirme al seguimiento →</span>
 </button></form>
 {% elif subscription_enabled %}
 <a class="tier tier-clickable" href="#analizar" aria-label="Seguimiento mensual de $349 MXN. Analizar primero la página">
-<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Historial, comparaciones y PDF para una web.</span><span class="tier-cta">Analiza tu página primero →</span></span></a>
+<span class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Comprueba qué cambió mes a mes: gráficas, recomendaciones y PDF.</span><span class="tier-cta">Analiza tu página primero →</span></span></a>
 {% else %}
-<div class="tier tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Historial y comparaciones de una web.</span><span class="tier-cta">Suscripción en preparación</span></div></div>
+<div class="tier tier-disabled"><div class="tier-inner"><span class="tier-overview"><span class="tier-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m6 16 5-5 4 3 6-8"/></svg></span><span class="tier-name">Seguimiento de mejoras</span><span class="price">$349 <small>/mes</small></span></span><span class="tier-copy">Gráficas por mes, recomendaciones y PDF para una web.</span><span class="tier-cta">Suscripción en preparación</span></div></div>
 {% endif %}
 </div>
 <p class="plan-note">El seguimiento es mensual, se renueva automáticamente y puedes cancelar desde Stripe. Las revisiones se realizan cuando las solicitas en tu panel. El análisis no mide visitas, ventas o posiciones reales sin acceso autorizado.</p>
