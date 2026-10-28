@@ -229,10 +229,12 @@ def comparison_pdf(url, goal_label, baseline, latest, previous, goal="contactos"
                                escape(item["status_label"])+")",body))
         story.append(Paragraph("<b>Evidencia:</b> "+escape(item["evidence"]),body))
         story.append(Paragraph("<b>Qué hacer:</b> "+escape(item["action"]),body))
-    story.append(Paragraph("Los diez puntos de revisión", h))
-    for item in checked["checks"][:10]:
+    story.append(Paragraph("Los 14 aspectos incluidos en cada revisión", h))
+    for item in checked["checks"]:
         story.append(Paragraph("<b>"+escape(item["title"])+"</b>: "+
                                escape(item["status_label"]),body))
+        story.append(Paragraph("<b>Evidencia:</b> "+escape(item["evidence"]),body))
+        story.append(Paragraph("<b>Qué hacer:</b> "+escape(item["action"]),body))
     story += [
         Paragraph("Alcance", h),
         Paragraph(
