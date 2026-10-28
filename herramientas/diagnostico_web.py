@@ -427,6 +427,15 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
     response.headers["Cache-Control"] = "no-store"
     response.headers["X-Diagnostico-Revision"] = "2026-10-28-pdf-pago-v1"
     response.headers["X-Diagnostico-Checkout"] = "enabled" if payments_enabled() else "disabled"
+    if request.method == "GET" and not payments_enabled():
+        current_app.logger.info(
+            "diagnostico checkout configuration: flag=%s key_present=%s key_live=%s price_match=%s label_match=%s",
+            os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1",
+            bool(os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY")),
+            os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("rk_live_", "sk_live_")),
+            os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID,
+            os.getenv("DIAGNOSTICO_PRICE_LABEL") == "$199 MXN",
+        )
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Content-Security-Policy"] = (
         "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
