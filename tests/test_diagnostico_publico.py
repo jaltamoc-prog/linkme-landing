@@ -19,7 +19,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
     def test_public_landing_and_sitemap(self):
         r = self.client.get("/diagnostico-web/")
         self.assertEqual(r.status_code, 200)
-        self.assertIn(b"Analiza tu", r.data)
+        self.assertIn("Escribe la página que quieres revisar".encode(), r.data)
         self.assertIn(b"converte.uno/diagnostico-web/", self.client.get("/sitemap.xml").data)
         self.assertEqual(self.client.get("/health").status_code, 200)
         self.assertEqual(self.client.get("/").status_code, 200)
@@ -49,7 +49,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn(b'href="#planes"', r.data)
         self.assertIn(b'id="planes"', r.data)
         self.assertIn("Ver cómo continuar con las mejoras".encode(), r.data)
-        self.assertIn("Seguimiento mensual".encode(), r.data)
+        self.assertIn("Comprueba tus avances".encode(), r.data)
         self.assertIn("Pago temporalmente no disponible".encode(), r.data)
         self.assertNotIn(b'formaction="/diagnostico-web/comprar"', r.data)
 
@@ -326,8 +326,45 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn(b'id="audit-form"',page.data)
         self.assertIn(b'formaction="/diagnostico-web/comprar"',page.data)
         self.assertIn(b'formaction="/diagnostico-web/suscribir"',page.data)
-        self.assertIn("14 temas".encode(),page.data)
+        self.assertIn("14 aspectos".encode(),page.data)
         self.assertIn("Sin segunda revisión".encode(),page.data) if False else None
+
+    def test_service_information_is_inside_each_plan_not_a_separate_section(self):
+        from bs4 import BeautifulSoup
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "1",
+            "DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS": "1",
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID": dw.monitor.PRICE_ID,
+            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+        }):
+            page = self.client.get("/diagnostico-web/")
+        self.assertEqual(page.status_code, 200)
+        soup = BeautifulSoup(page.data, "html.parser")
+        plans = soup.select("#planes .tiers > [data-plan]")
+        self.assertEqual([plan["data-plan"] for plan in plans],
+                         ["gratis", "unico", "mensual"])
+        self.assertFalse(soup.select("#planes > .checklist, #planes > .plan-note"))
+        self.assertEqual(len(soup.select("#planes details.tier-more")), 3)
+        self.assertEqual(len(plans[0].select("details.tier-more li")), 3)
+        self.assertEqual(len(plans[1].select("details.tier-more ol > li")), 14)
+        self.assertEqual(len(plans[2].select("details.tier-more ol > li")), 14)
+        self.assertEqual(len(soup.select('form#audit-form')), 1)
+        self.assertEqual(len(soup.select('button[form="audit-form"][formaction="/diagnostico-web/comprar"]')), 1)
+        self.assertEqual(len(soup.select('button[form="audit-form"][formaction="/diagnostico-web/suscribir"]')), 1)
+        for i in range(3):
+            self.assertIsNotNone(plans[i].select_one(".tier-plan-term"))
+            self.assertIsNotNone(plans[i].select_one(".tier-cta"))
+            self.assertIsNotNone(plans[i].select_one("details.tier-more summary"))
+        self.assertIn("Sin renovación", plans[1].get_text(" ", strip=True))
+        self.assertIn("Cancela en Stripe", plans[2].get_text(" ", strip=True))
+        self.assertIn("Search Console", plans[1].get_text(" ", strip=True))
+        self.assertIn("Search Console", plans[2].get_text(" ", strip=True))
+        # Detail expansion must not be nested in a checkout submit button.
+        for plan in plans:
+            details = plan.select_one("details.tier-more")
+            self.assertIsNone(details.find_parent("button"))
 
     def test_one_time_report_has_no_second_review_or_comparison(self):
         self.assertEqual(self.client.post("/diagnostico-web/comparar").status_code, 404)
