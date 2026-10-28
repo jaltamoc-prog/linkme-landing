@@ -8,6 +8,7 @@ on:
       - 'herramientas/diagnostico_web.py'
       - 'herramientas/diagnostico_seguimiento.py'
       - 'herramientas/diagnostico_pdf.py'
+      - 'herramientas/diagnostico_visual_pdf.py'
       - 'templates/diagnostico_seguimiento.html'
   workflow_dispatch:
 
@@ -23,7 +24,7 @@ jobs:
       - name: Instalar dependencias de producción y lector de PDF para las pruebas
         run: |
           python -m pip install -r requirements.txt
-          python -m pip install "pypdf>=5,<7"
+          python -m pip install "pypdf>=5,<7" "pymupdf>=1.24,<2"
       - name: Compilar los componentes de diagnóstico y seguimiento
         run: python -m compileall -q app.py herramientas/diagnostico_web.py herramientas/diagnostico_seguimiento.py herramientas/diagnostico_pdf.py
       - name: Probar ambos recorridos completos y leer el contenido de los PDF
@@ -32,6 +33,35 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_diagnostico_entrega.py' -v
           python -m unittest discover -s tests -p 'test_diagnostico_publico.py' -v
+      - name: Renderizar visualmente las cuatro paginas y comprobar límites
+        run: |
+          python - <<'PY'
+          import fitz
+          from pathlib import Path
+          files=[
+              Path("evidencias-entrega/ejemplo_informe_387.pdf"),
+              Path("evidencias-entrega/ejemplo_seguimiento_597.pdf"),
+          ]
+          for file in files:
+              doc=fitz.open(file)
+              assert len(doc)==2, (file, len(doc))
+              print("PDF",file,"paginas",len(doc))
+              for i,page in enumerate(doc,1):
+                  text=page.get_text()
+                  assert len(text)>350, (file,i,"empty")
+                  vector_shapes=len(page.get_drawings())
+                  assert vector_shapes>=15, (file,i,"not visual enough",vector_shapes)
+                  for block in page.get_text("dict")["blocks"]:
+                      if block.get("type")!=0: continue
+                      for line in block["lines"]:
+                          for span in line["spans"]:
+                              x0,y0,x1,y1=span["bbox"]
+                              assert -1<=x0<=page.rect.width and x1<=page.rect.width+1, (file,i,"horizontal overflow",span["text"])
+                              assert -1<=y0<=page.rect.height and y1<=page.rect.height+1, (file,i,"vertical overflow",span["text"])
+                  page.get_pixmap(matrix=fitz.Matrix(1.4,1.4),alpha=False).save(
+                      str(file.with_name(file.stem+"_pagina_"+str(i)+".png")))
+                  print("pagina",i,"formas",vector_shapes,"caracteres",len(text))
+          PY
       - name: Subir PDFs de demostración y comprobantes sin datos personales
         if: always()
         uses: actions/upload-artifact@v4
