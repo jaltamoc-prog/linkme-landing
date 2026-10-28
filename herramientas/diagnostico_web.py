@@ -966,7 +966,8 @@ def seguimiento_descargar():
         saved = monitor.history(sub.get("metadata") or {})
         latest = saved[-1]["audit"] if saved else baseline
         previous = saved[-2]["audit"] if len(saved) > 1 else baseline
-        pdf = monitor.comparison_pdf(url, GOALS[goal], baseline, latest, previous)
+        pdf = monitor.comparison_pdf(url, GOALS[goal], baseline, latest, previous,
+                                     goal=goal, history=saved)
         response = send_file(pdf, mimetype="application/pdf", as_attachment=True,
             download_name="Diagnostico_Web_Seguimiento_Mensual.pdf", max_age=0)
         response.headers["Cache-Control"] = "private, no-store"
