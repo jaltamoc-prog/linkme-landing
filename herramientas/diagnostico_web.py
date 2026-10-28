@@ -16,6 +16,7 @@ from urllib.parse import urljoin, urlsplit, urlunsplit, urlencode, quote
 import urllib3
 from bs4 import BeautifulSoup
 from flask import Blueprint, abort, current_app, redirect, render_template, request, make_response
+from werkzeug.exceptions import HTTPException
 
 bp = Blueprint("diagnostico_web", __name__, url_prefix="/diagnostico-web")
 GOALS = {
@@ -258,7 +259,9 @@ def cached(url):
 
 
 def payments_enabled():
-    return (os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_")
+    """Los cobros solo se habilitan tras autorización explícita en Render."""
+    return (os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS", "") == "1"
+            and os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_live_")
             and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID", "").startswith("price_"))
 
 
@@ -365,5 +368,8 @@ def informe():
         goal = meta.get("goal", "contactos")
         result = cached(url)
         return view(url, goal, result, report_for(result, goal), paid=True)
-    except (ValueError, urllib3.exceptions.HTTPError, TimeoutError, OSError):
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("Error al verificar informe de Stripe")
         return view(error="No se pudo recuperar el informe. Contactanos con tu comprobante.", code=503)
