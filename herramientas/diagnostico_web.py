@@ -4,8 +4,11 @@
 Adaptacion segura de las reglas de Revisar Metricas Web:
 sin credenciales de Google, sin acceso a redes privadas y sin almacenar leads.
 """
+import base64
 import ipaddress
+import json
 import os
+import zlib
 import re
 import socket
 import threading
@@ -318,6 +321,61 @@ def payment_limited(ip):
         return False
 
 
+def audit_snapshot(audit):
+    """Guarda el analisis compacto en metadata de Checkout sin usar BD ni credenciales ajenas."""
+    public = {
+        k: (str(v)[:380] if isinstance(v, str) else v)
+        for k, v in audit.items()
+        if k in {
+            "url", "checked", "title", "description", "canonical", "noindex",
+            "h1", "noalt", "viewport", "jsonld", "contact", "booking", "purchase",
+            "forms", "headings",
+        }
+    }
+    payload = json.dumps(public, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    compressed = base64.urlsafe_b64encode(zlib.compress(payload)).decode("ascii")
+    segments = [compressed[i:i+420] for i in range(0, len(compressed), 420)]
+    if not segments or len(segments) > 15:
+        raise ValueError("Este sitio excede el limite del resumen procesable.")
+    result = {"audit_version": "1", "audit_parts": str(len(segments))}
+    for i, segment in enumerate(segments):
+        result["audit_" + str(i)] = segment
+    return result
+
+
+def restored_snapshot(metadata, url):
+    """Recupera la auditoria pagada incluso si la pagina original ya no esta en linea."""
+    if metadata.get("audit_version") != "1":
+        return None
+    try:
+        n = int(metadata.get("audit_parts", "0"))
+        if not 1 <= n <= 15:
+            raise ValueError("Cantidad de partes invalida")
+        raw = "".join(metadata["audit_" + str(i)] for i in range(n))
+        if len(raw) > 6300:
+            raise ValueError("Metadatos excesivos")
+        compressed = base64.urlsafe_b64decode(raw)
+        decompressor = zlib.decompressobj()
+        restored = decompressor.decompress(compressed, 20000)
+        if decompressor.unconsumed_tail or len(restored) >= 20000:
+            raise ValueError("Tamano del informe no admitido")
+        restored += decompressor.flush()
+        if len(restored) > 20000:
+            raise ValueError("Informe demasiado grande")
+        audit = json.loads(restored)
+        if not isinstance(audit, dict) or audit.get("url") != url:
+            raise ValueError("La URL no corresponde al pago")
+        required = ("url", "checked", "title", "description", "canonical",
+                    "noindex", "h1", "noalt", "viewport", "jsonld",
+                    "contact", "booking", "purchase", "forms", "headings")
+        if not all(field in audit for field in required):
+            raise ValueError("Informe incompleto")
+        return audit
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError,
+            zlib.error, base64.binascii.Error):
+        raise ValueError("El informe de Stripe no pudo validarse.") from None
+
+
 def verify_purchase(session_id):
     """Verifica cada acceso en Stripe; nunca se confia en un return_url sin consultar."""
     if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", session_id):
@@ -349,7 +407,7 @@ def verify_purchase(session_id):
     goal = meta.get("goal", "contactos")
     if goal not in GOALS:
         abort(403)
-    return url, goal
+    return url, goal, restored_snapshot(meta, url)
 
 
 def view(url="", goal="contactos", audit=None, summary=None, error="", paid=False,
@@ -412,22 +470,25 @@ def comprar():
         goal = request.form.get("objetivo", "contactos")
         if goal not in GOALS:
             goal = "contactos"
-        cached(url)
+        audit = cached(url)
+        snapshot = audit_snapshot(audit)
         import requests as http
+        metadata = {"service": "diagnostico-web-informe",
+                    "url": url, "goal": goal, **snapshot}
+        data = {
+            "mode": "payment",
+            "line_items[0][price]": REPORT_PRICE_ID,
+            "line_items[0][quantity]": "1",
+            "success_url": "https://converte.uno/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://converte.uno/diagnostico-web/",
+            "client_reference_id": "diagnostico-web",
+        }
+        for key, value in metadata.items():
+            data["metadata[" + key + "]"] = value
         resp = http.post(
             "https://api.stripe.com/v1/checkout/sessions", timeout=12,
             auth=(os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], ""),
-            data={
-                "mode": "payment",
-                "line_items[0][price]": REPORT_PRICE_ID,
-                "line_items[0][quantity]": "1",
-                "success_url": "https://converte.uno/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
-                "cancel_url": "https://converte.uno/diagnostico-web/",
-                "metadata[service]": "diagnostico-web-informe",
-                "metadata[url]": url,
-                "metadata[goal]": goal,
-                "client_reference_id": "diagnostico-web",
-            },
+            data=data,
         )
         resp.raise_for_status()
         destination = resp.json().get("url", "")
@@ -447,8 +508,8 @@ def informe():
     if payment_limited(visitor_ip()):
         abort(429)
     try:
-        url, goal = verify_purchase(sid)
-        result = cached(url)
+        url, goal, snapshot = verify_purchase(sid)
+        result = snapshot if snapshot is not None else cached(url)
         return view(url, goal, result, report_for(result, goal), paid=True,
                     session_id=sid)
     except HTTPException:
@@ -467,8 +528,8 @@ def descargar():
     if payment_limited(visitor_ip()):
         abort(429)
     try:
-        url, goal = verify_purchase(sid)
-        result = cached(url)
+        url, goal, snapshot = verify_purchase(sid)
+        result = snapshot if snapshot is not None else cached(url)
         pdf = build_pdf(result, report_for(result, goal), GOALS[goal])
         response = send_file(pdf, as_attachment=True, mimetype="application/pdf",
                              download_name="Diagnostico_Web_Informe_Completo.pdf",
