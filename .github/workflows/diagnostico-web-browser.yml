@@ -56,9 +56,12 @@ jobs:
                   cards: document.querySelectorAll('.tiers > .tier').length,
                   icons: document.querySelectorAll('.tiers .tier-icon svg').length,
                   height: document.documentElement.scrollHeight,
+                  sections: [...document.querySelectorAll('.hero,.formcard,#resultado,.tierscard,footer')].map(e=>({name:e.id||e.className,height:Math.round(e.getBoundingClientRect().height)})),
+                  findings: document.querySelectorAll('.finding').length,
                 }));
                 if (geometry.scroll > geometry.width+2) throw Error('Desborde en movil: ' + JSON.stringify(geometry));
                 if (geometry.cards !== 3 || geometry.icons !== 3) throw Error('Tarjetas/iconos incorrectos: ' + JSON.stringify(geometry));
+                console.log('Geometría móvil:',JSON.stringify(geometry));
                 if (geometry.height > 2100) throw Error('Página móvil demasiado larga: ' + JSON.stringify(geometry));
                 // Clic intencionalmente en el NOMBRE de la tarjeta, no en un CTA interno.
                 await page.locator('form[action="' + action + '"] .tier-name').click();
