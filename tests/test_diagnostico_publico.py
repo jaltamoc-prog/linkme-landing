@@ -193,6 +193,26 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertEqual(len(mon.history(meta)), 12)
         self.assertLessEqual(len(meta), 30)
 
+    def test_stripe_monthly_permissions_read_write_probe_is_nondestructive(self):
+        from unittest.mock import Mock
+        from herramientas.diagnostico_permisos import check_restricted_key, permissions_verified
+        ok = Mock(status_code=200)
+        missing = Mock(status_code=404)
+        missing.json.return_value = {"error": {"code": "resource_missing"}}
+        with patch("herramientas.diagnostico_permisos.requests.get", return_value=ok) as get, \
+             patch("herramientas.diagnostico_permisos.requests.post", return_value=missing) as post:
+            result = check_restricted_key("rk_live_fake_for_test")
+        self.assertTrue(permissions_verified(result))
+        self.assertEqual(get.call_args.kwargs["params"], {"limit": 1})
+        self.assertIn("/subscriptions/sub_", post.call_args.args[0])
+        self.assertIn("metadata[permission_probe]", post.call_args.kwargs["data"])
+
+        denied = Mock(status_code=403)
+        with patch("herramientas.diagnostico_permisos.requests.get", return_value=denied), \
+             patch("herramientas.diagnostico_permisos.requests.post") as post:
+            self.assertFalse(permissions_verified(check_restricted_key("rk_live_fake")))
+            post.assert_not_called()
+
     def test_monthly_history_snapshot_and_comparison(self):
         from herramientas import diagnostico_seguimiento as mon
         with patch.object(dw, "fetch_html",
