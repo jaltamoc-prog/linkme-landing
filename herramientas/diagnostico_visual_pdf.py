@@ -137,10 +137,15 @@ def _action(c, number, item, top, height=115):
     title = LABELS.get(item.get("id"), str(item.get("title","Recomendación")))
     _line(c, PAD+42, top-21, title, WIDTH-174, 12, bold=True)
     _state(c, RIGHT-117, top-22, item.get("status", "review"), small=True)
-    _line(c, PAD+17, top-47, "Qué encontramos: " + str(item.get("evidence","")),
-          WIDTH-33, 9.2, max_lines=2, color=MUTED)
-    _line(c, PAD+17, top-78, "Que corregir: " + str(item.get("action","")),
-          WIDTH-33, 9.4, max_lines=2, color=DARK)
+    is_compact = height < 100
+    _line(c, PAD+17, top-(44 if is_compact else 47),
+          "Qué encontramos: " + str(item.get("evidence","")),
+          WIDTH-33, 9.0 if is_compact else 9.2,
+          max_lines=1 if is_compact else 2, color=MUTED)
+    _line(c, PAD+17, top-(65 if is_compact else 78),
+          "Que corregir: " + str(item.get("action","")),
+          WIDTH-33, 9.0 if is_compact else 9.4,
+          max_lines=1 if is_compact else 2, color=DARK)
 
 
 def _audit_grid(c, rows, title, subtitle, url, date, plan):
