@@ -4,6 +4,11 @@ on:
   push:
     paths:
       - '.github/workflows/diagnostico-web-browser.yml'
+      - 'herramientas/diagnostico_web.py'
+      - 'herramientas/diagnostico_evaluacion.py'
+      - 'herramientas/diagnostico_seguimiento.py'
+      - 'templates/diagnostico_web.html'
+      - 'templates/diagnostico_seguimiento.html'
   workflow_dispatch:
 
 jobs:
@@ -39,16 +44,22 @@ jobs:
                 });
                 await page.locator('input[name="url"]').fill('https://example.com/');
                 await page.locator('select[name="objetivo"]').selectOption('ventas');
+                await page.locator('.optional-fields summary').click();
+                await page.locator('input[name="keyword"]').fill('Example');
+                await page.locator('input[name="city"]').fill('Querétaro');
                 await page.locator('button[type="submit"]:has-text("Analizar gratis")').click();
                 await page.locator('form[action="' + action + '"] .tier-name').waitFor({timeout:30000});
+                if(!(await page.locator('form[action="' + action + '"] input[name="keyword"]').getAttribute('value'))?.includes('Example'))throw Error('No se conservó la frase objetivo');
                 const geometry = await page.evaluate(() => ({
                   width: document.documentElement.clientWidth,
                   scroll: document.documentElement.scrollWidth,
                   cards: document.querySelectorAll('.tiers > .tier').length,
                   icons: document.querySelectorAll('.tiers .tier-icon svg').length,
+                  height: document.documentElement.scrollHeight,
                 }));
                 if (geometry.scroll > geometry.width+2) throw Error('Desborde en movil: ' + JSON.stringify(geometry));
                 if (geometry.cards !== 3 || geometry.icons !== 3) throw Error('Tarjetas/iconos incorrectos: ' + JSON.stringify(geometry));
+                if (geometry.height > 2100) throw Error('Página móvil demasiado larga: ' + JSON.stringify(geometry));
                 // Clic intencionalmente en el NOMBRE de la tarjeta, no en un CTA interno.
                 await page.locator('form[action="' + action + '"] .tier-name').click();
                 await page.waitForURL(url => url.hostname === 'checkout.stripe.com', {timeout:45000});
