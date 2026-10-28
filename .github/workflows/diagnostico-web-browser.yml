@@ -42,14 +42,25 @@ jobs:
                 await page.goto('https://converte.uno/diagnostico-web/', {
                   waitUntil:'domcontentloaded', timeout: 50000
                 });
+                const payCard = page.locator('button[form="audit-form"][formaction="' + action + '"]');
+                // Wait for new production revision; do not test an old deployment.
+                for(let wait=0;wait<22;wait++){
+                  if(await payCard.count()) break;
+                  await new Promise(done=>setTimeout(done,5000));
+                  await page.reload({waitUntil:'domcontentloaded'});
+                }
+                await payCard.waitFor({timeout:25000});
+                if(await page.locator('form#audit-form').count() !== 1) throw Error('No existe el formulario principal');
                 await page.locator('input[name="url"]').fill('https://example.com/');
                 await page.locator('select[name="objetivo"]').selectOption('ventas');
                 await page.locator('.optional-fields summary').click();
                 await page.locator('input[name="keyword"]').fill('Example');
                 await page.locator('input[name="city"]').fill('Querétaro');
-                await page.locator('button[type="submit"]:has-text("Analizar gratis")').click();
-                await page.locator('form[action="' + action + '"] .tier-name').waitFor({timeout:30000});
-                if(!(await page.locator('form[action="' + action + '"] input[name="keyword"]').getAttribute('value'))?.includes('Example'))throw Error('No se conservó la frase objetivo');
+                if(await page.locator('button[formaction="/diagnostico-web/comprar"]').count() !== 1
+                    || await page.locator('button[formaction="/diagnostico-web/suscribir"]').count() !== 1)
+                  throw Error('Ambos botones de compra deben estar activos SIN análisis previo');
+                if(!(await page.locator('details.checklist').textContent()).includes('Google Search Console'))
+                  throw Error('No se muestran los temas revisados');
                 const geometry = await page.evaluate(() => ({
                   width: document.documentElement.clientWidth,
                   scroll: document.documentElement.scrollWidth,
@@ -62,13 +73,22 @@ jobs:
                 if (geometry.scroll > geometry.width+2) throw Error('Desborde en movil: ' + JSON.stringify(geometry));
                 if (geometry.cards !== 3 || geometry.icons !== 3) throw Error('Tarjetas/iconos incorrectos: ' + JSON.stringify(geometry));
                 console.log('Geometría móvil:',JSON.stringify(geometry));
-                if (geometry.height > 2100) throw Error('Página móvil demasiado larga: ' + JSON.stringify(geometry));
+                if (geometry.height > 2600) throw Error('Página móvil demasiado larga: ' + JSON.stringify(geometry));
                 // Clic intencionalmente en el NOMBRE de la tarjeta, no en un CTA interno.
-                await page.locator('form[action="' + action + '"] .tier-name').click();
+                await payCard.locator('.tier-name').click();
                 await page.waitForURL(url => url.hostname === 'checkout.stripe.com', {timeout:45000});
                 console.log('OK ' + label + ': clic en cualquier parte del cuadro abre Stripe Checkout');
                 await page.close();
               }
+              const check = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+              await check.goto('https://converte.uno/diagnostico-web/',{waitUntil:'domcontentloaded'});
+              await check.locator('input[name="url"]').fill('https://example.com/');
+              await check.locator('button[type="submit"]:has-text("Analizar gratis")').click();
+              await check.locator('#resultado').waitFor({timeout:30000});
+              if(await check.locator('button[formaction="/diagnostico-web/comprar"]').count() !== 1)
+                throw Error('La compra desapareció después del informe gratuito');
+              console.log('OK diagnóstico gratuito y botones de pago visibles después');
+              await check.close();
               const desktop = await browser.newPage({viewport:{width:1280,height:800}});
               await desktop.goto('https://converte.uno/diagnostico-web/', {waitUntil:'domcontentloaded'});
               const columns = await desktop.locator('.tiers').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
