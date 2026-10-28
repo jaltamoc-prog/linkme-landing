@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup
 from flask import Blueprint, abort, current_app, redirect, render_template, request, make_response, send_file, url_for
 from werkzeug.exceptions import HTTPException
 from herramientas.diagnostico_pdf import build_pdf
+from herramientas import diagnostico_seguimiento as monitor
 
 bp = Blueprint("diagnostico_web", __name__, url_prefix="/diagnostico-web")
 GOALS = {
@@ -407,6 +408,11 @@ def stripe_ready():
             and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID)
 
 
+def subscriptions_enabled():
+    return (stripe_ready() and os.getenv('DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS') == '1'
+            and os.getenv('DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID') == monitor.PRICE_ID)
+
+
 def payments_enabled():
     return (stripe_ready()
             and os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1"
@@ -529,6 +535,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         checkout_enabled=payments_enabled(),
         price_label="$199 MXN",
         subscription_label="$349 MXN/mes",
+        subscription_enabled=subscriptions_enabled(),
         download_url=download_url,
     )
     response = make_response(page, code)
