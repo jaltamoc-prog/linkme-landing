@@ -202,7 +202,7 @@ def comparison_pdf(url, goal_label, baseline, latest, previous, goal="contactos"
         story.append(history_chart)
         story.append(Paragraph(
             "La altura representa señales favorables entre las comprobables de esa fecha. "
-            "No mide visitas, ventas ni posiciones.", note))
+            "No mide visitas, ventas ni posiciones.", body))
     changes = differences(baseline, latest)
     if changes:
         for item in changes:
