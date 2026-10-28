@@ -71,6 +71,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@200&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ asset_version }}-1068">
+  {% if ga4_measurement_id and ga4_measurement_id.startswith('G-') %}
+  <script defer src="{{ url_for('static', filename='js/analytics_optin.js') }}?v={{ asset_version }}" data-measurement-id="{{ ga4_measurement_id }}"></script>
+  {% endif %}
 </head>
 <body>
 <header class="lm-header">
