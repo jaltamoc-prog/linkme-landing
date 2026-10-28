@@ -259,6 +259,28 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertTrue(form["metadata[audit_0]"])
         self.assertEqual(form["mode"], "payment")
 
+    def test_checkout_card_is_fully_clickable_and_csp_allows_stripe(self):
+        # Chrome can enforce form-action on a 303 redirect to hosted Checkout.
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_mock_for_test",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "1",
+        }), patch.object(dw, "fetch_html",
+                        return_value=("https://ejemplo.com/", HTML, {})):
+            result = self.client.post("/diagnostico-web/", data={
+                "url": "https://ejemplo.com/", "objetivo": "ventas",
+            })
+        self.assertEqual(result.status_code, 200)
+        csp = result.headers["Content-Security-Policy"]
+        self.assertIn("form-action 'self' https://checkout.stripe.com", csp)
+        self.assertIn("default-src 'none'", csp)
+        self.assertIn("base-uri 'none'", csp)
+        self.assertIn("tier popular tier-clickable", result.get_data(as_text=True))
+        self.assertIn('action="/diagnostico-web/comprar"', result.get_data(as_text=True))
+        self.assertIn(".tier-clickable button::after", result.get_data(as_text=True))
+        self.assertIn('type="hidden" name="url"', result.get_data(as_text=True))
+
     def test_paid_checkout_disabled_by_default_even_if_stripe_keys_exist(self):
         with patch.dict("os.environ", {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
