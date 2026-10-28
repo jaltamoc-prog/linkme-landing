@@ -820,3 +820,19 @@ def seguimiento_descargar():
     except Exception:
         current_app.logger.exception("No se pudo preparar el PDF mensual")
         return view(error="No pudimos preparar tu PDF mensual ahora. Reintenta desde tu panel.", code=503)
+
+
+
+@bp.record_once
+def _probe_recurring_permissions_at_start(state):
+    """Diagnóstico de permisos en Render sin registrar secretos ni información personal."""
+    if (os.getenv("RENDER") != "true"
+            or os.getenv("DIAGNOSTICO_VERIFICAR_PERMISOS_MES") != "1"):
+        return
+    from herramientas.diagnostico_permisos import check_restricted_key, permissions_verified
+    status = check_restricted_key(os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", ""))
+    state.app.logger.warning(
+        "diagnostico_monthly_key_probe read=%s write=%s permission_code=%s verified=%s",
+        status["read"], status["write"], status["write_result"],
+        permissions_verified(status),
+    )
