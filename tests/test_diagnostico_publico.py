@@ -220,6 +220,31 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn("no-store", pdf.headers.get("Cache-Control", ""))
         self.assertEqual(pdf.headers.get("X-Robots-Tag"), "noindex, nofollow")
 
+    def test_checkout_creates_hosted_session_with_verified_audit_snapshot(self):
+        from unittest.mock import Mock
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "1",
+        }), patch.object(dw, "fetch_html",
+                        return_value=("https://ejemplo.com/", HTML, {})):
+            stripe = Mock()
+            stripe.json.return_value = {"url": "https://checkout.stripe.com/c/pay/test"}
+            with patch("requests.post", return_value=stripe) as call:
+                response = self.client.post("/diagnostico-web/comprar", data={
+                    "url": "https://ejemplo.com/", "objetivo": "ventas",
+                })
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.location, "https://checkout.stripe.com/c/pay/test")
+        form = call.call_args.kwargs["data"]
+        self.assertEqual(form["line_items[0][price]"], dw.REPORT_PRICE_ID)
+        self.assertEqual(form["metadata[service]"], "diagnostico-web-informe")
+        self.assertEqual(form["metadata[url]"], "https://ejemplo.com/")
+        self.assertEqual(form["metadata[audit_version]"], "1")
+        self.assertTrue(form["metadata[audit_0]"])
+        self.assertEqual(form["mode"], "payment")
+
     def test_paid_checkout_disabled_by_default_even_if_stripe_keys_exist(self):
         with patch.dict("os.environ", {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
