@@ -1,18 +1,46 @@
 <!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Seguimiento mensual | Diagnóstico Web</title><meta name="robots" content="noindex,nofollow">
-<style>:root{font-family:system-ui,Arial,sans-serif;color:#19353b;background:#f4f8f7}*{box-sizing:border-box}body{margin:0}header{background:#123842;color:white;padding:26px 18px}.wrap{max-width:950px;margin:auto}main{padding:24px 15px 60px}section{background:white;border:1px solid #dce8e6;border-radius:15px;padding:22px;margin-bottom:16px}h1{font-size:clamp(24px,4vw,38px);margin:5px 0}h2{font-size:21px}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.small{font-size:13px;color:#557276;line-height:1.6}button,a.button{background:#116e76;color:white;border:0;border-radius:8px;padding:12px 16px;font:inherit;font-weight:750;cursor:pointer;text-decoration:none;display:inline-block}.alt{background:#eaf5f2!important;color:#13545a!important}.change{border-bottom:1px solid #e4eeeb;padding:12px 0}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid #e1eae7;padding:11px;text-align:left;overflow-wrap:anywhere}th{background:#edf6f3}.notice{background:#e9f5f1;padding:13px;border-radius:8px}@media(max-width:700px){section{padding:15px}table{font-size:12px}}@media print{header,form,.row a,footer{display:none}}</style></head>
-<body><header><div class="wrap"><div>CONVERTE · DIAGNÓSTICO WEB</div><h1>Seguimiento de tu página web</h1><p>Una página, hasta doce registros mensuales, decisiones claras.</p></div></header>
+<style>:root{font-family:system-ui,Arial,sans-serif;color:#16353c;background:#f5f8f7}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#133943,#1e7773);color:white;padding:19px 15px}header h1{font-size:clamp(23px,3vw,32px);margin:3px 0 6px}header p{font-size:13px;color:#d8eae8;margin:0}.wrap{width:min(950px,calc(100% - 24px));margin-inline:auto}main{padding:14px 0 26px}.card{background:white;border:1px solid #dbe9e6;border-radius:13px;padding:18px;margin-bottom:12px}h2{font-size:19px;margin:0 0 9px}h3{font-size:15px;margin:10px 0 4px}.muted{font-size:12px;color:#566f74;line-height:1.55}.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.button,button{background:#126f73;color:white;text-decoration:none;font:inherit;font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 13px;border:0;border-radius:8px;cursor:pointer}.button.alt{background:#e8f3f0;color:#135f61}button:hover,.button:hover{filter:brightness(.94)}.notice{background:#e8f7ef;padding:10px;border-radius:8px;font-size:13px}
+.chart{background:#f7fbfa;border:1px solid #dce9e5;border-radius:10px;padding:12px;margin:12px 0}.chartline{display:grid;grid-template-columns:120px 1fr auto;gap:9px;align-items:center;margin:10px 0}.chartlabel,.chartval{font-size:12px;font-weight:750}.track{height:21px;background:#e1ebe8;border-radius:5px;overflow:hidden}.fill{height:100%;background:#18847b;border-radius:5px}.chartval{text-align:right;min-width:42px}.tiny{font-size:11px;color:#5c7478;line-height:1.5;margin:5px 0}.history{display:flex;align-items:flex-end;gap:9px;min-height:120px;overflow-x:auto;padding-bottom:8px}.month-col{display:flex;align-items:center;flex-direction:column;min-width:48px;flex:1}.month-col .track{width:29px;height:90px;display:flex;align-items:flex-end}.month-col .fill{width:100%;height:auto;min-height:3px}.month-col span{font-size:10px;white-space:nowrap;margin-top:6px}.month-col strong{font-size:10px}details{margin-top:10px;border:1px solid #dce8e5;border-radius:9px;padding:9px}summary{font-size:12px;font-weight:800;color:#17666a;cursor:pointer}.action{border-bottom:1px solid #e1ebe8;padding:10px 0}.action:last-child{border:0}.action strong{display:block;font-size:13px}.action p{font-size:12px;line-height:1.48;margin:5px 0}.status{font-size:11px;color:#976024;font-weight:850}.compare-list{font-size:12px;line-height:1.5}.compare-list div{padding:8px 0;border-bottom:1px solid #e8efed}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid #e2ebea;text-align:left}th{background:#f1f7f5}footer{font-size:11px;color:#60757b;margin:12px 0 24px}
+@media(max-width:520px){.card{padding:13px}.chartline{grid-template-columns:95px 1fr 40px;gap:6px}.chartlabel,.chartval{font-size:11px}.button,button{width:100%}.row{flex-direction:column;align-items:stretch}.month-col{min-width:47px}}
+@media print{header,form,.row,footer{display:none}.card{border:0;break-inside:avoid}main{padding:0}}
+</style></head><body>
+<header><div class="wrap"><span style="font-size:11px;letter-spacing:.1em">CONVERTE · DIAGNÓSTICO WEB</span><h1>Seguimiento de tu página web</h1><p>Comprueba qué mejoró y qué conviene corregir después.</p></div></header>
 <main class="wrap">
-<section><h2>Tu suscripción</h2><p><strong>Página:</strong> {{url}}</p><p><strong>Objetivo:</strong> {{goal}}</p><p><strong>Estado:</strong> {{status_label}}</p><p class="small">La revisión se ejecuta cuando la solicitas; no prometemos monitoreo automático ni cifras de Google que no podamos verificar.</p><p class="small">Esta dirección privada es tu acceso al panel. No compartas el enlace de confirmación de Stripe.</p>
-<div class="row"><a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar suscripción en Stripe</a><a class="button alt" href="/diagnostico-web/">Volver al diagnóstico gratuito</a></div></section>
-<section><h2>Revisar avances</h2><p><strong>Primer diagnóstico:</strong> {{baseline.checked}}</p><p><strong>Último registro:</strong> {{last.checked}}</p>
-{% if message %}<p class="notice">{{message}}</p>{% endif %}{% if error %}<p role="alert">{{error}}</p>{% endif %}
-<p><a class="button alt" href="/diagnostico-web/seguimiento/descargar?session_id={{session_id|urlencode}}">Descargar comparación en PDF</a></p>
-<form method="post" action="/diagnostico-web/seguimiento/revisar"><input type="hidden" name="session_id" value="{{session_id}}"><button type="submit">Analizar nuevamente mi página y guardar el avance</button></form><p class="small">Una revisión nueva se añade al mes actual y sustituye únicamente el registro de ese mismo mes. Conservamos hasta doce meses en los metadatos de tu suscripción de Stripe.</p></section>
-<section><h2>Cambios desde el primer diagnóstico</h2>
-{% for item in changes %}<div class="change"><strong>{{item.field}}</strong><p class="small">Antes: {{item.previous}}</p><p>Ahora: {{item.current}}</p></div>{% else %}<p>No hay diferencias detectables en los indicadores guardados. Esto no significa necesariamente que las ventas o visitas no hayan cambiado.</p>{% endfor %}</section>
-<section><h2>Historial de revisiones guardadas</h2><table><thead><tr><th>Mes</th><th>Fecha revisada</th><th>Diferencias respecto al inicio</th></tr></thead><tbody>
-{% for row in history %}<tr><td>{{row.month[:4]}}-{{row.month[4:]}}</td><td>{{row.audit.checked}}</td><td>{{row.change_count}}</td></tr>
-{% else %}<tr><td colspan="3">Aún no hay revisiones adicionales. Puedes iniciar la primera desde el botón superior.</td></tr>{% endfor %}
-</tbody></table></section>
-<footer class="small">Diagnóstico Web · Análisis de HTML público. No incluye cambios automáticos a la web ni acceso a Analytics.</footer></main></body></html>
+<section class="card"><h2>Tu página y suscripción</h2><p style="font-size:13px;overflow-wrap:anywhere"><strong>{{url}}</strong></p><p class="muted">{{goal}} · {{status_label}} · Un solo sitio web</p>
+<div class="row"><a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar renovación en Stripe</a><a class="button alt" href="/diagnostico-web/">Nuevo diagnóstico gratuito</a></div>
+<p class="tiny">Este enlace privado permite consultar los informes de tu suscripción. No lo compartas. Las revisiones se ejecutan cuando las solicitas.</p></section>
+<section class="card"><h2>¿Tu web está mejorando?</h2>
+<p class="muted">Comparamos las señales que sí pudimos observar en ambas fechas. No medimos ventas, visitas ni posiciones sin acceso autorizado.</p>
+<div class="chart" role="img" aria-label="Comparación de señales encontradas: al inicio {{progress.start}} de {{progress.total}} y en la última revisión {{progress.end}} de {{progress.total}}">
+<h3>Inicio frente a última revisión</h3>
+{% if progress.total %}
+<div class="chartline"><span class="chartlabel">Primera revisión</span><div class="track"><div class="fill" style="width:{{progress.start_pct}}%"></div></div><span class="chartval">{{progress.start}}/{{progress.total}}</span></div>
+<div class="chartline"><span class="chartlabel">Última revisión</span><div class="track"><div class="fill" style="width:{{progress.end_pct}}%"></div></div><span class="chartval">{{progress.end}}/{{progress.total}}</span></div>
+<p class="tiny">Mejoras detectadas: {{progress.improved|length}} · Señales que empeoraron: {{progress.regressed|length}}. Estas barras no son una puntuación de Google.</p>
+{% else %}<p class="muted">Aún no hay suficientes señales medidas del mismo modo para compararlas.</p>{% endif %}
+</div>
+{% if progress_history|length > 1 %}
+<div class="chart"><h3>Mes a mes</h3><div class="history" role="img" aria-label="Historial de señales observables desde el inicio">
+{% for point in progress_history %}<div class="month-col"><strong>{{point.ok}}/{{point.total}}</strong><div class="track"><div class="fill" style="height:{{point.pct}}%"></div></div><span>{{point.month[:4] ~ '-' ~ point.month[4:] if point.month != 'Inicio' else 'Inicio'}}</span></div>{% endfor %}
+</div><p class="tiny">El historial solo refleja las fechas en que solicitaste una revisión; una barra más alta no garantiza más clientes.</p></div>{% endif %}
+<div class="row"><form method="post" action="/diagnostico-web/seguimiento/revisar"><input type="hidden" name="session_id" value="{{session_id}}"><button type="submit">Revisar mi página y guardar este mes</button></form>
+<a class="button alt" href="/diagnostico-web/seguimiento/descargar?session_id={{session_id|urlencode}}">Descargar comparación en PDF</a></div>
+{% if message %}<p class="notice">{{message}}</p>{% endif %}
+<p class="tiny">Cada nueva revisión actualiza únicamente el mes en curso. Guardamos hasta 12 meses y no cobramos por cada revisión.</p>
+</section>
+<section class="card"><h2>Qué conviene hacer ahora</h2><p class="muted">Recomendaciones prácticas con base en lo encontrado en tu última revisión.</p>
+{% for point in action_items %}<article class="action"><span class="status">{{point.status_label}}</span><strong>{{point.title}}</strong><p><b>Qué detectamos:</b> {{point.evidence}}</p><p><b>Tu siguiente paso:</b> {{point.action}}</p></article>{% else %}<p class="notice">No detectamos barreras básicas. Hay que comprobar el rendimiento real y las conversiones con las cuentas del propietario.</p>{% endfor %}
+<details><summary>Ver los 10 puntos esenciales revisados</summary>
+{% for point in overview.checks[:10] %}<div class="action"><strong>{{point.title}} — {{point.status_label}}</strong><p>{{point.action}}</p></div>{% endfor %}
+</details>
+</section>
+<section class="card"><h2>Qué cambió desde el comienzo</h2>
+<div class="compare-list">{% for item in changes %}<div><strong>{{item.field}}</strong><p class="tiny">Antes: {{item.previous}} · Ahora: {{item.current}}</p></div>
+{% else %}<p class="muted">No encontramos diferencias en las señales registradas. Esto no significa que las ventas o visitas no hayan cambiado.</p>{% endfor %}</div>
+<details><summary>Historial de revisiones ({{history|length}})</summary><table><thead><tr><th>Mes</th><th>Fecha</th><th>Señales que cambiaron</th></tr></thead><tbody>
+{% for item in history %}<tr><td>{{item.month[:4]}}-{{item.month[4:]}}</td><td>{{item.audit.checked}}</td><td>{{item.change_count}}</td></tr>
+{% else %}<tr><td colspan="3">La primera revisión de seguimiento aún no se ha guardado.</td></tr>{% endfor %}
+</tbody></table></details></section>
+<footer>Diagnóstico Web · Revisión de información pública. No se realizan cambios automáticos a tu web ni se accede a métricas privadas.</footer>
+</main></body></html>
