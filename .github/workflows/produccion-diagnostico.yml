@@ -51,6 +51,11 @@ jobs:
           code=$(curl -sSL --max-time 15 -o /dev/null -w '%{http_code}' https://converte.uno/diagnostico-web/descargar || true)
           test "$code" = "404" || { echo "::error::PDF sin pago no esta protegido"; exit 1; }
           echo 'OK: revision actual confirmada, y PDF sin pago protegido (404)'
+          if grep -Fiq 'X-Diagnostico-Checkout: enabled' /tmp/revision.headers; then
+            echo 'CHECKOUT_READY=true'
+          else
+            echo 'CHECKOUT_READY=false'
+          fi
       - name: Verificar CTA comercial del informe en produccion
         shell: bash
         run: |
