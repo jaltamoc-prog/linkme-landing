@@ -6,6 +6,7 @@ sin credenciales de Google, sin acceso a redes privadas y sin almacenar leads.
 """
 import base64
 import ipaddress
+import datetime as dt
 import json
 import os
 import zlib
@@ -22,6 +23,7 @@ from flask import Blueprint, abort, current_app, redirect, render_template, requ
 from werkzeug.exceptions import HTTPException
 from herramientas.diagnostico_pdf import build_pdf
 from herramientas import diagnostico_seguimiento as monitor
+from herramientas import diagnostico_evaluacion as business
 
 bp = Blueprint("diagnostico_web", __name__, url_prefix="/diagnostico-web")
 GOALS = {
@@ -125,6 +127,28 @@ def fetch_html(url):
     raise ValueError("La pagina tiene demasiadas redirecciones.")
 
 
+
+def context_text(raw, limit=70):
+    """Objetivos opcionales; jamás se interpretan como métricas de Google."""
+    val = re.sub(r"\s+", " ", str(raw or "")).strip()
+    if len(val) > limit or any(ord(ch) < 32 for ch in val):
+        raise ValueError("La frase y la ciudad deben tener hasta 70 caracteres.")
+    return val
+
+
+def with_context(audit, keyword="", city="", goal="contactos"):
+    """El caché se comparte por URL; jamás se altera la información de otros compradores."""
+    a = dict(audit)
+    keyword = context_text(keyword)
+    city = context_text(city)
+    a["keyword"], a["city"] = keyword, city
+    a["city_in_page"] = (business._fold(city) in business._fold(a.get("page_text","")))
+        if city and a.get("page_text") is not None else None
+    a["goal"] = goal if goal in GOALS else "contactos"
+    return a
+
+
+
 def analyse(url):
     final, html, headers = fetch_html(url)
     soup = BeautifulSoup(html, "html.parser")
@@ -147,14 +171,43 @@ def analyse(url):
                        ("checkout", "comprar", "cotizar", "pedido", "wa.me/", "pagar"))
                    for h, label in links)
     imgs = soup.find_all("img")
+    source_host = urlsplit(final).hostname or ""
+    internal = set()
+    for link, label in links:
+        try:
+            u = urlsplit(urljoin(final, link))
+            if (u.scheme in ("http", "https") and u.hostname == source_host
+                    and (u.path or "/") != (urlsplit(final).path or "/")):
+                internal.add((u.path.rstrip("/") or "/").lower())
+        except ValueError:
+            continue
+    script_sources = " ".join(str(t.get("src", "")) for t in soup.find_all("script"))
+    tracking = bool(re.search(
+        r"googletagmanager\.com/(?:gtm|gtag)|google-analytics\.com/|G-[A-Z0-9]{6,}",
+        script_sources + " " + html, re.I))
+    business_link = any(("google." in href and "/maps" in href)
+                         or href.startswith(("https://g.page/", "https://maps.app.goo.gl/"))
+                         for href, label in links)
+    modern = sum(1 for img in imgs if re.search(r"\.(webp|avif)(?:[?#]|$)", img.get("src", ""), re.I))
+    modern += sum(1 for src in soup.find_all("source") if re.search(r"image/(?:webp|avif)", str(src.get("type","")), re.I))
+    sitemap_hint = any("sitemap" in (str(t.get("rel",""))+" "+t.get("href","")).lower()
+                       for t in soup.find_all("link", href=True))
+    sitemap_hint = sitemap_hint or any("sitemap" in link for link, _ in links)
     return {
         "url": final, "checked": time.strftime("%d/%m/%Y %H:%M UTC", time.gmtime()),
+        "schema_version": 2,
         "title": title, "description": description, "canonical": can,
         "noindex": noindex, "h1": len(soup.find_all("h1")), "noalt": sum(not x.has_attr("alt") for x in imgs),
         "viewport": bool(soup.find("meta", attrs={"name": re.compile("^viewport$", re.I)})),
         "jsonld": len(soup.find_all("script", type="application/ld+json")),
         "contact": contact, "booking": booking, "purchase": purchase,
         "forms": len(soup.find_all("form")), "headings": len(soup.find_all(["h2", "h3"])),
+        "analytics_signal": tracking, "google_profile_link": business_link,
+        "internal_links": len(internal), "sitemap_hint": sitemap_hint,
+        "images_total": len(imgs), "modern_images": modern,
+        "images_without_dimensions": sum(not im.has_attr("width") or not im.has_attr("height") for im in imgs),
+        # Solo en caché temporal; se excluye expresamente de los metadatos de Stripe.
+        "page_text": soup.get_text(" ", strip=True)[:24000],
     }
 
 
@@ -442,7 +495,9 @@ def audit_snapshot(audit):
         if k in {
             "url", "checked", "title", "description", "canonical", "noindex",
             "h1", "noalt", "viewport", "jsonld", "contact", "booking", "purchase",
-            "forms", "headings",
+            "forms", "headings", "schema_version", "keyword", "city", "city_in_page",
+            "analytics_signal", "google_profile_link", "internal_links", "sitemap_hint",
+            "images_total", "modern_images", "images_without_dimensions",
         }
     }
     payload = json.dumps(public, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
