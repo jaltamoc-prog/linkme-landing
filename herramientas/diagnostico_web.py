@@ -6,6 +6,7 @@ sin credenciales de Google, sin acceso a redes privadas y sin almacenar leads.
 """
 import base64
 import ipaddress
+import logging
 import json
 import os
 import zlib
@@ -554,3 +555,14 @@ def descargar():
         current_app.logger.exception("No se pudo descargar el informe pagado")
         return view(error="No se pudo generar el PDF ahora. El pago no se repite: "
                           "conserva el enlace y vuelve a intentarlo.", code=503)
+
+
+logging.getLogger(__name__).warning(
+    "diagnostico startup checkout configuration: enabled=%s flag=%s key_present=%s key_live=%s price_match=%s label_match=%s",
+    payments_enabled(),
+    os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1",
+    bool(os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY")),
+    os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("rk_live_", "sk_live_")),
+    os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID,
+    os.getenv("DIAGNOSTICO_PRICE_LABEL") == "$199 MXN",
+)
