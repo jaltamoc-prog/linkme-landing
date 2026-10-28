@@ -49,7 +49,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn(b'href="#planes"', r.data)
         self.assertIn(b'id="planes"', r.data)
         self.assertIn("Ver cómo continuar con las mejoras".encode(), r.data)
-        self.assertIn("Suscripción mensual".encode(), r.data)
+        self.assertIn("Seguimiento de mejoras".encode(), r.data)
         self.assertIn("pago seguro".encode(), r.data)
         self.assertNotIn(b'action="/diagnostico-web/comprar"', r.data)
 
