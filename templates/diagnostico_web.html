@@ -31,7 +31,7 @@ button:hover,.button:hover{background:#07545d}.button.alt{background:#eaf3f2;col
 .finding p{line-height:1.65;margin:7px 0}.action{padding:13px;border-radius:10px;background:#eef7f3;color:#155341}.proof{color:#667b82;font-size:12px}
 .positive{background:#eef8f3;border-left:4px solid #398e72;padding:11px 15px;border-radius:5px;margin:11px 0;line-height:1.5}
 .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.tier{border:1px solid #dce8e6;border-radius:12px;padding:18px}.tier p{font-size:14px;color:#536e73;line-height:1.65}
-.price{font-weight:900;font-size:23px;margin:7px 0}.tier.popular{border:2px solid #12717a;background:#f4fbfa}.tier .button,.tier button{width:100%;text-align:center}.disabled-note{border:1px dashed #a5bcb8;border-radius:9px;background:#f6f9f8;padding:10px;color:#526a6f;font-size:12px;line-height:1.5}.result-cta{padding:20px;border-radius:13px;background:#edf8f5;border:1px solid #b6ddd5}.result-cta h3{margin:0 0 6px}.result-cta p{margin:4px 0 13px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
+.price{font-weight:900;font-size:23px;margin:7px 0}.tier.popular{border:2px solid #12717a;background:#f4fbfa}.tier{position:relative}.tier-clickable{cursor:pointer;transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}.tier-clickable:hover{border-color:#0b6972;background:#eaf7f3;box-shadow:0 12px 24px #0b69721a;transform:translateY(-2px)}.tier-clickable:focus-within{outline:3px solid #1e818c;outline-offset:3px}.tier-clickable button::after,.tier-clickable > a.button::after{content:"";position:absolute;inset:0;cursor:pointer}.tier .button,.tier button{width:100%;text-align:center}.disabled-note{border:1px dashed #a5bcb8;border-radius:9px;background:#f6f9f8;padding:10px;color:#526a6f;font-size:12px;line-height:1.5}.result-cta{padding:20px;border-radius:13px;background:#edf8f5;border:1px solid #b6ddd5}.result-cta h3{margin:0 0 6px}.result-cta p{margin:4px 0 13px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
 details{border:1px solid #dce6e4;border-radius:11px;margin-top:18px}summary{padding:12px;cursor:pointer;font-weight:700}
 table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-top:1px solid #e1eae7;overflow-wrap:anywhere}td:first-child{font-weight:700;width:40%}
 .foot{font-size:12px;line-height:1.7;color:#536a70;margin-bottom:35px}.foot a{margin-right:14px}
@@ -134,21 +134,21 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <h2>Decide cuánto quieres avanzar</h2>
 <p class="note">Primero puedes revisar gratis tu página. Los servicios de pago no están incluidos en el diagnóstico gratuito.</p>
 <div class="tiers">
-<div class="tier">
+<div class="tier tier-clickable">
 <strong>Diagnóstico inicial</strong>
 <div class="price">Gratis</div>
 <p>Tres prioridades, lo que encontramos y qué debes revisar primero.</p>
 <a class="button alt" href="#analizar">Analizar otra página</a>
 </div>
-<div class="tier popular">
+<div class="tier popular{% if checkout_enabled %} tier-clickable{% endif %}">
 <strong>Informe completo</strong>
 <div class="price">{{price_label}}</div>
-<p>Todas las oportunidades detectadas, un plan de {{10}} comprobaciones con evidencia y acciones, y un PDF descargable después del pago.</p>
+<p>Todas las oportunidades detectadas, un plan de 10 comprobaciones con evidencia y acciones, y un PDF descargable después del pago.</p>
 {% if checkout_enabled and audit and not paid %}
 <form method="post" action="/diagnostico-web/comprar">
 <input type="hidden" name="url" value="{{audit.url}}">
 <input type="hidden" name="objetivo" value="{{goal}}">
-<button type="submit">Comprar informe completo</button>
+<button type="submit" aria-label="Comprar informe completo por {{price_label}}">Comprar informe completo</button>
 </form>
 {% elif checkout_enabled %}
 <a class="button" href="#analizar">Primero analiza tu página</a>
