@@ -489,6 +489,29 @@ def restored_snapshot(metadata, url):
         raise ValueError("El informe de Stripe no pudo validarse.") from None
 
 
+def checkout_handoff(destination):
+    """Evita bloqueos de CSP form-action al redirigir un POST a Stripe.
+
+    Renderiza una transición breve en el mismo dominio con navegación
+    automática y enlace directo accesible si el navegador la bloquea.
+    """
+    target = urlsplit(destination)
+    if (target.scheme != "https" or target.hostname != "checkout.stripe.com"
+            or target.username or target.password or target.port not in (None, 443)
+            or not target.path.startswith("/")):
+        raise ValueError("Destino de Checkout no autorizado.")
+    response = make_response(render_template("diagnostico_checkout.html", checkout_url=destination))
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; style-src 'unsafe-inline'; "
+        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+    return response
+
+
 def verify_purchase(session_id):
     """Verifica cada acceso en Stripe; nunca se confia en un return_url sin consultar."""
     if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", session_id):
@@ -610,7 +633,7 @@ def comprar():
         destination = resp.json().get("url", "")
         if not destination.startswith("https://checkout.stripe.com/"):
             raise ValueError("Stripe no devolvio un checkout valido.")
-        return redirect(destination, code=303)
+        return checkout_handoff(destination)
     except Exception:
         current_app.logger.exception("Fallo al iniciar Stripe Checkout")
         return view(error="No se pudo iniciar el pago; no se efectuo ningun cobro.", code=503)
@@ -753,7 +776,7 @@ def suscribir():
         destination = checkout.get("url", "")
         if not destination.startswith("https://checkout.stripe.com/"):
             raise ValueError("Stripe no devolvió una dirección de Checkout válida.")
-        return redirect(destination, code=303)
+        return checkout_handoff(destination)
     except HTTPException:
         raise
     except Exception:
