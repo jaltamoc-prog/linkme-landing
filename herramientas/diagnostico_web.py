@@ -15,8 +15,9 @@ from urllib.parse import urljoin, urlsplit, urlunsplit, urlencode, quote
 
 import urllib3
 from bs4 import BeautifulSoup
-from flask import Blueprint, abort, current_app, redirect, render_template, request, make_response
+from flask import Blueprint, abort, current_app, redirect, render_template, request, make_response, send_file, url_for
 from werkzeug.exceptions import HTTPException
+from herramientas.diagnostico_pdf import build_pdf
 
 bp = Blueprint("diagnostico_web", __name__, url_prefix="/diagnostico-web")
 GOALS = {
@@ -31,6 +32,11 @@ _by_ip = defaultdict(deque)
 _global = deque()
 _cache = {}
 _slots = threading.BoundedSemaphore(3)
+_payment_lock = threading.Lock()
+_payment_ip = defaultdict(deque)
+# Solo precio autorizado por el propietario del negocio para el informe de pago unico.
+REPORT_PRICE_ID = "price_1UVcyUFHNcj4CFU1OzZrSYfB"
+REPORT_AMOUNT_MXN = 19900
 
 
 def public_url(raw):
@@ -285,35 +291,88 @@ def cached(url):
         _slots.release()
 
 
+def stripe_ready():
+    """Una credencial activa permite revisar compras anteriores aun si se pausan ventas."""
+    return (os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_live_")
+            and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID)
+
+
 def payments_enabled():
-    """Los cobros solo se habilitan tras autorización explícita en Render."""
-    return (os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS", "") == "1"
-            and os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_live_")
-            and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID", "").startswith("price_")
-            and bool(os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip()))
+    return (stripe_ready()
+            and os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1"
+            and os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip() == "$199 MXN")
 
 
-def contact_link(url):
-    number = re.sub(r"\D", "", os.getenv("DIAGNOSTICO_CONTACT_WHATSAPP", ""))
-    if not (10 <= len(number) <= 15):
-        return ""
-    message = "Hola, revise mi pagina " + url + " en Diagnostico Web y quiero ayuda con las mejoras."
-    return "https://wa.me/" + number + "?" + urlencode({"text": message})
+def payment_limited(ip):
+    """Proteccion separada: no consume cuota de auditorias gratuitas."""
+    now = time.monotonic()
+    with _payment_lock:
+        if len(_payment_ip) > 2500:
+            _payment_ip.clear()
+        q = _payment_ip[ip]
+        while q and q[0] <= now - 300:
+            q.popleft()
+        if len(q) >= 35:
+            return True
+        q.append(now)
+        return False
 
 
-def view(url="", goal="contactos", audit=None, summary=None, error="", paid=False, code=200):
+def verify_purchase(session_id):
+    """Verifica cada acceso en Stripe; nunca se confia en un return_url sin consultar."""
+    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", session_id):
+        abort(404)
+    import requests as http
+    base = "https://api.stripe.com/v1/checkout/sessions/"
+    auth = (os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], "")
+    response = http.get(base + quote(session_id, safe=""), auth=auth, timeout=12)
+    response.raise_for_status()
+    data = response.json()
+    if (not data.get("livemode") or data.get("id") != session_id
+        or data.get("payment_status") != "paid" or data.get("status") != "complete"
+        or data.get("mode") != "payment" or data.get("currency") != "mxn"
+        or data.get("amount_total") != REPORT_AMOUNT_MXN):
+        abort(403)
+    meta = data.get("metadata") or {}
+    if meta.get("service") != "diagnostico-web-informe":
+        abort(403)
+    items = http.get(base + quote(session_id, safe="") + "/line_items",
+                     auth=auth, timeout=12)
+    items.raise_for_status()
+    line_items = items.json().get("data") or []
+    if (len(line_items) != 1
+        or line_items[0].get("price", {}).get("id") != REPORT_PRICE_ID
+        or line_items[0].get("quantity") != 1
+        or line_items[0].get("amount_total") != REPORT_AMOUNT_MXN):
+        abort(403)
+    url = public_url(meta.get("url", ""))
+    goal = meta.get("goal", "contactos")
+    if goal not in GOALS:
+        abort(403)
+    return url, goal
+
+
+def view(url="", goal="contactos", audit=None, summary=None, error="", paid=False,
+         code=200, session_id=""):
     if goal not in GOALS:
         goal = "contactos"
-    page = render_template("diagnostico_web.html", url=url, goal=goal, goals=GOALS,
+    download_url = url_for(".descargar", session_id=session_id) if paid and session_id else ""
+    page = render_template(
+        "diagnostico_web.html", url=url, goal=goal, goals=GOALS,
         audit=audit, summary=summary, error=error, paid=paid,
         checkout_enabled=payments_enabled(),
-        price_label=os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip()[:35],
-        contact_url=contact_link(url) if audit else "")
+        price_label="$199 MXN",
+        subscription_label="$349 MXN/mes",
+        download_url=download_url,
+    )
     response = make_response(page, code)
     response.headers["Cache-Control"] = "no-store"
-    response.headers["X-Diagnostico-Revision"] = "2026-10-28-limites-v2"
+    response.headers["X-Diagnostico-Revision"] = "2026-10-28-pdf-pago-v1"
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'self'"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
+        "form-action 'self'; base-uri 'none'; frame-ancestors 'self'"
+    )
     if audit or error or paid:
         response.headers["X-Robots-Tag"] = "noindex, nofollow"
         response.headers["Referrer-Policy"] = "no-referrer"
@@ -346,7 +405,7 @@ def index():
 def comprar():
     if not payments_enabled():
         abort(503)
-    if limited(request.remote_addr or "desconocido"):
+    if payment_limited(visitor_ip()):
         abort(429)
     try:
         url = public_url(request.form.get("url", ""))
@@ -355,13 +414,21 @@ def comprar():
             goal = "contactos"
         cached(url)
         import requests as http
-        resp = http.post("https://api.stripe.com/v1/checkout/sessions", timeout=12,
+        resp = http.post(
+            "https://api.stripe.com/v1/checkout/sessions", timeout=12,
             auth=(os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], ""),
-            data={"mode": "payment", "line_items[0][price]": os.environ["DIAGNOSTICO_STRIPE_PRICE_ID"],
-                  "line_items[0][quantity]": "1",
-                  "success_url": "https://converte.uno/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
-                  "cancel_url": "https://converte.uno/diagnostico-web/",
-                  "metadata[url]": url, "metadata[goal]": goal})
+            data={
+                "mode": "payment",
+                "line_items[0][price]": REPORT_PRICE_ID,
+                "line_items[0][quantity]": "1",
+                "success_url": "https://converte.uno/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
+                "cancel_url": "https://converte.uno/diagnostico-web/",
+                "metadata[service]": "diagnostico-web-informe",
+                "metadata[url]": url,
+                "metadata[goal]": goal,
+                "client_reference_id": "diagnostico-web",
+            },
+        )
         resp.raise_for_status()
         destination = resp.json().get("url", "")
         if not destination.startswith("https://checkout.stripe.com/"):
@@ -375,32 +442,44 @@ def comprar():
 @bp.route("/informe", methods=["GET"])
 def informe():
     sid = request.args.get("session_id", "")
-    if not payments_enabled() or not re.fullmatch(r"cs_(test|live)_[A-Za-z0-9]{15,250}", sid):
+    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
         abort(404)
-    import requests as http
+    if payment_limited(visitor_ip()):
+        abort(429)
     try:
-        response = http.get("https://api.stripe.com/v1/checkout/sessions/" + quote(sid),
-            auth=(os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], ""), timeout=12)
-        response.raise_for_status()
-        payment = response.json()
-        if payment.get("payment_status") != "paid" or payment.get("status") != "complete":
-            abort(403)
-        if payment.get("mode") != "payment" or payment.get("amount_total", 0) <= 0:
-            abort(403)
-        expected_price = os.environ["DIAGNOSTICO_STRIPE_PRICE_ID"]
-        items = http.get("https://api.stripe.com/v1/checkout/sessions/" + quote(sid) + "/line_items",
-            auth=(os.environ["DIAGNOSTICO_STRIPE_SECRET_KEY"], ""), timeout=12)
-        items.raise_for_status()
-        line_items = items.json().get("data", [])
-        if not any(item.get("price", {}).get("id") == expected_price for item in line_items):
-            abort(403)
-        meta = payment.get("metadata") or {}
-        url = public_url(meta.get("url", ""))
-        goal = meta.get("goal", "contactos")
+        url, goal = verify_purchase(sid)
         result = cached(url)
-        return view(url, goal, result, report_for(result, goal), paid=True)
+        return view(url, goal, result, report_for(result, goal), paid=True,
+                    session_id=sid)
     except HTTPException:
         raise
     except Exception:
-        current_app.logger.exception("Error al verificar informe de Stripe")
-        return view(error="No se pudo recuperar el informe. Contactanos con tu comprobante.", code=503)
+        current_app.logger.exception("No se pudo recuperar el informe pagado")
+        return view(error="El pago se puede verificar, pero el informe no esta disponible ahora. "
+                          "Conserva el enlace y vuelve a intentarlo.", code=503)
+
+
+@bp.route("/descargar", methods=["GET"])
+def descargar():
+    sid = request.args.get("session_id", "")
+    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+        abort(404)
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        url, goal = verify_purchase(sid)
+        result = cached(url)
+        pdf = build_pdf(result, report_for(result, goal), GOALS[goal])
+        response = send_file(pdf, as_attachment=True, mimetype="application/pdf",
+                             download_name="Diagnostico_Web_Informe_Completo.pdf",
+                             max_age=0)
+        response.headers["Cache-Control"] = "private, no-store, max-age=0"
+        response.headers["X-Robots-Tag"] = "noindex, nofollow"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        return response
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("No se pudo descargar el informe pagado")
+        return view(error="No se pudo generar el PDF ahora. El pago no se repite: "
+                          "conserva el enlace y vuelve a intentarlo.", code=503)
