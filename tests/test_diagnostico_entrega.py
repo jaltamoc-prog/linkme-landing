@@ -142,7 +142,7 @@ class TestEntregaCompleta(unittest.TestCase):
         if PdfReader:
             self.assertIn("Informe completo de oportunidades", contents)
             self.assertIn("Panaderia", contents)
-            self.assertIn("10 puntos clave", contents)
+            self.assertIn("14 aspectos principales revisados", contents)
             self.assertIn("Que corregir:", contents)
         save_artifact("ejemplo_informe_387.pdf", pdf.data)
         self.single_receipt = {
@@ -240,6 +240,7 @@ class TestEntregaCompleta(unittest.TestCase):
         self.assertEqual(first.status_code, 200)
         self.assertIn("Seguimiento de tu página web".encode(), first.data)
         self.assertIn("Qué conviene hacer ahora".encode(), first.data)
+        self.assertIn("Ver los 14 aspectos de esta revisión".encode(), first.data)
         self.assertIn("Primera revisión".encode(), first.data)
         self.assertIn("no-store", first.headers["Cache-Control"])
         self.assertIn("noindex", first.headers["X-Robots-Tag"])
@@ -271,6 +272,7 @@ class TestEntregaCompleta(unittest.TestCase):
             self.assertIn("Seguimiento mensual", contents)
             self.assertIn("Acciones recomendadas", contents)
             self.assertIn("Revisiones disponibles mes por mes", contents)
+            self.assertIn("Los 14 aspectos incluidos en cada revisión", contents)
             self.assertIn("Panaderia", contents)
         save_artifact("ejemplo_seguimiento_597.pdf", pdf.data)
 
