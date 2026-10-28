@@ -538,7 +538,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Content-Security-Policy"] = (
         "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
-        "form-action 'self'; base-uri 'none'; frame-ancestors 'self'"
+        "form-action 'self' https://checkout.stripe.com; base-uri 'none'; frame-ancestors 'self'"
     )
     if audit or error or paid:
         response.headers["X-Robots-Tag"] = "noindex, nofollow"
