@@ -150,7 +150,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with app.test_request_context("/diagnostico-web/informe"), patch.dict(
             "os.environ", context
         ), patch("requests.get", side_effect=[response(valid), response(lines)]):
-            self.assertEqual(dw.verify_purchase(sid), ("https://ejemplo.com/", "ventas"))
+            self.assertEqual(dw.verify_purchase(sid), ("https://ejemplo.com/", "ventas", None))
         with app.test_request_context("/diagnostico-web/informe"), patch.dict(
             "os.environ", context
         ), patch("requests.get", side_effect=[response({
@@ -167,6 +167,37 @@ class DiagnosticSmokeTests(unittest.TestCase):
             with self.assertRaises(Forbidden):
                 dw.verify_purchase(sid)
 
+    def test_checkout_snapshot_survives_site_outage_after_payment(self):
+        import copy
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            audited = dw.analyse("https://ejemplo.com/")
+        metadata = dw.audit_snapshot(audited)
+        self.assertTrue(all(len(value) <= 500 for value in metadata.values()))
+        recovered = dw.restored_snapshot(metadata, "https://ejemplo.com/")
+        self.assertEqual(audited, recovered)
+        tampered = copy.deepcopy(metadata)
+        tampered["audit_0"] = "not_valid"
+        with self.assertRaises(ValueError):
+            dw.restored_snapshot(tampered, "https://ejemplo.com/")
+        with self.assertRaises(ValueError):
+            dw.restored_snapshot(metadata, "https://otra-web.com/")
+
+    def test_pdf_can_be_downloaded_without_revisiting_source(self):
+        sid = "cs_live_" + "Z"*24
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+        }), patch.object(dw, "fetch_html",
+                        return_value=("https://ejemplo.com/", HTML, {})):
+            audited = dw.analyse("https://ejemplo.com/")
+            with patch.object(dw, "verify_purchase", return_value=(
+                "https://ejemplo.com/", "ventas", audited
+            )), patch.object(dw, "fetch_html", side_effect=RuntimeError("Site offline")):
+                pdf = self.client.get("/diagnostico-web/descargar?session_id="+sid)
+        self.assertEqual(pdf.status_code, 200)
+        self.assertTrue(pdf.data.startswith(b"%PDF-"))
+
     def test_paid_page_has_real_pdf_download_and_no_messaging_service(self):
         context = {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
@@ -175,7 +206,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         }
         sid = "cs_live_" + "A" * 24
         with patch.dict("os.environ", context), patch.object(
-            dw, "verify_purchase", return_value=("https://ejemplo.com/", "ventas")
+            dw, "verify_purchase", return_value=("https://ejemplo.com/", "ventas", None)
         ), patch.object(dw, "fetch_html",
                         return_value=("https://ejemplo.com/", HTML, {})):
             webpage = self.client.get("/diagnostico-web/informe?session_id=" + sid)
