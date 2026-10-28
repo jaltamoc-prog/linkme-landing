@@ -156,11 +156,21 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <div class="disabled-note">Estamos habilitando el pago seguro. Por ahora no podemos cobrar ni entregar este informe como producto de pago.</div>
 {% endif %}
 </div>
-<div class="tier">
+<div class="tier{% if subscription_enabled %} tier-clickable{% endif %}">
 <strong>Seguimiento de mejoras</strong>
 <div class="price">{{subscription_label}}</div>
-<p>La propuesta comercial es comparar avances y recomendar las siguientes mejoras periódicamente. Este servicio aún no está habilitado.</p>
-<div class="disabled-note">El seguimiento todavía está en desarrollo. No se solicita tarjeta ni se activa una renovación.</div>
+<p>Para una página web. Incluye una revisión inicial, un panel con comparaciones, registro mensual de avances y cancelación desde Stripe. Las nuevas revisiones se ejecutan cuando el cliente las solicita en su panel.</p>
+{% if subscription_enabled and audit %}
+<form method="post" action="/diagnostico-web/suscribir">
+<input type="hidden" name="url" value="{{audit.url}}">
+<input type="hidden" name="objetivo" value="{{goal}}">
+<button type="submit" aria-label="Suscribirme al seguimiento mensual por {{subscription_label}}">Suscribirme al seguimiento</button>
+</form>
+{% elif subscription_enabled %}
+<a class="button" href="#analizar">Analiza primero tu página</a>
+{% else %}
+<div class="disabled-note">Estamos validando el historial de revisiones y la gestión de pagos. Aún no se aceptan suscripciones.</div>
+{% endif %}
 </div>
 </div>
 </section>
