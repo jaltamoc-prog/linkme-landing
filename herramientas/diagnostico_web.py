@@ -796,3 +796,27 @@ def seguimiento_revisar():
     except Exception:
         current_app.logger.exception("Falló la revisión del seguimiento")
         return view(error="No se pudo guardar la revisión. No se produjo ningún cobro adicional.", code=503)
+
+
+@bp.route("/seguimiento/descargar", methods=["GET"])
+def seguimiento_descargar():
+    sid = request.args.get("session_id", "")
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        sub, url, goal, baseline = _monthly_subscription(sid)
+        saved = monitor.history(sub.get("metadata") or {})
+        latest = saved[-1]["audit"] if saved else baseline
+        previous = saved[-2]["audit"] if len(saved) > 1 else baseline
+        pdf = monitor.comparison_pdf(url, GOALS[goal], baseline, latest, previous)
+        response = send_file(pdf, mimetype="application/pdf", as_attachment=True,
+            download_name="Diagnostico_Web_Seguimiento_Mensual.pdf", max_age=0)
+        response.headers["Cache-Control"] = "private, no-store"
+        response.headers["X-Robots-Tag"] = "noindex, nofollow"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        return response
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("No se pudo preparar el PDF mensual")
+        return view(error="No pudimos preparar tu PDF mensual ahora. Reintenta desde tu panel.", code=503)
