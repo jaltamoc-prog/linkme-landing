@@ -105,7 +105,7 @@ def build_pdf(audit, report, goal_label, checks=None, seo_checks=None, compariso
         ]
         story.append(KeepTogether(elements))
     if checks:
-        story.append(Paragraph("Revisión técnica adicional: 10 acciones de mejora", section))
+        story.append(Paragraph("Anexo técnico: 10 comprobaciones adicionales", section))
         story.append(Paragraph(
             "Estas comprobaciones detallan qué se encontró en la página y qué debe "
             "verificar o cambiar el responsable web. Algunas requieren una revisión "
@@ -124,7 +124,7 @@ def build_pdf(audit, report, goal_label, checks=None, seo_checks=None, compariso
             ]))
 
     if seo_checks:
-        story.append(Paragraph("10 puntos clave para que encuentren y contacten a tu negocio", section))
+        story.append(Paragraph("%s aspectos principales revisados para tu negocio" % len(seo_checks), section))
         story.append(Paragraph(
             "Una señal visible no demuestra que una cuenta de Google funcione. "
             "Los puntos Por confirmar requieren una acción del propietario.",
