@@ -141,9 +141,11 @@ def customer_visible_status(subscription):
 
 
 
-def comparison_pdf(url, goal_label, baseline, latest, previous):
+def comparison_pdf(url, goal_label, baseline, latest, previous, goal="contactos", history=None):
     """PDF comparativo de las señales publicas, sin atribuciones de ventas."""
     from io import BytesIO
+    from herramientas import diagnostico_evaluacion as business
+    from herramientas.diagnostico_pdf import progress_drawing
     from xml.sax.saxutils import escape
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -174,6 +176,33 @@ def comparison_pdf(url, goal_label, baseline, latest, previous):
         HRFlowable(width="100%", thickness=1, color=teal),
         Paragraph("Cambios observables desde el primer diagnóstico", h),
     ]
+    result = business.progress(baseline, latest, goal)
+    story.append(Paragraph("Gráfica de avances verificables", h))
+    if result["total"]:
+        story.append(progress_drawing(result))
+        story.append(Paragraph(
+            str(result["start"])+"/"+str(result["total"])+" señales positivas al inicio; "+
+            str(result["end"])+"/"+str(result["total"])+" en la última revisión.",
+            body))
+    else:
+        story.append(Paragraph("Las dos revisiones no tienen señales equivalentes suficientes.",body))
+    if history:
+        from reportlab.graphics.shapes import Drawing, Rect, String
+        values=business.history_progress(baseline, history, goal)
+        history_chart=Drawing(460,115)
+        barw=min(29, max(10, 398/max(1,len(values))))
+        for idx, row in enumerate(values):
+            x=23+idx*min(32, 418/max(1,len(values)))
+            height=75*row["pct"]/100
+            history_chart.add(Rect(x,28,barw,75,fillColor=colors.HexColor("#e5efec"),strokeColor=None))
+            history_chart.add(Rect(x,28,barw,height,fillColor=teal,strokeColor=None))
+            history_chart.add(String(x,16,str(row["month"][-2:] if row["month"]!="Inicio" else "Inicio"),
+                                     fontName="Helvetica",fontSize=7,fillColor=dark))
+        story.append(Paragraph("Revisiones disponibles mes por mes", h))
+        story.append(history_chart)
+        story.append(Paragraph(
+            "La altura representa señales favorables entre las comprobables de esa fecha. "
+            "No mide visitas, ventas ni posiciones.", note))
     changes = differences(baseline, latest)
     if changes:
         for item in changes:
@@ -189,9 +218,20 @@ def comparison_pdf(url, goal_label, baseline, latest, previous):
         for item in recent:
             story.append(Paragraph(
                 "<b>" + escape(item["field"]) + "</b>: " +
-                escape(item["previous"]) + " → " + escape(item["current"]), body))
+                escape(item["previous"]) + " / " + escape(item["current"]), body))
     else:
         story.append(Paragraph("No se detectaron diferencias adicionales.", body))
+    checked=business.overview(latest,goal)
+    story.append(Paragraph("Acciones recomendadas para el próximo mes", h))
+    for item in checked["actionable"][:8]:
+        story.append(Paragraph("<b>"+escape(item["title"])+"</b> ("+
+                               escape(item["status_label"])+")",body))
+        story.append(Paragraph("<b>Evidencia:</b> "+escape(item["evidence"]),body))
+        story.append(Paragraph("<b>Qué hacer:</b> "+escape(item["action"]),body))
+    story.append(Paragraph("Los diez puntos de revisión", h))
+    for item in checked["checks"][:10]:
+        story.append(Paragraph("<b>"+escape(item["title"])+"</b>: "+
+                               escape(item["status_label"]),body))
     story += [
         Paragraph("Alcance", h),
         Paragraph(
