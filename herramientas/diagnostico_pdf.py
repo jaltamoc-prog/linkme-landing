@@ -105,7 +105,7 @@ def build_pdf(audit, report, goal_label, checks=None, seo_checks=None, compariso
         ]
         story.append(KeepTogether(elements))
     if checks:
-        story.append(Paragraph("Plan completo de revisión y acciones", section))
+        story.append(Paragraph("Revisión técnica adicional: 10 acciones de mejora", section))
         story.append(Paragraph(
             "Estas comprobaciones detallan qué se encontró en la página y qué debe "
             "verificar o cambiar el responsable web. Algunas requieren una revisión "
@@ -122,6 +122,35 @@ def build_pdf(audit, report, goal_label, checks=None, seo_checks=None, compariso
                 Paragraph("<b>Acción:</b> " + escape(str(item["action"])), body),
                 Spacer(1, 5),
             ]))
+
+    if seo_checks:
+        story.append(Paragraph("10 puntos clave para que encuentren y contacten a tu negocio", section))
+        story.append(Paragraph(
+            "Una señal visible no demuestra que una cuenta de Google funcione. "
+            "Los puntos Por confirmar requieren una acción del propietario.",
+            note))
+        for item in seo_checks:
+            story.append(KeepTogether([
+                Paragraph(escape(item["title"]), subtitle),
+                Paragraph("<b>Estado:</b> "+escape(item["status_label"]), body),
+                Paragraph("<b>Por qué importa:</b> "+escape(item["why"]), note),
+                Paragraph("<b>Lo que encontramos:</b> "+escape(item["evidence"]), body),
+                Paragraph("<b>Próximo paso:</b> "+escape(item["action"]), body),
+                Spacer(1, 5),
+            ]))
+    if comparison is not None:
+        story.append(Paragraph("Comparación entre revisiones", section))
+        if comparison["total"]:
+            story.append(Paragraph(
+                "Gráfico de señales positivas medidas de la misma forma en ambas fechas. "
+                "No es una puntuación de Google ni una medición de ventas.", note))
+            story.append(progress_drawing(comparison))
+            story.append(Paragraph(
+                "Mejoras identificadas: "+str(len(comparison["improved"]))+
+                ". Señales con retroceso: "+str(len(comparison["regressed"]))+".",
+                body))
+        else:
+            story.append(Paragraph("No existen señales comparables suficientes.", note))
     story.append(Paragraph("Aspectos positivos comprobados", section))
     for positive in report["positives"]:
         story.append(Paragraph("&#8226; " + escape(str(positive)), body))
