@@ -13,8 +13,13 @@ import zlib
 PRICE_ID = "price_1UVcyeFHNcj4CFU195mIQ9kE"
 AMOUNT = 34900
 PORTAL = "https://billing.stripe.com/p/login/28EaEXfqN1xc0r120L6J200"
-FIELDS = ("checked", "title", "description", "canonical", "h1", "noalt",
-          "noindex", "viewport", "jsonld", "contact", "booking", "purchase", "forms")
+BASE_FIELDS = ("checked", "title", "description", "canonical", "h1", "noalt",
+               "noindex", "viewport", "jsonld", "contact", "booking", "purchase", "forms")
+EXTRA_FIELDS = ("schema_version", "keyword", "city", "city_in_page",
+                "analytics_signal", "google_profile_link", "internal_links",
+                "sitemap_hint", "images_total", "modern_images",
+                "images_without_dimensions")
+FIELDS = BASE_FIELDS + EXTRA_FIELDS
 LABELS = {
     "title": "Título de la página",
     "description": "Descripción para buscadores",
@@ -35,7 +40,7 @@ BOOL_FIELDS = {"noindex", "viewport", "contact", "booking", "purchase"}
 def encode(a):
     """Una cadena de hasta 2 metadatos de 420 caracteres cada uno."""
     values = {k: (str(a.get(k, ""))[:180] if k in
-                  ("title", "description", "canonical", "checked")
+                  ("title", "description", "canonical", "checked", "keyword", "city")
                   else a.get(k))
               for k in FIELDS}
     data = json.dumps(values, ensure_ascii=False, separators=(",", ":")).encode()
@@ -55,8 +60,11 @@ def decode(raw):
         if obj.unconsumed_tail or len(uncompressed) >= 4000:
             raise ValueError("Datos demasiado grandes")
         data = json.loads(uncompressed + obj.flush())
-        if not isinstance(data, dict) or any(k not in data for k in FIELDS):
+        if not isinstance(data, dict) or any(k not in data for k in BASE_FIELDS):
             raise ValueError("Datos incompletos")
+        # Las compras y revisiones antiguas siguen pudiendo abrirse.
+        for k in EXTRA_FIELDS:
+            data.setdefault(k, None)
         return data
     except (ValueError, TypeError, KeyError, zlib.error, json.JSONDecodeError,
             base64.binascii.Error):
