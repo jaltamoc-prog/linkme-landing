@@ -115,6 +115,20 @@ class DiagnosticSmokeTests(unittest.TestCase):
                                      "DIAGNOSTICO_STRIPE_PRICE_ID": ""}):
             self.assertEqual(self.client.post("/diagnostico-web/comprar").status_code, 503)
 
+    def test_paid_report_has_ten_distinct_evidence_based_checks(self):
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            audit = dw.analyse("https://ejemplo.com/")
+        checks = dw.expanded_plan(audit, "ventas")
+        self.assertEqual(len(checks), 10)
+        self.assertTrue(any("Ruta de compra" in item["area"] for item in checks))
+        self.assertTrue(all(item["evidence"] and item["action"] for item in checks))
+        from herramientas.diagnostico_pdf import build_pdf
+        report = dw.report_for(audit, "ventas")
+        pdf = build_pdf(audit, report, dw.GOALS["ventas"], checks=checks)
+        self.assertTrue(pdf.getvalue().startswith(b"%PDF-"))
+        self.assertGreater(len(pdf.getvalue()), 4500)
+
     def test_paid_pdf_is_readable_and_contains_all_findings(self):
         from herramientas.diagnostico_pdf import build_pdf
         with patch.object(dw, "fetch_html",
