@@ -782,7 +782,6 @@ def _monthly_subscription(sid):
     if (checkout.get("id") != sid or checkout.get("mode") != "subscription"
         or checkout.get("status") != "complete" or checkout.get("payment_status") != "paid"
         or not checkout.get("livemode") or checkout.get("currency") != "mxn"
-        or checkout.get("amount_total") != monitor.AMOUNT
         or (checkout.get("metadata") or {}).get("service") != "diagnostico-web-seguimiento"):
         abort(403)
     sub_id = checkout.get("subscription", "")
@@ -794,7 +793,12 @@ def _monthly_subscription(sid):
         or (sub.get("metadata") or {}).get("monitor_service") != "diagnostico-web-seguimiento"):
         abort(403)
     items = (sub.get("items") or {}).get("data") or []
-    if len(items) != 1 or items[0].get("price", {}).get("id") != monitor.PRICE_ID or items[0].get("quantity") != 1:
+    if len(items) != 1 or items[0].get("quantity") != 1:
+        abort(403)
+    subscription_price = (items[0].get("price") or {}).get("id")
+    allowed_prices = {monitor.PRICE_ID: monitor.AMOUNT, **monitor.LEGACY_PRICES}
+    if (allowed_prices.get(subscription_price) is None
+            or checkout.get("amount_total") != allowed_prices[subscription_price]):
         abort(403)
     meta = sub.get("metadata") or {}
     url = public_url(meta.get("monitor_url", ""))
