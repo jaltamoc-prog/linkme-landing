@@ -262,6 +262,34 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertTrue(any(item["id"]=="keyword_title" for item in comparison["regressed"]))
         self.assertNotIn("search_console", [item["id"] for item in comparison["regressed"]])
 
+    def test_old_paid_report_remains_downloadable_at_historical_price(self):
+        from unittest.mock import Mock
+        sid = "cs_live_" + "O"*25
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            a = dw.analyse("https://ejemplo.com/")
+        meta = {"service": "diagnostico-web-informe", "url": a["url"],
+                "goal": "ventas", **dw.audit_snapshot(a)}
+        historic = {"id": sid, "livemode": True, "status": "complete",
+                    "payment_status": "paid", "mode": "payment", "currency": "mxn",
+                    "amount_total": 19900, "metadata": meta}
+        historic_items = {"data": [{"price": {"id": next(iter(dw.LEGACY_REPORT_PRICES))},
+                                   "quantity": 1, "amount_total": 19900}]}
+        def reply(url, *args, **kwargs):
+            response = Mock()
+            response.raise_for_status.return_value = None
+            response.json.return_value = historic_items if url.endswith("/line_items") else historic
+            return response
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_example",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+        }), patch("requests.get", side_effect=reply), patch.object(
+            dw, "fetch_html", side_effect=RuntimeError("website offline")
+        ):
+            pdf = self.client.get("/diagnostico-web/descargar?session_id=" + sid)
+        self.assertEqual(pdf.status_code, 200)
+        self.assertTrue(pdf.data.startswith(b"%PDF-"))
+
     def test_paid_flow_revalidates_stripe_and_delivers_pdf(self):
         """Mock Stripe's live paid session; no payment is performed."""
         from unittest.mock import Mock
@@ -275,10 +303,10 @@ class DiagnosticSmokeTests(unittest.TestCase):
         paid={
             "id":sid,"livemode":True,"status":"complete",
             "payment_status":"paid","mode":"payment",
-            "currency":"mxn","amount_total":19900,"metadata":meta,
+            "currency":"mxn","amount_total":38700,"metadata":meta,
         }
         items={"data":[{"price":{"id":dw.REPORT_PRICE_ID},
-                        "quantity":1,"amount_total":19900}]}
+                        "quantity":1,"amount_total":38700}]}
         def stripe_reply(url,*args,**kwargs):
             obj=Mock()
             obj.raise_for_status.return_value=None
@@ -319,7 +347,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
             "DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
             "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID,
             "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID":dw.monitor.PRICE_ID,
-            "DIAGNOSTICO_PRICE_LABEL":"$199 MXN",
+            "DIAGNOSTICO_PRICE_LABEL":"$387 MXN",
         }):
             page=self.client.get("/diagnostico-web/")
         self.assertEqual(page.status_code,200)
@@ -337,7 +365,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_mock",
             "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
             "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID": dw.monitor.PRICE_ID,
-            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PRICE_LABEL": "$387 MXN",
         }):
             page = self.client.get("/diagnostico-web/")
         self.assertEqual(page.status_code, 200)
@@ -465,7 +493,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         a["goal"] = "ventas"
         meta = mon.baseline_metadata(a)
         session = {"id":sid, "mode":"subscription", "status":"complete",
-                   "payment_status":"paid", "amount_total":34900,
+                   "payment_status":"paid", "amount_total":59700,
                    "currency":"mxn", "livemode":True, "subscription":subid,
                    "metadata":{"service":"diagnostico-web-seguimiento"}}
         subscription = {"id":subid, "status":"active", "livemode":True,
@@ -531,12 +559,12 @@ class DiagnosticSmokeTests(unittest.TestCase):
         }
         valid = {
             "id": sid, "livemode": True, "mode": "payment", "currency": "mxn",
-            "payment_status": "paid", "status": "complete", "amount_total": 19900,
+            "payment_status": "paid", "status": "complete", "amount_total": 38700,
             "metadata": {"service": "diagnostico-web-informe",
                          "url": "https://ejemplo.com/", "goal": "ventas"},
         }
         lines = {"data": [{"price": {"id": dw.REPORT_PRICE_ID},
-                           "quantity": 1, "amount_total": 19900}]}
+                           "quantity": 1, "amount_total": 38700}]}
         def response(body):
             obj = Mock()
             obj.json.return_value = body
@@ -556,7 +584,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
             "os.environ", context
         ), patch("requests.get", side_effect=[
             response(valid), response({"data": [{"price": {"id": "price_other"},
-                                                 "quantity": 1, "amount_total": 19900}]}),
+                                                 "quantity": 1, "amount_total": 38700}]}),
         ]):
             with self.assertRaises(Forbidden):
                 dw.verify_purchase(sid)
@@ -620,7 +648,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with patch.dict("os.environ", {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
             "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
-            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PRICE_LABEL": "$387 MXN",
             "DIAGNOSTICO_PAGOS_ACTIVOS": "1",
         }), patch.object(dw, "fetch_html",
                         return_value=("https://ejemplo.com/", HTML, {})):
@@ -648,7 +676,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with patch.dict("os.environ", {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_mock_for_test",
             "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
-            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PRICE_LABEL": "$387 MXN",
             "DIAGNOSTICO_PAGOS_ACTIVOS": "1",
         }), patch.object(dw, "fetch_html",
                         return_value=("https://ejemplo.com/", HTML, {})):
@@ -689,7 +717,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
         with patch.dict("os.environ", {
             "DIAGNOSTICO_STRIPE_SECRET_KEY": "sk_live_test_key_for_mock",
             "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
-            "DIAGNOSTICO_PRICE_LABEL": "$199 MXN",
+            "DIAGNOSTICO_PRICE_LABEL": "$387 MXN",
             "DIAGNOSTICO_PAGOS_ACTIVOS": "",
         }):
             self.assertFalse(dw.payments_enabled())
