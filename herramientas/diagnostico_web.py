@@ -618,6 +618,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         price_label="$199 MXN",
         subscription_label="$349 MXN/mes",
         subscription_enabled=subscriptions_enabled(),
+        service_checks=business.SERVICE_CHECKLIST,
         download_url=download_url,
     )
     response = make_response(page, code)
