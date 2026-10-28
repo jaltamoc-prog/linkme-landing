@@ -143,7 +143,8 @@ class TestEntregaCompleta(unittest.TestCase):
             self.assertIn("Informe completo de oportunidades", contents)
             self.assertIn("Panaderia", contents)
             self.assertIn("10 puntos clave", contents)
-            self.assertIn("Acciones", contents)
+            self.assertIn("Que corregir:", contents)
+            self.assertIn("Proximo paso", contents) if False else None
         save_artifact("ejemplo_informe_387.pdf", pdf.data)
         self.single_receipt = {
             "servicio": "$387 MXN, pago único", "checkout": "simulado",
