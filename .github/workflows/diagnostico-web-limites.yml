@@ -1,0 +1,33 @@
+name: Diagnostico Web - verificar limite corregido en produccion
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-web-limites.yml'
+  workflow_dispatch:
+
+jobs:
+  cached-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Repetir analisis valido mas de seis veces con mismo cliente
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Un solo objetivo y sitio, para reutilizar el resultado y no agotar recursos.
+          for i in $(seq 1 8); do
+            code=$(curl --silent --show-error -L --max-time 45 \
+              -o /tmp/reporte.html -w '%{http_code}' \
+              --data-urlencode 'url=https://example.com/' \
+              --data-urlencode 'objetivo=ventas' \
+              https://converte.uno/diagnostico-web/)
+            echo "Consulta $i: HTTP $code"
+            if [ "$code" != "200" ]; then
+              echo "::error::Analisis repetido fue bloqueado."
+              head -c 700 /tmp/reporte.html
+              exit 1
+            fi
+            grep -Fq 'Qué conviene hacer primero' /tmp/reporte.html
+          done
+          echo 'Correcto: el cache permite volver a revisar sin consumir cuota.'
