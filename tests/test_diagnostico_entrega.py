@@ -143,7 +143,7 @@ class TestEntregaCompleta(unittest.TestCase):
             self.assertIn("Informe completo de oportunidades", contents)
             self.assertIn("Panaderia", contents)
             self.assertIn("14 aspectos principales revisados", contents)
-            self.assertIn("Que corregir:", contents)
+            self.assertIn("Haz esto:", contents)
             self.assertIn("Empieza por estas 3 acciones", contents)
             self.assertIn("CONVIENE MEJORAR", contents)
             self.assertEqual(len(PdfReader(__import__("io").BytesIO(pdf.data)).pages), 2)
