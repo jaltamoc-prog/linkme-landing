@@ -1,0 +1,29 @@
+name: Diagnostico Web - prueba real de analisis
+
+on:
+  push:
+    paths: ['.github/workflows/diagnostico-web-e2e.yml']
+  workflow_dispatch:
+
+jobs:
+  analizar-ejemplo-publico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Enviar URL real al diagnostico publicado
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl -sSL --max-time 65 -o /tmp/resultado.html -w '%{http_code}' \
+            --data-urlencode 'url=https://example.com/' \
+            --data-urlencode 'objetivo=ventas' \
+            'https://converte.uno/diagnostico-web/')
+          echo "HTTP: $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::No se pudo completar la auditoria real."
+            head -c 1800 /tmp/resultado.html
+            exit 1
+          fi
+          grep -Fq 'Qué conviene hacer primero' /tmp/resultado.html
+          grep -Fq 'https://example.com/' /tmp/resultado.html
+          echo 'OK: analisis de URL externa con informe comercial'
