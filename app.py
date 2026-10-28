@@ -52,10 +52,12 @@ import os
 
 from herramientas.calculadora_isr import calculadora_isr_bp
 from herramientas.generaqr import generaqr_bp
+from herramientas.diagnostico_web import bp as diagnostico_web_bp
 
 app = Flask(__name__)
 app.register_blueprint(calculadora_isr_bp, url_prefix="/calculadora-isr")
 app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
+app.register_blueprint(diagnostico_web_bp)
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
 ASSET_VERSION = "1091"
@@ -201,6 +203,11 @@ def sitemap():
     <loc>https://converte.uno/generaqr/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/diagnostico-web/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>
 """
