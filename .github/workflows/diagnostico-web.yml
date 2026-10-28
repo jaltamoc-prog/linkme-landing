@@ -4,7 +4,11 @@ on:
   push:
     paths:
       - 'herramientas/diagnostico_web.py'
+      - 'herramientas/diagnostico_evaluacion.py'
+      - 'herramientas/diagnostico_seguimiento.py'
+      - 'herramientas/diagnostico_pdf.py'
       - 'templates/diagnostico_web.html'
+      - 'templates/diagnostico_seguimiento.html'
       - 'tests/test_diagnostico_publico.py'
       - 'app.py'
       - 'requirements.txt'
@@ -21,5 +25,5 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements.txt
-      - run: python -m compileall -q app.py herramientas/diagnostico_web.py
+      - run: python -m compileall -q app.py herramientas/diagnostico_web.py herramientas/diagnostico_evaluacion.py herramientas/diagnostico_seguimiento.py herramientas/diagnostico_pdf.py
       - run: python -m unittest discover -s tests -p 'test_diagnostico_publico.py' -v
