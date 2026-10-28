@@ -154,6 +154,26 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn("Historial de revisiones".encode(), result.data)
         self.assertEqual(len(mon.history(saved["metadata"])), 1)
 
+    def test_monthly_monitoring_pdf_is_protected_and_readable(self):
+        from herramientas import diagnostico_seguimiento as mon
+        sid = "cs_live_" + "Q"*24
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            baseline = dw.analyse("https://ejemplo.com/")
+        sub = {"metadata": {}, "status": "active", "cancel_at_period_end": False}
+        with patch.object(dw, "_monthly_subscription",
+                          return_value=(sub, "https://ejemplo.com/", "ventas", baseline)):
+            page = self.client.get("/diagnostico-web/seguimiento/descargar?session_id=" + sid)
+        self.assertEqual(page.status_code, 200)
+        self.assertTrue(page.data.startswith(b"%PDF-"))
+        self.assertIn("no-store", page.headers.get("Cache-Control", ""))
+        self.assertEqual(
+            self.client.get("/diagnostico-web/seguimiento/descargar?session_id=invalid").status_code,
+            404)
+        data = mon.comparison_pdf("https://ejemplo.com/", "Facilitar ventas",
+                                  baseline, {**baseline, "h1": 2}, baseline)
+        self.assertGreater(len(data.getvalue()), 1500)
+
     def test_monthly_history_has_bounded_twelve_months(self):
         import datetime as datetime_module
         from herramientas import diagnostico_seguimiento as mon
