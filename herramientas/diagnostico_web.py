@@ -6,7 +6,6 @@ sin credenciales de Google, sin acceso a redes privadas y sin almacenar leads.
 """
 import base64
 import ipaddress
-import logging
 import json
 import os
 import zlib
@@ -232,6 +231,113 @@ def report_for(a, goal):
     return {"findings": findings, "top": findings[:3], "positives": good[:3], "count": len(findings)}
 
 
+
+def expanded_plan(a, goal):
+    """Checklist de entrega de pago: evidencias del HTML, sin estimaciones ficticias."""
+    checks = []
+    def add(area, status, evidence, action, priority="Revisar"):
+        checks.append(dict(area=area, status=status, evidence=evidence,
+                           action=action, priority=priority))
+
+    title = a.get("title", "")
+    add("Mensaje que aparece en buscadores",
+        "Detectado" if title else "Ausente",
+        ("Título encontrado (%s caracteres): %s" % (len(title), title)) if title
+        else "No se encontró el título HTML.",
+        "Revisa que el título distinga el servicio, la marca y, si es pertinente, la localidad. "
+        "Evita títulos duplicados o excesivamente largos.",
+        "Prioritaria" if not title else "Optimización")
+
+    desc = a.get("description", "")
+    add("Descripción de la página",
+        "Detectada" if desc else "Ausente",
+        ("Descripción encontrada (%s caracteres): %s" % (len(desc), desc)) if desc
+        else "No se encontró meta description.",
+        "Redacta un resumen convincente de la oferta y el siguiente paso. "
+        "Google puede modificar el texto mostrado en sus resultados.",
+        "Prioritaria" if not desc else "Optimización")
+
+    n = a.get("h1", 0)
+    add("Claridad del encabezado principal",
+        "Un H1 encontrado" if n == 1 else "Revisar estructura",
+        "%s encabezado(s) H1 en el HTML." % n,
+        "Comprueba que el encabezado principal explique qué ofrece la empresa al visitante. "
+        "Si hay varios, revisa que no compitan entre sí.",
+        "Prioritaria" if n != 1 else "Optimización")
+
+    can = a.get("canonical", "")
+    add("Dirección preferida para buscadores",
+        "Declarada" if can else "No declarada",
+        ("Canonical informado: " + can) if can else "No se encontró enlace canonical.",
+        "Comprueba que la dirección canonical apunte a la URL pública correcta y no a "
+        "una versión antigua o distinta del contenido.",
+        "Revisar" if can else "Prioritaria")
+
+    noindex = a.get("noindex", False)
+    add("Señales de indexación",
+        "Bloqueo encontrado" if noindex else "Sin bloqueo noindex detectado",
+        "El HTML o los encabezados " + ("indican noindex." if noindex
+                                       else "no declaran noindex; no confirma indexación real."),
+        "Si aparece noindex, verifica si es intencional antes de quitarlo. "
+        "Confirma la indexación efectiva en Search Console con acceso del propietario.",
+        "Urgente" if noindex else "Verificación")
+
+    viewport = a.get("viewport", False)
+    add("Preparación básica para celulares",
+        "Etiqueta viewport detectada" if viewport else "No se encontró viewport",
+        "Meta viewport: " + ("presente." if viewport else "ausente."),
+        "Prueba el sitio en un celular: texto legible, botones accesibles, menús y formularios. "
+        "La etiqueta viewport por sí sola no demuestra que el sitio sea adaptable.",
+        "Prioritaria" if not viewport else "Verificación")
+
+    alt = a.get("noalt", 0)
+    add("Accesibilidad de imágenes",
+        "Hay atributos por revisar" if alt else "Sin faltantes alt detectados",
+        "%s imágenes sin atributo alt." % alt,
+        "Añade descripciones a imágenes informativas y alt vacío a las decorativas. "
+        "Revisa las imágenes cargadas dinámicamente por separado.",
+        "Prioritaria" if alt else "Verificación")
+
+    actions = {
+        "contactos": ("Canal de contacto", a.get("contact", False),
+                      "Comprueba que exista teléfono, correo o enlace de contacto visible; "
+                      "si usas un formulario dinámico, pruébalo en celular."),
+        "ventas": ("Ruta de compra o cotización", a.get("purchase", False),
+                   "Realiza una compra o cotización de prueba sin cobrar: comprueba "
+                   "que el botón sea visible, que el precio sea claro y que el proceso funcione."),
+        "reservas": ("Acceso a citas o reservas", a.get("booking", False),
+                     "Entra al calendario como visitante y comprueba disponibilidad real, "
+                     "campos, confirmación y facilidad para reservar desde el celular."),
+        "informacion": ("Presentación del negocio", bool(title and a.get("h1") == 1),
+                        "Comprueba que la primera pantalla explique qué haces, para quién y "
+                        "qué acción puede realizar un visitante interesado."),
+    }
+    area, detected, action = actions.get(goal, actions["contactos"])
+    add(area, "Indicio visible en HTML" if detected else "No encontramos un indicio claro",
+        ("Se detectó una señal de la acción deseada en el HTML." if detected else
+         "No encontramos un enlace identificable en el HTML; JavaScript podría cargarlo."),
+        action, "Verificación" if detected else "Prioritaria")
+
+    schema = a.get("jsonld", 0)
+    add("Información estructurada para buscadores",
+        "JSON-LD detectado" if schema else "JSON-LD no detectado",
+        "%s bloque(s) JSON-LD en el HTML." % schema,
+        "Valida los datos estructurados existentes. Si aún no existen, evalúa "
+        "los tipos que realmente correspondan al negocio; no todas las páginas necesitan lo mismo.",
+        "Optimización")
+
+    forms = a.get("forms", 0)
+    add("Formularios visibles en el código",
+        "Formularios HTML detectados" if forms else "Sin formularios HTML detectados",
+        "%s formulario(s) HTML encontrados." % forms,
+        "Si recibes prospectos mediante formulario, comprueba que se envíe, "
+        "confirme recepción y proteja los datos personales. "
+        "Este análisis no ejecutó formularios ni scripts.",
+        "Verificación")
+
+    return checks
+
+
 def visitor_ip():
     """Distingue visitantes detras del proxy confiable de Render.
 
@@ -419,6 +525,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
     page = render_template(
         "diagnostico_web.html", url=url, goal=goal, goals=GOALS,
         audit=audit, summary=summary, error=error, paid=paid,
+        expanded_checks=expanded_plan(audit, goal) if paid and audit else [],
         checkout_enabled=payments_enabled(),
         price_label="$199 MXN",
         subscription_label="$349 MXN/mes",
@@ -428,15 +535,6 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
     response.headers["Cache-Control"] = "no-store"
     response.headers["X-Diagnostico-Revision"] = "2026-10-28-pdf-pago-v1"
     response.headers["X-Diagnostico-Checkout"] = "enabled" if payments_enabled() else "disabled"
-    if request.method == "GET" and not payments_enabled():
-        current_app.logger.warning(
-            "diagnostico checkout configuration: flag=%s key_present=%s key_live=%s price_match=%s label_match=%s",
-            os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1",
-            bool(os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY")),
-            os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("rk_live_", "sk_live_")),
-            os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID,
-            os.getenv("DIAGNOSTICO_PRICE_LABEL") == "$199 MXN",
-        )
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Content-Security-Policy"] = (
         "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
@@ -541,7 +639,8 @@ def descargar():
     try:
         url, goal, snapshot = verify_purchase(sid)
         result = snapshot if snapshot is not None else cached(url)
-        pdf = build_pdf(result, report_for(result, goal), GOALS[goal])
+        pdf = build_pdf(result, report_for(result, goal), GOALS[goal],
+                        checks=expanded_plan(result, goal))
         response = send_file(pdf, as_attachment=True, mimetype="application/pdf",
                              download_name="Diagnostico_Web_Informe_Completo.pdf",
                              max_age=0)
@@ -555,14 +654,3 @@ def descargar():
         current_app.logger.exception("No se pudo descargar el informe pagado")
         return view(error="No se pudo generar el PDF ahora. El pago no se repite: "
                           "conserva el enlace y vuelve a intentarlo.", code=503)
-
-
-logging.getLogger(__name__).warning(
-    "diagnostico startup checkout configuration: enabled=%s flag=%s key_present=%s key_live=%s price_match=%s label_match=%s",
-    payments_enabled(),
-    os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1",
-    bool(os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY")),
-    os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("rk_live_", "sk_live_")),
-    os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID,
-    os.getenv("DIAGNOSTICO_PRICE_LABEL") == "$199 MXN",
-)
