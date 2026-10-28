@@ -94,7 +94,7 @@ jobs:
               const check = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
               await check.goto('https://converte.uno/diagnostico-web/',{waitUntil:'domcontentloaded'});
               await check.locator('input[name="url"]').fill('https://example.com/');
-              await check.locator('button[type="submit"]:has-text("Analizar gratis")').click();
+              await check.locator('#audit-form button[type="submit"]:has-text("Analizar gratis")').click();
               await check.locator('#resultado').waitFor({timeout:30000});
               if(await check.locator('button[formaction="/diagnostico-web/comprar"]').count() !== 1)
                 throw Error('La compra desapareció después del informe gratuito');
