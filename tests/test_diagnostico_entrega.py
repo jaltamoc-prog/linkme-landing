@@ -144,6 +144,9 @@ class TestEntregaCompleta(unittest.TestCase):
             self.assertIn("Panaderia", contents)
             self.assertIn("14 aspectos principales revisados", contents)
             self.assertIn("Que corregir:", contents)
+            self.assertIn("Empieza por estas 3 acciones", contents)
+            self.assertIn("CONVIENE MEJORAR", contents)
+            self.assertEqual(len(PdfReader(__import__("io").BytesIO(pdf.data)).pages), 2)
         save_artifact("ejemplo_informe_387.pdf", pdf.data)
         self.single_receipt = {
             "servicio": "$387 MXN, pago único", "checkout": "simulado",
@@ -274,6 +277,8 @@ class TestEntregaCompleta(unittest.TestCase):
             self.assertIn("Revisiones disponibles mes por mes", contents)
             self.assertIn("Los 14 aspectos incluidos en cada revisión", contents)
             self.assertIn("Panaderia", contents)
+            self.assertIn("Mejoras detectadas", contents)
+            self.assertEqual(len(PdfReader(__import__("io").BytesIO(pdf.data)).pages), 2)
         save_artifact("ejemplo_seguimiento_597.pdf", pdf.data)
 
         # Simular cancelación confirmada en Stripe: se mantiene el periodo pagado,
