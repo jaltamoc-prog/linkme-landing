@@ -110,6 +110,69 @@ class DiagnosticSmokeTests(unittest.TestCase):
             self.assertEqual(other.status_code, 200)
             self.assertEqual(download.call_count, 21)
 
+    def test_monthly_dashboard_and_saved_update_without_stripe_network(self):
+        from herramientas import diagnostico_seguimiento as mon
+        sid = "cs_live_" + "K"*24
+        subid = "sub_" + "L"*22
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            baseline = dw.analyse("https://ejemplo.com/")
+        baseline["goal"] = "ventas"
+        meta = mon.baseline_metadata(baseline)
+        sub = {
+            "id": subid, "status": "active", "livemode": True,
+            "cancel_at_period_end": False, "metadata": dict(meta),
+            "items": {"data": [{"price": {"id": mon.PRICE_ID}, "quantity": 1}]},
+        }
+        with patch.object(dw, "_monthly_subscription",
+                          return_value=(sub, "https://ejemplo.com/", "ventas", baseline)):
+            page = self.client.get("/diagnostico-web/seguimiento?session_id=" + sid)
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("Seguimiento de tu página web".encode(), page.data)
+        self.assertIn(b"no-store", page.headers.get("Cache-Control", "").encode())
+        self.assertNotIn(b"checkout.stripe.com", page.data)
+
+        saved = dict(sub)
+        saved["metadata"] = dict(meta)
+        def stripe_update(method, path, fields=None):
+            self.assertEqual(method, "POST")
+            self.assertEqual(path, "subscriptions/" + subid)
+            self.assertTrue(any(k.startswith("metadata[monitor_m") for k in fields))
+            updates = {k[len("metadata["):-1]: v for k, v in fields.items()}
+            saved["metadata"].update(updates)
+            return saved
+
+        with patch.object(dw, "_monthly_subscription",
+                          return_value=(sub, "https://ejemplo.com/", "ventas", baseline)), \
+             patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})), \
+             patch.object(dw, "_billing_request", side_effect=stripe_update):
+            result = self.client.post("/diagnostico-web/seguimiento/revisar",
+                                      data={"session_id": sid})
+        self.assertEqual(result.status_code, 200)
+        self.assertIn("Revisión guardada".encode(), result.data)
+        self.assertIn("Historial de revisiones".encode(), result.data)
+        self.assertEqual(len(mon.history(saved["metadata"])), 1)
+
+    def test_monthly_history_has_bounded_twelve_months(self):
+        import datetime as datetime_module
+        from herramientas import diagnostico_seguimiento as mon
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            audited = dw.analyse("https://ejemplo.com/")
+        meta = mon.baseline_metadata(audited)
+        for year in (2025, 2026):
+            for month in range(1, 13):
+                now = datetime_module.datetime(year, month, 10, tzinfo=datetime_module.timezone.utc)
+                updates = mon.month_updates(meta, audited, now=now)
+                for key, value in updates.items():
+                    if value:
+                        meta[key] = value
+                    else:
+                        meta.pop(key, None)
+        self.assertEqual(len(mon.history(meta)), 12)
+        self.assertLessEqual(len(meta), 30)
+
     def test_monthly_history_snapshot_and_comparison(self):
         from herramientas import diagnostico_seguimiento as mon
         with patch.object(dw, "fetch_html",
