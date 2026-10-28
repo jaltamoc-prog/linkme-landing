@@ -7,6 +7,7 @@
 <div class="row"><a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar suscripción en Stripe</a><a class="button alt" href="/diagnostico-web/">Volver al diagnóstico gratuito</a></div></section>
 <section><h2>Revisar avances</h2><p><strong>Primer diagnóstico:</strong> {{baseline.checked}}</p><p><strong>Último registro:</strong> {{last.checked}}</p>
 {% if message %}<p class="notice">{{message}}</p>{% endif %}{% if error %}<p role="alert">{{error}}</p>{% endif %}
+<p><a class="button alt" href="/diagnostico-web/seguimiento/descargar?session_id={{session_id|urlencode}}">Descargar comparación en PDF</a></p>
 <form method="post" action="/diagnostico-web/seguimiento/revisar"><input type="hidden" name="session_id" value="{{session_id}}"><button type="submit">Analizar nuevamente mi página y guardar el avance</button></form><p class="small">Una revisión nueva se añade al mes actual y sustituye únicamente el registro de ese mismo mes. Conservamos hasta doce meses en los metadatos de tu suscripción de Stripe.</p></section>
 <section><h2>Cambios desde el primer diagnóstico</h2>
 {% for item in changes %}<div class="change"><strong>{{item.field}}</strong><p class="small">Antes: {{item.previous}}</p><p>Ahora: {{item.current}}</p></div>{% else %}<p>No hay diferencias detectables en los indicadores guardados. Esto no significa necesariamente que las ventas o visitas no hayan cambiado.</p>{% endfor %}</section>
