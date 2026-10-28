@@ -511,15 +511,17 @@ def audit_snapshot(audit):
     return result
 
 
-def restored_snapshot(metadata, url):
-    """Recupera la auditoria pagada incluso si la pagina original ya no esta en linea."""
-    if metadata.get("audit_version") != "1":
+def restored_snapshot(metadata, url, prefix="audit"):
+    """Recupera una revisión pagada aunque la página original deje de responder."""
+    if prefix not in ("audit", "followup"):
+        raise ValueError("Revisión desconocida.")
+    if metadata.get(prefix + "_version") != "1":
         return None
     try:
-        n = int(metadata.get("audit_parts", "0"))
+        n = int(metadata.get(prefix + "_parts", "0"))
         if not 1 <= n <= 15:
             raise ValueError("Cantidad de partes invalida")
-        raw = "".join(metadata["audit_" + str(i)] for i in range(n))
+        raw = "".join(metadata[prefix + "_" + str(i)] for i in range(n))
         if len(raw) > 6300:
             raise ValueError("Metadatos excesivos")
         compressed = base64.urlsafe_b64decode(raw)
@@ -705,6 +707,25 @@ def comprar():
         return view(error="No se pudo iniciar el pago; no se efectuo ningun cobro.", code=503)
 
 
+def purchased_progress(sid, url, baseline):
+    """Obtiene segunda medición asociada al mismo pago único."""
+    session = _billing_request("GET", "checkout/sessions/" + quote(sid, safe=""))
+    if session.get("id") != sid or not session.get("livemode"):
+        abort(403)
+    followup = restored_snapshot(session.get("metadata") or {}, url, prefix="followup")
+    return followup
+
+
+def next_comparison_days(baseline):
+    """Comparación opcional una sola vez, al menos 28 días después del informe."""
+    try:
+        when = dt.datetime.strptime(baseline["checked"], "%d/%m/%Y %H:%M UTC").replace(tzinfo=dt.timezone.utc)
+        now = dt.datetime.now(dt.timezone.utc)
+        return max(0, 28 - (now - when).days)
+    except (ValueError, TypeError, KeyError):
+        return 28
+
+
 @bp.route("/informe", methods=["GET"])
 def informe():
     sid = request.args.get("session_id", "")
@@ -715,8 +736,11 @@ def informe():
     try:
         url, goal, snapshot = verify_purchase(sid)
         result = snapshot if snapshot is not None else cached(url)
+        after = purchased_progress(sid, url, result)
+        comparison = business.progress(result, after, goal) if after else None
         return view(url, goal, result, report_for(result, goal), paid=True,
-                    session_id=sid)
+                    session_id=sid, comparison=comparison,
+                    compare_days=next_comparison_days(result))
     except HTTPException:
         raise
     except Exception:
@@ -735,8 +759,11 @@ def descargar():
     try:
         url, goal, snapshot = verify_purchase(sid)
         result = snapshot if snapshot is not None else cached(url)
+        after = purchased_progress(sid, url, result)
+        compare = business.progress(result, after, goal) if after else None
         pdf = build_pdf(result, report_for(result, goal), GOALS[goal],
-                        checks=expanded_plan(result, goal))
+                        checks=expanded_plan(result, goal),
+                        seo_checks=business.checks(result, goal), comparison=compare)
         response = send_file(pdf, as_attachment=True, mimetype="application/pdf",
                              download_name="Diagnostico_Web_Informe_Completo.pdf",
                              max_age=0)
@@ -750,6 +777,43 @@ def descargar():
         current_app.logger.exception("No se pudo descargar el informe pagado")
         return view(error="No se pudo generar el PDF ahora. El pago no se repite: "
                           "conserva el enlace y vuelve a intentarlo.", code=503)
+
+
+@bp.route("/comparar", methods=["POST"])
+def comparar():
+    """Una comparación posterior incluida en el informe de pago único."""
+    sid = request.form.get("session_id", "")
+    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+        abort(404)
+    if payment_limited(visitor_ip()):
+        abort(429)
+    try:
+        url, goal, baseline = verify_purchase(sid)
+        if baseline is None:
+            return view(error="Este informe antiguo no guardó datos comparables. Descarga tu PDF original.",code=422)
+        existing = purchased_progress(sid, url, baseline)
+        if existing:
+            return view(url,goal,baseline,report_for(baseline,goal),paid=True,
+                        session_id=sid,comparison=business.progress(baseline,existing,goal))
+        days = next_comparison_days(baseline)
+        if days > 0:
+            return view(url,goal,baseline,report_for(baseline,goal),paid=True,
+                        session_id=sid,compare_days=days)
+        latest = with_context(analyse(url), baseline.get("keyword") or "",
+                              baseline.get("city") or "", goal)
+        compact = audit_snapshot(latest)
+        data = {"metadata[" + key.replace("audit","followup",1) + "]":val
+                for key,val in compact.items()}
+        response = _billing_request("POST","checkout/sessions/"+quote(sid,safe=""), data)
+        if response.get("id")!=sid:
+            raise ValueError("No se confirmó el guardado de la comparación.")
+        return view(url,goal,baseline,report_for(baseline,goal),paid=True,
+                    session_id=sid,comparison=business.progress(baseline,latest,goal))
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.exception("Error al guardar comparación de pago único")
+        return view(error="No se pudo guardar la comparación. Conserva tu enlace de compra y vuelve a intentarlo.",code=503)
 
 
 def _billing_request(method, path, fields=None):
