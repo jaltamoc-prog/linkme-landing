@@ -42,6 +42,56 @@ class DiagnosticSmokeTests(unittest.TestCase):
                 r = self.client.post("/diagnostico-web/", data={"url": url})
                 self.assertEqual(r.status_code, 422)
 
+    def test_proxy_visitor_identity_uses_last_trusted_hop_on_render(self):
+        with patch.dict("os.environ", {"RENDER": "true"}):
+            with app.test_request_context(
+                "/diagnostico-web/",
+                headers={"X-Forwarded-For": "9.9.9.9, 8.8.8.8"},
+                environ_base={"REMOTE_ADDR": "10.0.0.3"},
+            ):
+                self.assertEqual(dw.visitor_ip(), "8.8.8.8")
+            with app.test_request_context(
+                "/diagnostico-web/",
+                headers={"X-Forwarded-For": "9.9.9.9, no-es-ip"},
+                environ_base={"REMOTE_ADDR": "10.0.0.3"},
+            ):
+                self.assertEqual(dw.visitor_ip(), "10.0.0.3")
+
+    def test_limits_apply_to_new_sites_not_cached_rechecks_or_other_clients(self):
+        with patch.dict("os.environ", {"RENDER": "true"}), patch.object(
+            dw, "fetch_html", return_value=("https://ejemplo.com/", HTML, {})
+        ) as download:
+            headers = {"X-Forwarded-For": "9.9.9.9, 8.8.8.8"}
+            for index in range(20):
+                response = self.client.post(
+                    "/diagnostico-web/",
+                    data={"url": "https://sitio-" + str(index) + ".com/"},
+                    headers=headers,
+                )
+                self.assertEqual(response.status_code, 200, index)
+            blocked = self.client.post(
+                "/diagnostico-web/",
+                data={"url": "https://sitio-21.com/"},
+                headers=headers,
+            )
+            self.assertEqual(blocked.status_code, 429)
+            self.assertEqual(blocked.headers.get("Retry-After"), "600")
+
+            repeat = self.client.post(
+                "/diagnostico-web/",
+                data={"url": "https://sitio-0.com/", "objetivo": "ventas"},
+                headers=headers,
+            )
+            self.assertEqual(repeat.status_code, 200)
+
+            other = self.client.post(
+                "/diagnostico-web/",
+                data={"url": "https://otro-cliente.com/"},
+                headers={"X-Forwarded-For": "9.9.9.9, 1.1.1.1"},
+            )
+            self.assertEqual(other.status_code, 200)
+            self.assertEqual(download.call_count, 21)
+
     def test_paid_feature_disabled_without_keys(self):
         with patch.dict("os.environ", {"DIAGNOSTICO_STRIPE_SECRET_KEY": "",
                                      "DIAGNOSTICO_STRIPE_PRICE_ID": ""}):
