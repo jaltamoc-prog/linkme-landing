@@ -213,6 +213,105 @@ class DiagnosticSmokeTests(unittest.TestCase):
             self.assertFalse(permissions_verified(check_restricted_key("rk_live_fake")))
             post.assert_not_called()
 
+    def test_ten_points_are_honest_about_google_accounts(self):
+        from herramientas import diagnostico_evaluacion as ev
+        html = """<!DOCTYPE html><html><head><title>Abogado de empresas en Puebla</title>
+        <meta name="description" content="Asesoría legal a negocios en Puebla">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://www.googletagmanager.com/gtag/js?id=G-1234567890"></script>
+        </head><body><h1>Asesoría en Puebla</h1>
+        <a href="/servicios">Servicios</a>
+        <a href="https://www.google.com/maps/place/example">Mapa</a>
+        <img src="/web.webp" width="200" height="100" alt="Oficina">
+        </body></html>"""
+        with patch.object(dw, "fetch_html", return_value=("https://ejemplo.com/", html, {})):
+            audit=dw.with_context(dw.analyse("https://ejemplo.com/"),
+                                  "abogado de empresas", "Puebla", "contactos")
+        checks=ev.checks(audit, "contactos")
+        self.assertEqual(len(checks),14)
+        ids={row["id"]:row for row in checks}
+        self.assertEqual(ids["search_console"]["status"], "review")
+        self.assertEqual(ids["backlinks"]["status"], "review")
+        self.assertEqual(ids["analytics"]["status"], "ok")
+        self.assertIn("no confirma", ids["analytics"]["evidence"] + ids["business_profile"]["evidence"])
+        self.assertEqual(ids["keyword_title"]["status"], "ok")
+        self.assertEqual(ids["city"]["status"], "ok")
+        self.assertEqual(ids["internal_links"]["status"], "ok")
+        self.assertEqual(ids["images_speed"]["status"], "ok")
+        self.assertEqual(ids["business_profile"]["status"], "ok")
+        self.assertEqual(ev.overview(audit, "contactos")["ok"]+
+                         ev.overview(audit, "contactos")["issue"]+
+                         ev.overview(audit, "contactos")["review"],14)
+        self.assertNotIn("page_text", dw.restored_snapshot(
+            dw.audit_snapshot(audit), audit["url"]))
+
+    def test_keyword_and_city_are_optional_and_comparable(self):
+        from herramientas import diagnostico_evaluacion as ev
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            base=dw.analyse("https://ejemplo.com/")
+        without=dw.with_context(base)
+        self.assertEqual({x["id"]:x for x in ev.checks(without)}["keyword_title"]["status"],"review")
+        with_words=dw.with_context(base,"ejemplo de negocio","Monterrey","ventas")
+        self.assertEqual({x["id"]:x for x in ev.checks(with_words)}["keyword_title"]["status"],"ok")
+        self.assertEqual({x["id"]:x for x in ev.checks(with_words)}["city"]["status"],"issue")
+        changed=dict(with_words)
+        changed["title"]="Otra página distinta"
+        comparison=ev.progress(with_words,changed,"ventas")
+        self.assertGreaterEqual(comparison["total"],3)
+        self.assertTrue(any(item["id"]=="keyword_title" for item in comparison["regressed"]))
+        self.assertNotIn("search_console", [item["id"] for item in comparison["regressed"]])
+
+    def test_paid_single_purchase_can_save_one_followup_without_new_charge(self):
+        sid="cs_live_"+"C"*24
+        with patch.object(dw,"fetch_html",
+                          return_value=("https://ejemplo.com/",HTML,{})):
+            previous=dw.with_context(dw.analyse("https://ejemplo.com/"),
+                                     "ejemplo","CDMX","ventas")
+        previous["checked"]="01/09/2026 10:00 UTC"
+        updated=dict(previous)
+        updated["checked"]="28/10/2026 11:00 UTC"
+        updated["title"]="Nuevo título de negocio"
+        updates={}
+        def post_stripe(method,path,fields=None):
+            self.assertEqual(method,"POST")
+            self.assertTrue(path.startswith("checkout/sessions/cs_live_"))
+            self.assertTrue(any("metadata[followup_0]"==k for k in fields))
+            updates.update(fields)
+            return {"id":sid}
+        with patch.dict("os.environ",{
+            "DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID,
+        }),patch.object(dw,"verify_purchase",
+                        return_value=(previous["url"],"ventas",previous)), \
+            patch.object(dw,"purchased_progress",return_value=None), \
+            patch.object(dw,"analyse",return_value=updated), \
+            patch.object(dw,"_billing_request",side_effect=post_stripe):
+            response=self.client.post("/diagnostico-web/comparar",
+                                      data={"session_id":sid})
+        self.assertEqual(response.status_code,200)
+        self.assertIn("Primera revisión".encode(),response.data)
+        self.assertIn("Revisión posterior".encode(),response.data)
+        self.assertIn("Tu evolución".encode(),response.data)
+        meta={key[len("metadata["):-1]:value for key,value in updates.items()}
+        recovered=dw.restored_snapshot(meta,previous["url"],prefix="followup")
+        self.assertEqual(recovered["title"],updated["title"])
+
+    def test_monthly_pdf_includes_comparison_and_recommendations(self):
+        from herramientas import diagnostico_seguimiento as mon
+        with patch.object(dw,"fetch_html",
+                          return_value=("https://ejemplo.com/",HTML,{})):
+            baseline=dw.with_context(dw.analyse("https://ejemplo.com/"),
+                                     "servicios","Puebla","ventas")
+        latest=dict(baseline)
+        latest["title"]="Servicio actualizado"
+        latest["checked"]="02/11/2026 11:00 UTC"
+        pdf=mon.comparison_pdf("https://ejemplo.com/","Atraer ventas",
+                                baseline,latest,baseline,goal="ventas",
+                                history=[{"month":"202611","audit":latest}])
+        self.assertTrue(pdf.getvalue().startswith(b"%PDF-"))
+        self.assertGreater(len(pdf.getvalue()),2200)
+
     def test_monthly_history_snapshot_and_comparison(self):
         from herramientas import diagnostico_seguimiento as mon
         with patch.object(dw, "fetch_html",
