@@ -296,7 +296,7 @@ def cached(url):
 
 def stripe_ready():
     """Una credencial activa permite revisar compras anteriores aun si se pausan ventas."""
-    return (os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith("sk_live_")
+    return (os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("sk_live_", "rk_live_"))
             and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID)
 
 
