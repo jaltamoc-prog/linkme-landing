@@ -11,7 +11,7 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, KeepTogether, HRFlowable
 
 
-def build_pdf(audit, report, goal_label):
+def build_pdf(audit, report, goal_label, checks=None):
     """Produce un PDF con observaciones respaldadas por HTML publico."""
     buffer = BytesIO()
     navy = colors.HexColor("#173741")
@@ -83,6 +83,24 @@ def build_pdf(audit, report, goal_label):
             Spacer(1, 5),
         ]
         story.append(KeepTogether(elements))
+    if checks:
+        story.append(Paragraph("Plan completo de revisión y acciones", section))
+        story.append(Paragraph(
+            "Estas comprobaciones detallan qué se encontró en la página y qué debe "
+            "verificar o cambiar el responsable web. Algunas requieren una revisión "
+            "humana, aunque los indicadores básicos ya estén presentes.",
+            note,
+        ))
+        for i, item in enumerate(checks, 1):
+            story.append(KeepTogether([
+                Paragraph("%d. %s" % (i, escape(str(item["area"]))), subtitle),
+                Paragraph(
+                    "<b>Estado:</b> %s &nbsp; | &nbsp; <b>Relevancia:</b> %s" %
+                    (escape(str(item["status"])), escape(str(item["priority"]))), body),
+                Paragraph("<b>Evidencia:</b> " + escape(str(item["evidence"])), note),
+                Paragraph("<b>Acción:</b> " + escape(str(item["action"])), body),
+                Spacer(1, 5),
+            ]))
     story.append(Paragraph("Aspectos positivos comprobados", section))
     for positive in report["positives"]:
         story.append(Paragraph("&#8226; " + escape(str(positive)), body))
