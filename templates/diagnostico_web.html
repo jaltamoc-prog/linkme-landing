@@ -98,20 +98,23 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <p class="note">También detectamos {{summary.count-3}} observaciones adicionales. El informe ampliado incluye todas las acciones y sus evidencias.</p>
 {% endif %}
 <div class="result-cta" aria-label="Siguiente paso para mejorar tu página">
-<h3>{{"¿Quieres ayuda para llevar estas mejoras a la práctica?" if paid else "¿Quieres saber qué corregir después?"}}</h3>
-<p>{{"Puedes solicitar ayuda para implementar las acciones." if paid else "El informe ampliado reúne todas las observaciones detectadas y un listado para tu desarrollador. También podrás conocer el seguimiento mensual cuando esté disponible."}}</p>
+<h3>{{"Tu informe completo está listo" if paid else "¿Quieres saber qué corregir después?"}}</h3>
+<p>{{"Descarga el PDF con todas las observaciones encontradas, su evidencia y acciones concretas. Conserva el enlace de compra para volver a descargarlo." if paid else "El informe de $199 MXN reúne todas las observaciones encontradas, un plan de mejora y un PDF listo para compartir con tu diseñador. El diagnóstico básico sigue siendo gratuito."}}</p>
 <div class="actions">
-{% if checkout_enabled and audit and not paid %}
+{% if paid and download_url %}
+<a class="button" href="{{download_url}}">Descargar mi informe completo (PDF)</a>
+{% elif checkout_enabled and audit %}
 <form method="post" action="/diagnostico-web/comprar">
 <input type="hidden" name="url" value="{{audit.url}}">
 <input type="hidden" name="objetivo" value="{{goal}}">
-<button type="submit">Comprar informe ampliado · {{price_label}}</button>
+<button type="submit">Comprar informe completo · {{price_label}}</button>
 </form>
-{% elif not paid %}<a class="button" href="#planes">Ver cómo continuar con las mejoras</a>{% endif %}
-{% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Pedir ayuda para implementar</a>{% endif %}
+{% else %}
+<a class="button" href="#planes">Ver cómo continuar con las mejoras</a>
+{% endif %}
 </div>
 </div>
-<p class="note">Para guardar este análisis inicial como PDF: abre Imprimir y elige “Guardar como PDF”.</p>
+{% if not paid %}<p class="note">Puedes imprimir este resumen gratuito desde tu navegador. El informe completo descargable en PDF es un producto distinto.</p>{% endif %}
 </section>
 {% endif %}
 <section class="card tierscard" id="planes">
@@ -128,7 +131,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <div class="tier popular">
 <strong>Informe completo</strong>
 <div class="price">{{price_label if checkout_enabled else "Pago único"}}</div>
-<p>Incluye todas las observaciones detectadas y evidencias para que puedas planear o encargar las correcciones.</p>
+<p>Informe digital con todas las oportunidades encontradas, prioridades y evidencia, más un PDF descargable tras verificar el pago.</p>
 {% if checkout_enabled and audit and not paid %}
 <form method="post" action="/diagnostico-web/comprar">
 <input type="hidden" name="url" value="{{audit.url}}">
@@ -137,21 +140,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 </form>
 {% elif checkout_enabled %}
 <a class="button" href="#analizar">Primero analiza tu página</a>
-{% elif contact_url %}
-<a class="button" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Consultar informe completo</a>
 {% else %}
 <div class="disabled-note">Estamos habilitando el pago seguro. Por ahora no podemos cobrar ni entregar este informe como producto de pago.</div>
 {% endif %}
 </div>
 <div class="tier">
 <strong>Seguimiento de mejoras</strong>
-<div class="price">Suscripción mensual</div>
+<div class="price">{{subscription_label}}</div>
 <p>La propuesta comercial es comparar avances y recomendar las siguientes mejoras periódicamente. Este servicio aún no está habilitado.</p>
-{% if contact_url %}
-<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Consultar seguimiento</a>
-{% else %}
-<div class="disabled-note">Suscripción en preparación. No se solicita tarjeta ni se activa una renovación.</div>
-{% endif %}
+<div class="disabled-note">El seguimiento todavía está en desarrollo. No se solicita tarjeta ni se activa una renovación.</div>
 </div>
 </div>
 </section>
