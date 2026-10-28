@@ -69,10 +69,12 @@ jobs:
                grep -Fq 'Comprar informe completo' /tmp/reporte-cta.html && \
                grep -Fq 'id="planes"' /tmp/reporte-cta.html && \
                grep -Fq 'Seguimiento de mejoras' /tmp/reporte-cta.html && \
-               grep -Fq 'tier popular tier-clickable' /tmp/reporte-cta.html && \
+               grep -Fq 'class="tier popular tier-clickable"' /tmp/reporte-cta.html && \
                grep -Fq 'aria-label="Comprar informe completo' /tmp/reporte-cta.html && \
-               grep -Fiq "form-action 'self' https://checkout.stripe.com" /tmp/reporte-cta.headers; then
-              echo "OK: diagnostico, tarjeta completamente clicable y redireccion CSP a Stripe en produccion"
+               grep -Fq 'action="/diagnostico-web/suscribir"' /tmp/reporte-cta.html && \
+               grep -Fq '<svg viewBox="0 0 24 24"' /tmp/reporte-cta.html && \
+               grep -Fq '@media(max-width:470px)' /tmp/reporte-cta.html; then
+              echo "OK: diagnóstico compacto, tres iconos SVG, dos tarjetas completas nativas y CSS móvil"
               exit 0
             fi
             echo "Intento $i: HTTP $code, esperando la version con CTA..."
@@ -80,3 +82,27 @@ jobs:
           done
           echo "::error::La version publicada no muestra el nuevo CTA."
           exit 1
+      - name: Validar ambas compras y paso real al dominio de Stripe sin pagar
+        shell: bash
+        run: |
+          set -euo pipefail
+          for endpoint in comprar suscribir; do
+            result=$(curl -sS --max-time 55 -D /tmp/pago.headers -o /tmp/pago.html -w '%{http_code}' \
+              --data-urlencode 'url=https://example.com/' \
+              --data-urlencode 'objetivo=ventas' \
+              "https://converte.uno/diagnostico-web/$endpoint" || true)
+            if [ "$result" != "200" ]; then
+              echo "::error::La compra $endpoint devolvio HTTP $result"
+              exit 1
+            fi
+            grep -Fq '<meta http-equiv="refresh"' /tmp/pago.html || {
+              echo "::error::Falta navegación automática a Stripe para $endpoint"
+              exit 1
+            }
+            grep -Fq 'href="https://checkout.stripe.com/' /tmp/pago.html || {
+              echo "::error::Falta enlace Stripe de respaldo para $endpoint"
+              exit 1
+            }
+            grep -Fq 'Continuar al pago seguro' /tmp/pago.html
+            echo "OK: $endpoint creó una sesión y entregó navegación automática sin cobro"
+          done
