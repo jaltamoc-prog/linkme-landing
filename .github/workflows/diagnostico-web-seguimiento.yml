@@ -1,0 +1,43 @@
+name: Diagnostico Web - seguimiento mensual en produccion
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-web-seguimiento.yml'
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Verificar el plan mensual sin activar cobros
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in $(seq 1 22); do
+            status=$(curl -sS -L --max-time 25 -o /tmp/monitor.html -w '%{http_code}' \
+              --data-urlencode 'url=https://example.com/' \
+              --data-urlencode 'objetivo=ventas' \
+              https://converte.uno/diagnostico-web/ || true)
+            if [ "$status" = 200 ] && \
+               grep -Fq 'Seguimiento de mejoras' /tmp/monitor.html && \
+               grep -Fq 'Estamos validando el historial' /tmp/monitor.html && \
+               grep -Fq 'revisiones se ejecutan cuando el cliente' /tmp/monitor.html; then
+              echo 'El plan mensual esta visible con compra desactivada y alcance claro.'
+              break
+            fi
+            if [ "$n" -eq 22 ]; then
+              echo '::error::No se observa el nuevo plan mensual en produccion.'
+              exit 1
+            fi
+            sleep 10
+          done
+          if grep -Fq 'action="/diagnostico-web/suscribir"' /tmp/monitor.html; then
+            echo '::error::Se habilito el cobro mensual antes de completar permisos.'
+            exit 1
+          fi
+          code=$(curl -sS --max-time 15 -o /dev/null -w '%{http_code}' \
+            'https://converte.uno/diagnostico-web/seguimiento?session_id=cs_live_INVALID' || true)
+          test "$code" = 404 || { echo "::error::Panel de clientes sin autenticar"; exit 1; }
+          echo 'OK: plan mensual seguro, sin cargos habilitados ni acceso anonimo.'
