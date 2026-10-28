@@ -62,7 +62,7 @@ ASSET_VERSION = "1091"
 
 @app.context_processor
 def inject_asset_version():
-    return {"asset_version": ASSET_VERSION}
+    return {"asset_version": ASSET_VERSION, "ga4_measurement_id": os.getenv("GA4_MEASUREMENT_ID", "").strip()}
 
 
 def detectar_mercado():
