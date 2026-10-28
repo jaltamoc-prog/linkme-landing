@@ -59,8 +59,19 @@ jobs:
                 if(await page.locator('button[formaction="/diagnostico-web/comprar"]').count() !== 1
                     || await page.locator('button[formaction="/diagnostico-web/suscribir"]').count() !== 1)
                   throw Error('Ambos botones de compra deben estar activos SIN análisis previo');
-                if(!(await page.locator('details.checklist').textContent()).includes('Google Search Console'))
-                  throw Error('No se muestran los temas revisados');
+                if(await page.locator('#planes .tiers > [data-plan]').count() !== 3)
+                  throw Error('No encontramos los tres servicios');
+                if(await page.locator('#planes .checklist, #planes .plan-note').count() !== 0)
+                  throw Error('Quedan descripciones dispersas fuera de las tarjetas');
+                for(const plan of ['unico','mensual']){
+                  const card=page.locator('#planes [data-plan="' + plan + '"]');
+                  await card.locator('details.tier-more summary').click();
+                  if(await card.locator('details.tier-more ol > li').count() !== 14)
+                    throw Error('El plan ' + plan + ' no tiene sus 14 puntos propios');
+                  if(!(await card.locator('details.tier-more').textContent()).includes('Google Search Console'))
+                    throw Error('Faltan las pruebas del plan ' + plan);
+                  await card.locator('details.tier-more summary').click();
+                }
                 const geometry = await page.evaluate(() => ({
                   width: document.documentElement.clientWidth,
                   scroll: document.documentElement.scrollWidth,
