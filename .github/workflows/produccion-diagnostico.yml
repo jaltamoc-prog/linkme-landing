@@ -22,7 +22,7 @@ jobs:
           url="https://converte.uno/diagnostico-web/"
           for i in $(seq 1 18); do
             code=$(curl -L --silent --show-error --max-time 18 -o /tmp/diagnostico.html -w '%{http_code}' "$url" || true)
-            if [ "$code" = "200" ] && grep -Fq 'Analiza tu página gratis' /tmp/diagnostico.html; then
+            if [ "$code" = "200" ] && grep -Fq 'Escribe la página que quieres revisar' /tmp/diagnostico.html; then
               echo "OK: Diagnostico Web publico y version nueva"
               break
             fi
@@ -66,15 +66,19 @@ jobs:
               --data-urlencode 'url=https://example.com/' \
               --data-urlencode 'objetivo=ventas' "$url" || true)
             if [ "$code" = "200" ] && \
-               grep -Fq 'Comprar informe completo' /tmp/reporte-cta.html && \
+               grep -Fq 'Comprar informe y recibir PDF' /tmp/reporte-cta.html && \
                grep -Fq 'id="planes"' /tmp/reporte-cta.html && \
-               grep -Fq 'Seguimiento de mejoras' /tmp/reporte-cta.html && \
+               grep -Fq 'Comprueba tus avances' /tmp/reporte-cta.html && \
                grep -Fq 'class="tier popular tier-clickable"' /tmp/reporte-cta.html && \
-               grep -Fq 'aria-label="Comprar informe completo' /tmp/reporte-cta.html && \
-               grep -Fq 'action="/diagnostico-web/suscribir"' /tmp/reporte-cta.html && \
+               grep -Fq 'formaction="/diagnostico-web/comprar"' /tmp/reporte-cta.html && \
+               grep -Fq 'formaction="/diagnostico-web/suscribir"' /tmp/reporte-cta.html && \
                grep -Fq '<svg viewBox="0 0 24 24"' /tmp/reporte-cta.html && \
+               grep -Fq 'data-plan="unico"' /tmp/reporte-cta.html && \
+               grep -Fq 'data-plan="mensual"' /tmp/reporte-cta.html && \
+               grep -Fq 'Ver los 14 aspectos que incluye el informe' /tmp/reporte-cta.html && \
+               grep -Fq 'Ver qué revisamos cada mes y cómo funciona' /tmp/reporte-cta.html && \
                grep -Fq '@media(max-width:470px)' /tmp/reporte-cta.html; then
-              echo "OK: diagnóstico compacto, tres iconos SVG, dos tarjetas completas nativas y CSS móvil"
+              echo "OK: tres tarjetas con detalles propios, 14 aspectos por plan, CTA nativo y CSS móvil"
               exit 0
             fi
             echo "Intento $i: HTTP $code, esperando la version con CTA..."
