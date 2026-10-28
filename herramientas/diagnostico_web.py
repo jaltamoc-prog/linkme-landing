@@ -311,6 +311,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         contact_url=contact_link(url) if audit else "")
     response = make_response(page, code)
     response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Diagnostico-Revision"] = "2026-10-28-limites-v2"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'self'"
     if audit or error or paid:
