@@ -35,6 +35,24 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn("Tu pagina no tiene".encode(), r.data) if False else None
         self.assertNotIn(b"<script>alert(1)</script>", r.data)
 
+    def test_public_result_always_has_a_working_next_step(self):
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_PAGOS_ACTIVOS": "",
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "",
+            "DIAGNOSTICO_CONTACT_WHATSAPP": "",
+        }), patch.object(dw, "fetch_html",
+                         return_value=("https://ejemplo.com/", HTML, {})):
+            r = self.client.post("/diagnostico-web/", data={
+                "url": "https://ejemplo.com/", "objetivo": "contactos",
+            })
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'href="#planes"', r.data)
+        self.assertIn(b'id="planes"', r.data)
+        self.assertIn("Ver cómo continuar con las mejoras".encode(), r.data)
+        self.assertIn("Suscripción mensual".encode(), r.data)
+        self.assertIn("pago seguro".encode(), r.data)
+        self.assertNotIn(b'action="/diagnostico-web/comprar"', r.data)
+
     def test_no_public_report_for_local_networks(self):
         for url in ["http://127.0.0.1/", "http://192.168.0.1/", "http://example.com:8080",
                     "http://localhost/", "http://user:secret@example.com/"]:
