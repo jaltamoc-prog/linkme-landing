@@ -103,21 +103,24 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 </div>
 </section>
 {% endif %}
+{% if checkout_enabled or contact_url %}
 <section class="card tierscard">
 <div class="label">Una herramienta útil, no otra tabla incomprensible</div>
 <h2>El siguiente paso depende de lo que quieras mejorar</h2>
 <div class="tiers">
 <div class="tier"><strong>Diagnóstico gratuito</strong><div class="price">$0</div><p>Tres acciones prioritarias, sus razones y recomendaciones prácticas. Sin cuenta obligatoria.</p></div>
-<div class="tier"><strong>Informe ampliado</strong><div class="price">{{price_label or "Pago único"}}</div><p>Todas las observaciones, evidencias y pasos para resolverlas. Ideal para compartir con tu diseñador web.</p>
+{% if checkout_enabled %}<div class="tier"><strong>Informe ampliado</strong><div class="price">{{price_label or "Pago único"}}</div><p>Todas las observaciones, evidencias y pasos para resolverlas. Ideal para compartir con tu diseñador web.</p>
 {% if checkout_enabled and audit and not paid %}
 <form method="post" action="/diagnostico-web/comprar"><input type="hidden" name="url" value="{{audit.url}}"><input type="hidden" name="objetivo" value="{{goal}}"><button type="submit">Comprar informe</button></form>
 {% elif not checkout_enabled %}<p class="note">Pago todavía no habilitado. No se realiza ningún cobro.</p>{% endif %}
 </div>
-<div class="tier"><strong>Ayuda para implementar</strong><div class="price">Por cotización</div><p>Servicio opcional para que un especialista revise e implemente los cambios.</p>
+{% endif %}
+{% if contact_url %}<div class="tier"><strong>Ayuda para implementar</strong><div class="price">Por cotización</div><p>Servicio opcional para que un especialista revise e implemente los cambios.</p>
 {% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Solicitar propuesta</a>
 {% else %}<p class="note">Canal comercial pendiente de habilitación.</p>{% endif %}
-</div></div>
+</div>{% endif %}</div>
 </section>
+{% endif %}
 <section class="card">
 <h2>Qué podemos comprobar y qué no</h2>
 <p>Revisamos títulos, descripciones, estructura, enlaces visibles y señales de indexabilidad en el HTML público. No podemos conocer las ventas, visitas, conversiones, posiciones en Google ni la indexación efectiva sin acceso autorizado a las cuentas del propietario. Algunos elementos que aparecen mediante JavaScript podrían no detectarse.</p>
