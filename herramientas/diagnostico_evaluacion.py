@@ -10,6 +10,25 @@ import unicodedata
 STATUS = {"ok": "Señal encontrada", "issue": "Conviene revisar",
           "review": "Por confirmar"}
 
+# Descripción comercial exacta de cada asunto, reutilizada en ambos paquetes.
+# No equiparar una señal de HTML con una verificación privada de Google.
+SERVICE_CHECKLIST = (
+    ("Google Search Console", "Guía para comprobar registro e indexación en la cuenta del propietario"),
+    ("Sitemap", "Señales públicas del mapa y cómo confirmar su envío a Google"),
+    ("Google Analytics", "Etiquetas visibles y pasos para verificar medición de visitas"),
+    ("Perfil de Empresa en Google", "Vínculos visibles y guía para confirmar datos de Google Maps"),
+    ("Frase principal de búsqueda", "Si la frase que indiques aparece en el título de la página"),
+    ("Ciudad donde vendes", "Si la ciudad que indiques se menciona en el contenido"),
+    ("Descripción en Google", "Si la página explica con claridad su oferta"),
+    ("Enlaces entre tus páginas", "Si el visitante puede descubrir otros servicios"),
+    ("Imágenes y velocidad", "Formato y señales de imágenes; velocidad real requiere medición aparte"),
+    ("Enlaces desde otros sitios", "Cómo verificar menciones externas desde Search Console"),
+    ("Bloqueos de buscadores", "Si el HTML incluye una orden para no aparecer en Google"),
+    ("Presentación en celular", "Señales de adaptación; funcionamiento visual por confirmar"),
+    ("Mensaje principal", "Si existe un encabezado principal identificable"),
+    ("Contacto y compra", "Si hay enlaces reconocibles para contactar, reservar o comprar"),
+)
+
 def _fold(text):
     return "".join(c for c in unicodedata.normalize("NFKD", str(text or "").casefold())
                    if not unicodedata.combining(c))
