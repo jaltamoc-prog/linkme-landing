@@ -1,0 +1,38 @@
+name: Diagnostico Web - auditoria de sitios propios
+
+on:
+  push:
+    paths: ['.github/workflows/diagnostico-web-negocios.yml']
+  workflow_dispatch:
+
+jobs:
+  sites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: https://brugafi.homes/
+            goal: ventas
+          - site: https://recuperatupension.casa/
+            goal: reservas
+    steps:
+      - name: Revisar una web de nuestros proyectos reales
+        shell: bash
+        env:
+          TARGET: ${{ matrix.site }}
+          GOAL: ${{ matrix.goal }}
+        run: |
+          set -euo pipefail
+          code=$(curl --silent --show-error -L --max-time 90 -o /tmp/reporte.html -w '%{http_code}' \
+            --data-urlencode "url=$TARGET" --data-urlencode "objetivo=$GOAL" \
+            https://converte.uno/diagnostico-web/)
+          echo "URL $TARGET -> HTTP $code"
+          if [ "$code" != 200 ]; then
+            head -c 900 /tmp/reporte.html
+            exit 1
+          fi
+          grep -Fq 'Qué conviene hacer primero' /tmp/reporte.html
+          grep -Fq "$TARGET" /tmp/reporte.html
+          echo 'Auditoria completada'
