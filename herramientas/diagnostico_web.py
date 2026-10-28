@@ -142,8 +142,8 @@ def with_context(audit, keyword="", city="", goal="contactos"):
     keyword = context_text(keyword)
     city = context_text(city)
     a["keyword"], a["city"] = keyword, city
-    a["city_in_page"] = (business._fold(city) in business._fold(a.get("page_text","")))
-        if city and a.get("page_text") is not None else None
+    a["city_in_page"] = (business._fold(city) in business._fold(a.get("page_text", ""))
+                         if city and a.get("page_text") is not None else None)
     a["goal"] = goal if goal in GOALS else "contactos"
     return a
 
