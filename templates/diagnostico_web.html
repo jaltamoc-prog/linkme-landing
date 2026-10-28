@@ -64,7 +64,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 {% if audit and summary %}
 <section class="card" id="resultado">
 <div class="label">{{"Informe ampliado · pago verificado" if paid else "Diagnóstico inicial gratuito"}}</div>
-<h2>{% if summary.count %}Encontramos {{summary.count}} oportunidades para revisar{% else %}No encontramos problemas evidentes en esta comprobación inicial{% endif %}</h2>
+<h2>{% if summary.count == 1 %}Encontramos 1 oportunidad para revisar{% elif summary.count > 1 %}Encontramos {{summary.count}} oportunidades para revisar{% else %}No encontramos problemas evidentes en esta comprobación inicial{% endif %}</h2>
 <p class="note"><strong>Sitio analizado:</strong> {{audit.url}} · <strong>Objetivo:</strong> {{goals[goal]}} · <strong>Fecha:</strong> {{audit.checked}}</p>
 <h3>Qué conviene hacer primero</h3>
 {% for item in (summary.findings if paid else summary.top) %}
@@ -81,6 +81,18 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 {% if summary.positives %}
 <h3 style="margin-top:24px">Lo que ya está bien encaminado</h3>
 {% for item in summary.positives %}<p class="positive">{{item}}</p>{% endfor %}
+{% endif %}
+{% if paid and expanded_checks %}
+<h3 style="margin-top:24px">Plan completo: qué revisar y cómo mejorarlo</h3>
+<p class="note">Además de los problemas detectados, tu informe incluye {{expanded_checks|length}} comprobaciones del HTML y sus siguientes pasos. La revisión manual sigue siendo importante para comprobar su funcionamiento real.</p>
+{% for check in expanded_checks %}
+<article class="finding">
+<div class="priority">{{check.priority}} · {{check.status}}</div>
+<h3>{{loop.index}}. {{check.area}}</h3>
+<p class="proof"><strong>Evidencia encontrada:</strong> {{check.evidence}}</p>
+<p class="action"><strong>Qué hacer:</strong> {{check.action}}</p>
+</article>
+{% endfor %}
 {% endif %}
 {% if paid %}
 <h3 style="margin-top:24px">Información técnica para tu desarrollador</h3>
@@ -130,8 +142,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 </div>
 <div class="tier popular">
 <strong>Informe completo</strong>
-<div class="price">{{price_label if checkout_enabled else "Pago único"}}</div>
-<p>Informe digital con todas las oportunidades encontradas, prioridades y evidencia, más un PDF descargable tras verificar el pago.</p>
+<div class="price">{{price_label}}</div>
+<p>Todas las oportunidades detectadas, un plan de {{10}} comprobaciones con evidencia y acciones, y un PDF descargable después del pago.</p>
 {% if checkout_enabled and audit and not paid %}
 <form method="post" action="/diagnostico-web/comprar">
 <input type="hidden" name="url" value="{{audit.url}}">
