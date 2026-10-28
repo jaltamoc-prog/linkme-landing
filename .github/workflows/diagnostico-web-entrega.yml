@@ -1,0 +1,42 @@
+name: Diagnostico Web - pruebas de entrega de ambos paquetes
+
+on:
+  push:
+    paths:
+      - 'tests/test_diagnostico_entrega.py'
+      - '.github/workflows/diagnostico-web-entrega.yml'
+      - 'herramientas/diagnostico_web.py'
+      - 'herramientas/diagnostico_seguimiento.py'
+      - 'herramientas/diagnostico_pdf.py'
+      - 'templates/diagnostico_seguimiento.html'
+  workflow_dispatch:
+
+jobs:
+  entregas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias de producción y lector de PDF para las pruebas
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install "pypdf>=5,<7"
+      - name: Compilar los componentes de diagnóstico y seguimiento
+        run: python -m compileall -q app.py herramientas/diagnostico_web.py herramientas/diagnostico_seguimiento.py herramientas/diagnostico_pdf.py
+      - name: Probar ambos recorridos completos y leer el contenido de los PDF
+        env:
+          DIAGNOSTICO_TEST_EVIDENCE_DIR: evidencias-entrega
+        run: |
+          python -m unittest discover -s tests -p 'test_diagnostico_entrega.py' -v
+          python -m unittest discover -s tests -p 'test_diagnostico_publico.py' -v
+      - name: Subir PDFs de demostración y comprobantes sin datos personales
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-web-pruebas-entrega-387-597
+          path: evidencias-entrega/
+          if-no-files-found: warn
+          retention-days: 14
