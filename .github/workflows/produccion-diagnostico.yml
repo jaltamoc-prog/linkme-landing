@@ -62,14 +62,17 @@ jobs:
           set -euo pipefail
           url="https://converte.uno/diagnostico-web/"
           for i in $(seq 1 18); do
-            code=$(curl -LsS --max-time 40 -o /tmp/reporte-cta.html -w '%{http_code}' \
+            code=$(curl -LsS --max-time 40 -D /tmp/reporte-cta.headers -o /tmp/reporte-cta.html -w '%{http_code}' \
               --data-urlencode 'url=https://example.com/' \
               --data-urlencode 'objetivo=ventas' "$url" || true)
             if [ "$code" = "200" ] && \
                grep -Fq 'Ver cómo continuar con las mejoras' /tmp/reporte-cta.html && \
                grep -Fq 'id="planes"' /tmp/reporte-cta.html && \
-               grep -Fq 'Seguimiento de mejoras' /tmp/reporte-cta.html; then
-              echo "OK: diagnostico y CTA comercial funcional en produccion"
+               grep -Fq 'Seguimiento de mejoras' /tmp/reporte-cta.html && \
+               grep -Fq 'tier popular tier-clickable' /tmp/reporte-cta.html && \
+               grep -Fq 'aria-label="Comprar informe completo' /tmp/reporte-cta.html && \
+               grep -Fiq "form-action 'self' https://checkout.stripe.com" /tmp/reporte-cta.headers; then
+              echo "OK: diagnostico, tarjeta completamente clicable y redireccion CSP a Stripe en produccion"
               exit 0
             fi
             echo "Intento $i: HTTP $code, esperando la version con CTA..."
