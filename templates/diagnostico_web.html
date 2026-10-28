@@ -98,7 +98,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:10px;border-
 <p class="note">También detectamos {{summary.count-3}} observaciones adicionales. El informe ampliado incluye todas las acciones y sus evidencias.</p>
 {% endif %}
 <div class="actions">
-{% if paid %}<button type="button" onclick="window.print()">Guardar informe como PDF</button>{% else %}<span class="note">Puedes guardar el resultado con Imprimir → Guardar como PDF.</span>{% endif %}
+{% if paid %}<span class="note"><strong>Guardar PDF:</strong> en el navegador utiliza Imprimir → Guardar como PDF.</span>{% else %}<span class="note">Puedes guardar el resultado con Imprimir → Guardar como PDF.</span>{% endif %}
 {% if contact_url %}<a class="button alt" href="{{contact_url}}" target="_blank" rel="noopener noreferrer">Pedir ayuda con las mejoras</a>{% endif %}
 </div>
 </section>
