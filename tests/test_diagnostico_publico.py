@@ -110,6 +110,98 @@ class DiagnosticSmokeTests(unittest.TestCase):
             self.assertEqual(other.status_code, 200)
             self.assertEqual(download.call_count, 21)
 
+    def test_monthly_history_snapshot_and_comparison(self):
+        from herramientas import diagnostico_seguimiento as mon
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            audit = dw.analyse("https://ejemplo.com/")
+        audit["goal"] = "ventas"
+        metadata = mon.baseline_metadata(audit)
+        self.assertEqual(mon.read_baseline(metadata)["title"], audit["title"])
+        updates = mon.month_updates(metadata, audit)
+        metadata.update(updates)
+        records = mon.history(metadata)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(len(mon.differences(mon.read_baseline(metadata), records[0]["audit"])), 0)
+        changed = dict(audit)
+        changed["title"] = "Nuevo título"
+        updates = mon.month_updates(metadata, changed)
+        metadata.update(updates)
+        records = mon.history(metadata)
+        self.assertEqual(len(records), 1)
+        self.assertTrue(any(row["field"] == "Título de la página"
+                            for row in mon.differences(mon.read_baseline(metadata),
+                                                       records[0]["audit"])))
+
+    def test_monthly_checkout_disabled_until_fully_configured(self):
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS": "",
+            "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID": "",
+        }):
+            self.assertFalse(dw.subscriptions_enabled())
+            self.assertEqual(self.client.post("/diagnostico-web/suscribir").status_code, 503)
+            page = self.client.get("/diagnostico-web/")
+            self.assertNotIn(b'action="/diagnostico-web/suscribir"', page.data)
+
+    def test_monthly_checkout_validates_price_and_writes_baseline(self):
+        from unittest.mock import Mock
+        with patch.dict("os.environ", {
+            "DIAGNOSTICO_STRIPE_SECRET_KEY": "rk_live_mock",
+            "DIAGNOSTICO_STRIPE_PRICE_ID": dw.REPORT_PRICE_ID,
+            "DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS": "1",
+            "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID": dw.monitor.PRICE_ID,
+        }), patch.object(dw, "fetch_html",
+                        return_value=("https://ejemplo.com/", HTML, {})):
+            mock = Mock()
+            mock.json.return_value = {"url": "https://checkout.stripe.com/c/pay/example"}
+            with patch("requests.post", return_value=mock) as stripe:
+                result = self.client.post("/diagnostico-web/suscribir",
+                    data={"url": "https://ejemplo.com/", "objetivo": "ventas"})
+        self.assertEqual(result.status_code, 303)
+        data = stripe.call_args.kwargs["data"]
+        self.assertEqual(data["mode"], "subscription")
+        self.assertEqual(data["line_items[0][price]"], dw.monitor.PRICE_ID)
+        self.assertEqual(data["subscription_data[metadata][monitor_goal]"], "ventas")
+        self.assertEqual(data["subscription_data[metadata][monitor_service]"],
+                         "diagnostico-web-seguimiento")
+
+    def test_monthly_dashboard_requires_paid_active_subscription(self):
+        from unittest.mock import Mock
+        from werkzeug.exceptions import Forbidden
+        from herramientas import diagnostico_seguimiento as mon
+        sid = "cs_live_" + "Z"*24
+        subid = "sub_" + "B"*22
+        with patch.object(dw, "fetch_html",
+                          return_value=("https://ejemplo.com/", HTML, {})):
+            a = dw.analyse("https://ejemplo.com/")
+        a["goal"] = "ventas"
+        meta = mon.baseline_metadata(a)
+        session = {"id":sid, "mode":"subscription", "status":"complete",
+                   "payment_status":"paid", "amount_total":34900,
+                   "currency":"mxn", "livemode":True, "subscription":subid,
+                   "metadata":{"service":"diagnostico-web-seguimiento"}}
+        subscription = {"id":subid, "status":"active", "livemode":True,
+                        "metadata":meta, "items":{"data":[{
+                            "price":{"id":mon.PRICE_ID}, "quantity":1
+                        }]}}
+        with app.test_request_context("/diagnostico-web/seguimiento"), patch.dict(
+            "os.environ", {"DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
+                           "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID}
+        ), patch.object(dw, "_billing_request", side_effect=[
+            session, subscription,
+        ]):
+            result = dw._monthly_subscription(sid)
+            self.assertEqual(result[1], "https://ejemplo.com/")
+            self.assertEqual(result[2], "ventas")
+        with app.test_request_context("/diagnostico-web/seguimiento"), patch.dict(
+            "os.environ", {"DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
+                           "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID}
+        ), patch.object(dw, "_billing_request", side_effect=[
+            session, {**subscription, "status":"canceled"},
+        ]):
+            with self.assertRaises(Forbidden):
+                dw._monthly_subscription(sid)
+
     def test_paid_feature_disabled_without_keys(self):
         with patch.dict("os.environ", {"DIAGNOSTICO_STRIPE_SECRET_KEY": "",
                                      "DIAGNOSTICO_STRIPE_PRICE_ID": ""}):
