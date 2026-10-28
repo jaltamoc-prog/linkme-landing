@@ -49,9 +49,9 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn(b'href="#planes"', r.data)
         self.assertIn(b'id="planes"', r.data)
         self.assertIn("Ver cómo continuar con las mejoras".encode(), r.data)
-        self.assertIn("Seguimiento de mejoras".encode(), r.data)
-        self.assertIn("pago seguro".encode(), r.data)
-        self.assertNotIn(b'action="/diagnostico-web/comprar"', r.data)
+        self.assertIn("Comprueba si estás mejorando".encode(), r.data)
+        self.assertIn("Pago temporalmente no disponible".encode(), r.data)
+        self.assertNotIn(b'formaction="/diagnostico-web/comprar"', r.data)
 
     def test_no_public_report_for_local_networks(self):
         for url in ["http://127.0.0.1/", "http://192.168.0.1/", "http://example.com:8080",
@@ -319,6 +319,7 @@ class DiagnosticSmokeTests(unittest.TestCase):
             "DIAGNOSTICO_STRIPE_SECRET_KEY":"rk_live_mock",
             "DIAGNOSTICO_STRIPE_PRICE_ID":dw.REPORT_PRICE_ID,
             "DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID":dw.monitor.PRICE_ID,
+            "DIAGNOSTICO_PRICE_LABEL":"$199 MXN",
         }):
             page=self.client.get("/diagnostico-web/")
         self.assertEqual(page.status_code,200)
@@ -623,12 +624,12 @@ class DiagnosticSmokeTests(unittest.TestCase):
         self.assertIn("default-src 'none'", csp)
         self.assertIn("base-uri 'none'", csp)
         self.assertIn("tier popular tier-clickable", result.get_data(as_text=True))
-        self.assertIn('action="/diagnostico-web/comprar"', result.get_data(as_text=True))
-        self.assertIn('<button class="tier-inner" type="submit"', result.get_data(as_text=True))
+        self.assertIn('formaction="/diagnostico-web/comprar"', result.get_data(as_text=True))
+        self.assertIn('form="audit-form" formaction="/diagnostico-web/comprar"', result.get_data(as_text=True))
         self.assertIn('<svg viewBox="0 0 24 24"', result.get_data(as_text=True))
         self.assertIn("form-grid", result.get_data(as_text=True))
         self.assertIn('class="tier popular tier-clickable"', result.get_data(as_text=True))
-        self.assertIn('type="hidden" name="url"', result.get_data(as_text=True))
+        self.assertIn('id="audit-form"', result.get_data(as_text=True))
 
     def test_checkout_transition_never_redirects_to_untrusted_domain(self):
         with app.test_request_context("/diagnostico-web/comprar"):
