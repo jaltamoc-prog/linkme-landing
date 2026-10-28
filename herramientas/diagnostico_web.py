@@ -40,8 +40,9 @@ _slots = threading.BoundedSemaphore(3)
 _payment_lock = threading.Lock()
 _payment_ip = defaultdict(deque)
 # Solo precio autorizado por el propietario del negocio para el informe de pago unico.
-REPORT_PRICE_ID = "price_1UVcyUFHNcj4CFU1OzZrSYfB"
-REPORT_AMOUNT_MXN = 19900
+REPORT_PRICE_ID = "price_1UVfWtFHNcj4CFU1hC5ILhJg"
+REPORT_AMOUNT_MXN = 38700
+LEGACY_REPORT_PRICES = {"price_1UVcyUFHNcj4CFU1OzZrSYfB": 19900}
 
 
 def public_url(raw):
@@ -468,7 +469,7 @@ def subscriptions_enabled():
 def payments_enabled():
     return (stripe_ready()
             and os.getenv("DIAGNOSTICO_PAGOS_ACTIVOS") == "1"
-            and os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip() == "$199 MXN")
+            and os.getenv("DIAGNOSTICO_PRICE_LABEL", "").strip() == "$387 MXN")
 
 
 def payment_limited(ip):
@@ -580,8 +581,7 @@ def verify_purchase(session_id):
     data = response.json()
     if (not data.get("livemode") or data.get("id") != session_id
         or data.get("payment_status") != "paid" or data.get("status") != "complete"
-        or data.get("mode") != "payment" or data.get("currency") != "mxn"
-        or data.get("amount_total") != REPORT_AMOUNT_MXN):
+        or data.get("mode") != "payment" or data.get("currency") != "mxn"):
         abort(403)
     meta = data.get("metadata") or {}
     if meta.get("service") != "diagnostico-web-informe":
@@ -590,10 +590,14 @@ def verify_purchase(session_id):
                      auth=auth, timeout=12)
     items.raise_for_status()
     line_items = items.json().get("data") or []
-    if (len(line_items) != 1
-        or line_items[0].get("price", {}).get("id") != REPORT_PRICE_ID
-        or line_items[0].get("quantity") != 1
-        or line_items[0].get("amount_total") != REPORT_AMOUNT_MXN):
+    allowed_prices = {REPORT_PRICE_ID: REPORT_AMOUNT_MXN, **LEGACY_REPORT_PRICES}
+    if len(line_items) != 1:
+        abort(403)
+    item = line_items[0]
+    price_id = (item.get("price") or {}).get("id")
+    amount = allowed_prices.get(price_id)
+    if (amount is None or data.get("amount_total") != amount
+            or item.get("quantity") != 1 or item.get("amount_total") != amount):
         abort(403)
     url = public_url(meta.get("url", ""))
     goal = meta.get("goal", "contactos")
@@ -615,8 +619,8 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         seo_overview=business.overview(audit, goal) if paid and audit else None,
         expanded_checks=expanded_plan(audit, goal) if paid and audit else [],
         checkout_enabled=payments_enabled(),
-        price_label="$199 MXN",
-        subscription_label="$349 MXN/mes",
+        price_label="$387 MXN",
+        subscription_label="$597 MXN/mes",
         subscription_enabled=subscriptions_enabled(),
         service_checks=business.SERVICE_CHECKLIST,
         download_url=download_url,
