@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - '.github/workflows/diagnostico-web-limites.yml'
-      - 'herramientas/diagnostico_web.py'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +19,7 @@ jobs:
           for n in $(seq 1 24); do
             curl --silent --show-error -L --max-time 15 -D /tmp/cabeceras.txt \
               -o /dev/null https://converte.uno/diagnostico-web/ || true
-            if grep -Fiq 'X-Diagnostico-Revision: 2026-10-28-limites-v2' /tmp/cabeceras.txt; then
+            if grep -Fiq 'X-Diagnostico-Revision: 2026-10-28-pdf-pago-v1' /tmp/cabeceras.txt; then
               echo 'La version corregida ya esta publicada.'
               break
             fi
@@ -38,7 +37,7 @@ jobs:
               --data-urlencode 'objetivo=ventas' \
               https://converte.uno/diagnostico-web/)
             echo "Consulta $i: HTTP $code"
-            grep -Fiq "X-Diagnostico-Revision: 2026-10-28-limites-v2" /tmp/encabezados.html || { echo "::error::Una instancia esta sirviendo codigo antiguo"; exit 1; }
+            grep -Fiq "X-Diagnostico-Revision: 2026-10-28-pdf-pago-v1" /tmp/encabezados.html || { echo "::error::Una instancia esta sirviendo codigo antiguo"; exit 1; }
             if [ "$code" != "200" ]; then
               echo "::error::Analisis repetido fue bloqueado."
               grep -o 'Limite temporal de analisis alcanzado\|Se alcanzó temporalmente el límite' /tmp/reporte.html || true
