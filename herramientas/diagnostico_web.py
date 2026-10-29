@@ -471,7 +471,7 @@ def stripe_test_mode():
     if os.getenv("RENDER", "").lower() == "true":
         return False  # Nunca permitir test mode en el servicio Render de producción.
     origin = os.getenv("DIAGNOSTICO_TEST_ORIGIN", "").rstrip("/")
-    return origin in ("http://127.0.0.1:8765", "http://localhost:8765")
+    return origin in ("http://127.0.0.1:8876", "http://localhost:8876")
 
 
 def report_price_id():
