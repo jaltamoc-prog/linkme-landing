@@ -60,21 +60,21 @@ QUICK = {
  "city": ("Tu ciudad aparece en esta página", "Incluye tu ciudad si atiendes una zona"),
  "description": ("Vimos una descripción de tu oferta", "Resume qué vendes en una frase"),
  "internal_links": ("Hay enlaces a más páginas", "Enlaza con tus productos o servicios"),
- "images_speed": ("Detectamos imágenes modernas", "Mide la carga en PageSpeed Insights"),
+ "images_speed": ("Detectamos imágenes modernas", "Mide la velocidad con la herramienta de Google"),
  "backlinks": ("Requiere datos de tu cuenta Google", "Revisa quién enlaza tu web en Google"),
- "noindex": ("No vimos bloqueo 'noindex'", "Consulta si la página debe ser pública"),
+ "noindex": ("No vimos una orden para ocultarla", "Consulta si la página debe ser pública"),
  "mobile": ("Hay una señal básica para móvil", "Prueba botones y texto en tu celular"),
  "heading": ("Encontramos un título principal", "Pon tu oferta en el título principal"),
  "action_path": ("Detectamos una forma de contacto", "Prueba tu botón de contacto o compra"),
 }
 ISSUE = {
  "sitemap": "No vimos una referencia al mapa",
- "analytics": "No vimos la etiqueta en el HTML",
+ "analytics": "No vimos señal de medición en el inicio",
  "keyword_title": "La frase elegida no está en el título",
  "city": "La ciudad elegida no aparece",
  "description": "Falta la descripción de tu oferta",
  "internal_links": "No vimos enlaces a otros servicios",
- "noindex": "Detectamos una orden de bloqueo",
+ "noindex": "Vimos una orden para ocultar la página",
  "mobile": "No vimos señal básica para móvil",
  "heading": "Revisa el título principal de tu web",
  "action_path": "No vimos una forma clara de contacto",
@@ -259,7 +259,7 @@ def _main_one_time(c, audit, goal, rows):
     _distribution(c, H-267, stats)
     _line(c, PAD, H-292, "Tu página se presenta como: " + str(audit.get("title") or "Sin título visible"),
           WIDTH, 9, color=DARK)
-    _line(c, PAD, H-307, "%d aspectos revisados · No es una calificación SEO" % len(rows),
+    _line(c, PAD, H-307, "%d aspectos revisados · Sin adivinar visitas ni ventas" % len(rows),
           WIDTH, 8.5, color=MUTED)
     _line(c, PAD, H-331, "Empieza por estas 3 acciones", WIDTH, 15, bold=True)
     prioritized = [r for r in rows if r["status"]=="issue"]+[r for r in rows if r["status"]=="review"]
@@ -334,7 +334,7 @@ def _main_monthly(c, url, goal, baseline, latest, history, rows):
     prog=business.progress(baseline,latest,goal)
     stats=(len(prog["improved"]),len(prog["regressed"]),
            sum(a["status"]=="review" for a in rows))
-    labels=("Mejoras detectadas","Necesitan atención","Por confirmar")
+    labels=("Mejoras detectadas","Retrocesos","Por confirmar")
     for i,(n,label,key) in enumerate(zip(stats,labels,("ok","issue","review"))):
         _kpi(c,PAD+i*((WIDTH-20)/3+10),H-149,n,label,STATES[key][1],STATES[key][2])
     _progress_bars(c,H-263,prog)
