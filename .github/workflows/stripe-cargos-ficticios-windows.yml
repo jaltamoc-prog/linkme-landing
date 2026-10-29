@@ -1,0 +1,63 @@
+name: Compilar Stripe cargos ficticios - Windows portable
+
+on:
+  push:
+    paths:
+      - '.github/workflows/stripe-cargos-ficticios-windows.yml'
+      - 'stripe_cargos_ficticios_gui.py'
+      - 'herramientas/stripe_pruebas/**'
+      - 'herramientas/diagnostico_web.py'
+      - 'herramientas/diagnostico_visual_pdf.py'
+      - 'herramientas/diagnostico_pdf.py'
+      - 'herramientas/diagnostico_evaluacion.py'
+      - 'herramientas/diagnostico_seguimiento.py'
+      - 'templates/diagnostico*.html'
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencias y herramientas de compilación
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Flask==3.0.3 reportlab==4.2.5 beautifulsoup4==4.12.3 urllib3==2.2.3 requests==2.32.3
+          python -m pip install pyinstaller==6.16.0
+      - name: Compilar y probar modo Stripe Test sin usar cuentas reales
+        shell: pwsh
+        run: |
+          python -m compileall -q stripe_cargos_ficticios_gui.py herramientas/diagnostico_web.py
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name "Stripe cargos ficticios" --add-data "templates;templates" --hidden-import herramientas.diagnostico_web --hidden-import herramientas.diagnostico_seguimiento --hidden-import herramientas.diagnostico_visual_pdf --hidden-import herramientas.diagnostico_evaluacion --collect-data reportlab stripe_cargos_ficticios_gui.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & ".\dist\Stripe cargos ficticios.exe" --self-test
+          if ($LASTEXITCODE -ne 0) { throw "El EXE compilado no pudo iniciar su motor." }
+          Write-Output "OK - GUI compilada, Flask y templates cargados en Windows."
+      - name: Empaquetar instalador hacia la ruta exacta de Windows y alternativa sin EXE
+        shell: pwsh
+        run: |
+          New-Item -Type Directory -Force -Path 'entrega\paquete\herramientas' | Out-Null
+          New-Item -Type Directory -Force -Path 'entrega\paquete\templates' | Out-Null
+          Copy-Item 'dist\Stripe cargos ficticios.exe' 'entrega\paquete\'
+          Copy-Item 'stripe_cargos_ficticios_gui.py' 'entrega\paquete\'
+          Copy-Item 'herramientas\diagnostico*.py' 'entrega\paquete\herramientas\'
+          if (Test-Path 'herramientas\__init__.py') { Copy-Item 'herramientas\__init__.py' 'entrega\paquete\herramientas\' }
+          Copy-Item 'templates\diagnostico*.html' 'entrega\paquete\templates\'
+          Copy-Item 'herramientas\stripe_pruebas\INSTALAR.cmd' 'entrega\'
+          Copy-Item 'herramientas\stripe_pruebas\EJECUTAR_CON_PYTHON.cmd' 'entrega\paquete\'
+          Copy-Item 'herramientas\stripe_pruebas\LEEME.txt' 'entrega\paquete\'
+          if (!(Test-Path 'entrega\paquete\Stripe cargos ficticios.exe')) { throw 'Falta ejecutable.' }
+          if (!(Test-Path 'entrega\paquete\templates\diagnostico_web.html')) { throw 'Falta template de compra.' }
+          Write-Output "Ruta de destino configurada: C:\procesos python\Revisar metricas web\versiones\Stripe cargos ficticios"
+      - name: Publicar ZIP descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stripe_cargos_ficticios_Windows_v1
+          path: entrega/
+          if-no-files-found: error
+          retention-days: 30
