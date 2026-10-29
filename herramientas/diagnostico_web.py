@@ -1012,8 +1012,11 @@ def seguimiento_descargar():
 
 
 
-@bp.route("/<section>", methods=["GET"])
-def legal(section):
+@bp.route("/terminos", methods=["GET"])
+@bp.route("/privacidad", methods=["GET"])
+@bp.route("/pagos", methods=["GET"])
+def legal():
+    section = request.path.rsplit("/", 1)[-1]
     pages = {
         "terminos": "Términos del servicio",
         "privacidad": "Aviso de privacidad",
