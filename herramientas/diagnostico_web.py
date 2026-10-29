@@ -455,15 +455,68 @@ def cached(url):
         _slots.release()
 
 
+def stripe_mode():
+    """Entorno de cobro. Por defecto siempre es PRODUCCIÓN."""
+    return (os.getenv("DIAGNOSTICO_STRIPE_MODE", "live") or "live").strip().lower()
+
+
+def stripe_test_mode():
+    """Sandbox local EXPLÍCITO; no se activa por URL, cookies ni cabeceras.
+
+    La instancia real no permite cambiar de modo en una solicitud pública.
+    Stripe separa por completo claves y objetos test/live.
+    """
+    if stripe_mode() != "test" or os.getenv("DIAGNOSTICO_PRUEBA_SIN_COBRO") != "1":
+        return False
+    if os.getenv("RENDER", "").lower() == "true":
+        return False  # Nunca permitir test mode en el servicio Render de producción.
+    origin = os.getenv("DIAGNOSTICO_TEST_ORIGIN", "").rstrip("/")
+    return origin in ("http://127.0.0.1:8765", "http://localhost:8765")
+
+
+def report_price_id():
+    return (os.getenv("DIAGNOSTICO_STRIPE_TEST_PRICE_ID", "")
+            if stripe_mode() == "test" else REPORT_PRICE_ID)
+
+
+def monthly_price_id():
+    return (os.getenv("DIAGNOSTICO_STRIPE_TEST_MONTHLY_PRICE_ID", "")
+            if stripe_mode() == "test" else monitor.PRICE_ID)
+
+
+def stripe_return_origin():
+    return (os.getenv("DIAGNOSTICO_TEST_ORIGIN", "").rstrip("/")
+            if stripe_mode() == "test" else "https://converte.uno")
+
+
+def stripe_session_valid(sid):
+    if not isinstance(sid, str):
+        return False
+    prefix = "cs_test_" if stripe_mode() == "test" else "cs_live_"
+    return bool(re.fullmatch(re.escape(prefix) + r"[A-Za-z0-9]{15,250}", sid))
+
+
 def stripe_ready():
-    """Una credencial activa permite revisar compras anteriores aun si se pausan ventas."""
-    return (os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "").startswith(("sk_live_", "rk_live_"))
+    """Aísla modo de prueba; en producción sigue exigiendo precios y clave reales."""
+    key = os.getenv("DIAGNOSTICO_STRIPE_SECRET_KEY", "")
+    if stripe_mode() == "test":
+        return (
+            stripe_test_mode()
+            and key.startswith(("sk_test_", "rk_test_"))
+            and re.fullmatch(r"price_[A-Za-z0-9]{8,120}",
+                             os.getenv("DIAGNOSTICO_STRIPE_TEST_PRICE_ID", "")) is not None
+            and re.fullmatch(r"price_[A-Za-z0-9]{8,120}",
+                             os.getenv("DIAGNOSTICO_STRIPE_TEST_MONTHLY_PRICE_ID", "")) is not None
+        )
+    return (stripe_mode() == "live"
+            and key.startswith(("sk_live_", "rk_live_"))
             and os.getenv("DIAGNOSTICO_STRIPE_PRICE_ID") == REPORT_PRICE_ID)
 
 
 def subscriptions_enabled():
     return (stripe_ready() and os.getenv('DIAGNOSTICO_SUSCRIPCIONES_ACTIVAS') == '1'
-            and os.getenv('DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID') == monitor.PRICE_ID)
+            and (stripe_mode() == "test"
+                 or os.getenv('DIAGNOSTICO_STRIPE_MONTHLY_PRICE_ID') == monitor.PRICE_ID))
 
 
 def payments_enabled():
