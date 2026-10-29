@@ -50,6 +50,35 @@ class StripeSandboxTest(unittest.TestCase):
         dw._cache.clear()
         dw._payment_ip.clear()
 
+    def test_launcher_reuses_valid_test_price_without_creating_another(self):
+        import probar_stripe_sin_cobrar as launcher
+        expected={"id":TEST_PRICE,"livemode":False,"active":True,
+                  "currency":"mxn","unit_amount":38700,"recurring":None}
+        with patch("requests.get",return_value=reply({"data":[expected]})) as getter, \
+             patch("requests.post") as poster:
+            price=launcher.test_price(KEY,"diagnostico_web_test_informe_387_v1",
+                                      "Informe",38700,False)
+        self.assertEqual(price,TEST_PRICE)
+        self.assertEqual(getter.call_args.kwargs["params"]["lookup_keys[]"],
+                         "diagnostico_web_test_informe_387_v1")
+        poster.assert_not_called()
+        self.assertFalse(launcher.valid_price({**expected,"livemode":True},38700,False))
+
+    def test_launcher_creates_monthly_price_only_in_test_key_scope(self):
+        import probar_stripe_sin_cobrar as launcher
+        valid={"id":TEST_MONTHLY,"livemode":False,"active":True,
+               "currency":"mxn","unit_amount":59700,
+               "recurring":{"interval":"month"}}
+        with patch("requests.get",return_value=reply({"data":[]})), \
+             patch("requests.post",return_value=reply(valid)) as post:
+            price=launcher.test_price(KEY,"diagnostico_web_test_seguimiento_597_v1",
+                                      "Seguimiento",59700,True)
+        self.assertEqual(price,TEST_MONTHLY)
+        self.assertEqual(post.call_args.kwargs["data"]["unit_amount"],59700)
+        self.assertEqual(post.call_args.kwargs["data"]["recurring[interval]"],"month")
+        self.assertEqual(post.call_args.kwargs["auth"][0],KEY)
+        self.assertIn("product_data[name]",post.call_args.kwargs["data"])
+
     def test_isolation_requires_explicit_mode_flag_localhost_and_test_keys(self):
         with patch.dict(os.environ, ENV):
             self.assertTrue(dw.stripe_ready())
