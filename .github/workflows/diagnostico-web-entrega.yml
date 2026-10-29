@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'tests/test_diagnostico_entrega.py'
+      - 'tests/test_diagnostico_correo.py'
+      - 'herramientas/diagnostico_correo.py'
+      - 'templates/diagnostico_legal.html'
       - 'tests/test_stripe_sandbox.py'
       - 'probar_stripe_sin_cobrar.py'
       - '.github/workflows/diagnostico-web-entrega.yml'
@@ -36,6 +39,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_diagnostico_entrega.py' -v
           python -m unittest discover -s tests -p 'test_diagnostico_publico.py' -v
           python -m unittest discover -s tests -p 'test_stripe_sandbox.py' -v
+          python -m unittest discover -s tests -p 'test_diagnostico_correo.py' -v
       - name: Renderizar visualmente las cuatro paginas y comprobar límites
         run: |
           python - <<'PY'
