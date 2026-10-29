@@ -32,7 +32,8 @@
 {% for point in progress_history %}<div class="month-col"><strong>{{point.ok}}/{{point.total}}</strong><div class="track"><div class="fill" style="height:{{point.pct}}%"></div></div><span>{{point.month[:4] ~ '-' ~ point.month[4:] if point.month != 'Inicio' else 'Inicio'}}</span></div>{% endfor %}
 </div><p class="tiny">El historial solo refleja las fechas en que solicitaste una revisión; una barra más alta no garantiza más clientes.</p></div>{% endif %}
 <div class="row"><form method="post" action="/diagnostico-web/seguimiento/revisar"><input type="hidden" name="session_id" value="{{session_id}}"><button type="submit">Revisar mi página y guardar este mes</button></form>
-<a class="button alt" href="/diagnostico-web/seguimiento/descargar?session_id={{session_id|urlencode}}">Descargar comparación en PDF</a></div>
+<a class="button alt" href="/diagnostico-web/seguimiento/descargar?session_id={{session_id|urlencode}}">Descargar comparación en PDF</a>
+{% if email_enabled %}<form method="post" action="/diagnostico-web/correo/reenviar"><input type="hidden" name="session_id" value="{{session_id}}"><input type="hidden" name="plan" value="mensual"><button type="submit">Enviar PDF a mi correo</button></form>{% endif %}</div>
 {% if message %}<p class="notice">{{message}}</p>{% endif %}
 <p class="tiny">Cada nueva revisión actualiza únicamente el mes en curso. Guardamos hasta 12 meses y no cobramos por cada revisión.</p>
 </section>
@@ -60,5 +61,5 @@
 {% for item in history %}<tr><td>{{item.month[:4]}}-{{item.month[4:]}}</td><td>{{item.audit.checked}}</td><td>{{item.change_count}}</td></tr>
 {% else %}<tr><td colspan="3">La primera revisión de seguimiento aún no se ha guardado.</td></tr>{% endfor %}
 </tbody></table></details></section>
-<footer>Diagnóstico Web · Revisión de información pública. No se realizan cambios automáticos a tu web ni se accede a métricas privadas.</footer>
+<footer>Diagnóstico Web · Revisión de información pública, sin acceso a métricas privadas. <a href="/diagnostico-web/terminos">Condiciones</a> · <a href="/diagnostico-web/privacidad">Privacidad</a> · <a href="/diagnostico-web/pagos">Pagos y cancelaciones</a></footer>
 </main></body></html>
