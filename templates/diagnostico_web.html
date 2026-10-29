@@ -171,6 +171,10 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 <div class="result-next">
 <p>{% if paid %}<strong>Pago confirmado por Stripe.</strong> Tu PDF se descargará automáticamente. Si no ocurre, utiliza el botón.{% else %}¿Quieres saber qué corregir y por dónde empezar? Elige un paquete.{% endif %}</p>
 {% if paid and download_url %}<a href="{{download_url}}" class="link-btn">Descargar mi informe completo (PDF)</a>
+{% if email_enabled %}<form method="post" action="/diagnostico-web/correo/reenviar" style="margin-top:10px">
+<input type="hidden" name="session_id" value="{{request.args.get('session_id','')}}">
+<button type="submit" class="primary">Enviar también mi PDF al correo de mi compra</button></form>
+<p class="note">Enviaremos una copia al correo que ingresaste en Stripe. Conserva el enlace de esta página.</p>{% endif %}
 {% elif checkout_enabled %}<a href="#planes" class="link-btn">Ver planes y continuar</a>
 {% else %}<a href="#planes" class="link-btn">Ver cómo continuar con las mejoras</a>{% endif %}
 </div>
@@ -259,6 +263,6 @@ details p{font-size:12px;line-height:1.5;margin:8px 0}
 </div>
 </section>
 </main>
-<footer class="wrap foot">Diagnóstico Web · <a href="https://converte.uno/privacidad">Privacidad</a><a href="https://converte.uno/terminos">Términos</a></footer>
+<footer class="wrap foot">Diagnóstico Web · <a href="/diagnostico-web/terminos">Condiciones</a> · <a href="/diagnostico-web/privacidad">Privacidad</a> · <a href="/diagnostico-web/pagos">Pagos y cancelaciones</a></footer>
 </body>
 </html>
