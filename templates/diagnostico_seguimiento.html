@@ -2,6 +2,7 @@
 <title>Seguimiento mensual | Diagnóstico Web</title><meta name="robots" content="noindex,nofollow">
 <style>:root{font-family:system-ui,Arial,sans-serif;color:#16353c;background:#f5f8f7}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#133943,#1e7773);color:white;padding:19px 15px}header h1{font-size:clamp(23px,3vw,32px);margin:3px 0 6px}header p{font-size:13px;color:#d8eae8;margin:0}.wrap{width:min(950px,calc(100% - 24px));margin-inline:auto}main{padding:14px 0 26px}.card{background:white;border:1px solid #dbe9e6;border-radius:13px;padding:18px;margin-bottom:12px}h2{font-size:19px;margin:0 0 9px}h3{font-size:15px;margin:10px 0 4px}.muted{font-size:12px;color:#566f74;line-height:1.55}.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.button,button{background:#126f73;color:white;text-decoration:none;font:inherit;font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 13px;border:0;border-radius:8px;cursor:pointer}.button.alt{background:#e8f3f0;color:#135f61}button:hover,.button:hover{filter:brightness(.94)}.notice{background:#e8f7ef;padding:10px;border-radius:8px;font-size:13px}
 .chart{background:#f7fbfa;border:1px solid #dce9e5;border-radius:10px;padding:12px;margin:12px 0}.chartline{display:grid;grid-template-columns:120px 1fr auto;gap:9px;align-items:center;margin:10px 0}.chartlabel,.chartval{font-size:12px;font-weight:750}.track{height:21px;background:#e1ebe8;border-radius:5px;overflow:hidden}.fill{height:100%;background:#18847b;border-radius:5px}.chartval{text-align:right;min-width:42px}.tiny{font-size:11px;color:#5c7478;line-height:1.5;margin:5px 0}.history{display:flex;align-items:flex-end;gap:9px;min-height:120px;overflow-x:auto;padding-bottom:8px}.month-col{display:flex;align-items:center;flex-direction:column;min-width:48px;flex:1}.month-col .track{width:29px;height:90px;display:flex;align-items:flex-end}.month-col .fill{width:100%;height:auto;min-height:3px}.month-col span{font-size:10px;white-space:nowrap;margin-top:6px}.month-col strong{font-size:10px}details{margin-top:10px;border:1px solid #dce8e5;border-radius:9px;padding:9px}summary{font-size:12px;font-weight:800;color:#17666a;cursor:pointer}.action{border-bottom:1px solid #e1ebe8;padding:10px 0}.action:last-child{border:0}.action strong{display:block;font-size:13px}.action p{font-size:12px;line-height:1.48;margin:5px 0}.status{font-size:11px;color:#976024;font-weight:850}.compare-list{font-size:12px;line-height:1.5}.compare-list div{padding:8px 0;border-bottom:1px solid #e8efed}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid #e2ebea;text-align:left}th{background:#f1f7f5}footer{font-size:11px;color:#60757b;margin:12px 0 24px}
+.visual-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:11px 0}.visual-total{border-radius:11px;padding:12px;background:#e6f3ea;color:#245b42}.visual-total.issue{background:#fff0de;color:#875921}.visual-total.review{background:#e9eef2;color:#516878}.visual-total strong{display:block;font-size:26px;line-height:1;font-weight:900}.visual-total span{display:block;font-size:11px;font-weight:650;margin-top:7px}.action-card{padding:12px;border-radius:10px;background:#f6faf8;border:1px solid #dce8e3;margin:8px 0}.action-card .pill{font-size:10px;color:#875921;background:#fff0de;border-radius:10px;padding:4px 8px;font-weight:850}.action-card strong{display:block;font-size:14px;margin:9px 0}.action-card p{font-size:12px;margin:6px 0;line-height:1.4}.action-card details{border:0;margin:5px 0 0;padding:0}.action-card summary{font-weight:600}@media(max-width:520px){.visual-totals{gap:5px}.visual-total{padding:9px}.visual-total strong{font-size:23px}.visual-total span{font-size:10px}}
 @media(max-width:520px){.card{padding:13px}.chartline{grid-template-columns:95px 1fr 40px;gap:6px}.chartlabel,.chartval{font-size:11px}.button,button{width:100%}.row{flex-direction:column;align-items:stretch}.month-col{min-width:47px}}
 @media print{header,form,.row,footer{display:none}.card{border:0;break-inside:avoid}main{padding:0}}
 </style></head><body>
@@ -11,7 +12,12 @@
 <div class="row"><a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar renovación en Stripe</a><a class="button alt" href="/diagnostico-web/">Nuevo diagnóstico gratuito</a></div>
 <p class="tiny">Este enlace privado permite consultar los informes de tu suscripción. No lo compartas. Las revisiones se ejecutan cuando las solicitas.</p></section>
 <section class="card"><h2>¿Tu web está mejorando?</h2>
-<p class="muted">Comparamos las señales que sí pudimos observar en ambas fechas. No medimos ventas, visitas ni posiciones sin acceso autorizado.</p>
+<div class="visual-totals" role="group" aria-label="Resumen de los 14 aspectos revisados">
+<div class="visual-total"><strong>{{overview.ok}}</strong><span>Señales encontradas</span></div>
+<div class="visual-total issue"><strong>{{overview.issue}}</strong><span>Por mejorar</span></div>
+<div class="visual-total review"><strong>{{overview.review}}</strong><span>Por confirmar</span></div>
+</div>
+<p class="muted">Esto resume señales visibles de tu página. Las gráficas comparan únicamente lo que pudimos comprobar en ambas fechas; no miden ventas ni posiciones de Google.</p>
 <div class="chart" role="img" aria-label="Comparación de señales encontradas: al inicio {{progress.start}} de {{progress.total}} y en la última revisión {{progress.end}} de {{progress.total}}">
 <h3>Inicio frente a última revisión</h3>
 {% if progress.total %}
@@ -29,8 +35,19 @@
 {% if message %}<p class="notice">{{message}}</p>{% endif %}
 <p class="tiny">Cada nueva revisión actualiza únicamente el mes en curso. Guardamos hasta 12 meses y no cobramos por cada revisión.</p>
 </section>
-<section class="card"><h2>Qué conviene hacer ahora</h2><p class="muted">Recomendaciones prácticas con base en lo encontrado en tu última revisión.</p>
-{% for point in action_items %}<article class="action"><span class="status">{{point.status_label}}</span><strong>{{point.title}}</strong><p><b>Qué detectamos:</b> {{point.evidence}}</p><p><b>Tu siguiente paso:</b> {{point.action}}</p></article>{% else %}<p class="notice">No detectamos barreras básicas. Hay que comprobar el rendimiento real y las conversiones con las cuentas del propietario.</p>{% endfor %}
+<section class="card"><h2>Tu próximo paso: empieza aquí</h2><p class="muted">Las recomendaciones más importantes de esta revisión, en palabras simples.</p>
+{% for point in action_items[:2] %}
+<article class="action-card"><span class="pill">{{point.status_label}}</span><strong>{{point.title}}</strong>
+<p><b>Haz esto:</b> {{point.action}}</p>
+<details><summary>Por qué lo sugerimos</summary><p>{{point.evidence}}</p></details>
+</article>
+{% else %}<p class="notice">No detectamos barreras básicas. Las visitas y ventas deben verificarse en tus propias cuentas.</p>{% endfor %}
+{% if action_items|length > 2 %}
+<details><summary>Ver otras {{action_items|length - 2}} oportunidades de mejora</summary>
+{% for point in action_items[2:] %}<article class="action-card"><strong>{{point.title}}</strong>
+<p><b>Haz esto:</b> {{point.action}}</p><details><summary>Por qué</summary><p>{{point.evidence}}</p></details>
+</article>{% endfor %}
+</details>{% endif %}
 <details><summary>Ver los 14 aspectos de esta revisión</summary>
 {% for point in overview.checks %}<div class="action"><strong>{{point.title}} — {{point.status_label}}</strong><p><b>Qué encontramos:</b> {{point.evidence}}</p><p><b>Qué hacer:</b> {{point.action}}</p></div>{% endfor %}
 </details>
