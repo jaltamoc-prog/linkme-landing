@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es-MX"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<title>{{title}} | Diagnóstico Web · CONVERTE</title>
+<style>
+:root{font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;color:#1a3c43;background:#f5f8f7}
+body{margin:0}.top{background:#153940;color:#fff;padding:21px max(18px,calc((100vw - 740px)/2))}
+.top a{color:#fff}.wrap{max-width:740px;margin:20px auto;padding:0 16px}
+main{background:white;border:1px solid #dae8e3;border-radius:15px;padding:24px 29px;line-height:1.68}
+h1{font-size:29px;line-height:1.2;margin:0 0 20px}h2{font-size:17px;margin:27px 0 8px}
+p,li{font-size:15px;color:#344f54}a{color:#167675;overflow-wrap:anywhere}
+.note{background:#f2f8f5;border-left:3px solid #167675;padding:12px;font-size:13px}
+nav{display:flex;gap:15px;flex-wrap:wrap;margin:17px 0 26px;font-size:13px}
+footer{font-size:12px;color:#567078;padding:12px 0 26px}
+@media(max-width:540px){main{padding:20px 17px}h1{font-size:24px}}
+</style></head><body>
+<header class="top"><a href="/diagnostico-web/">DIAGNÓSTICO WEB · CONVERTE</a></header>
+<div class="wrap"><main>
+<h1>{{title}}</h1>
+{% if section == "terminos" %}
+<p>Estas condiciones corresponden exclusivamente al servicio <strong>Diagnóstico Web de CONVERTE</strong>. No sustituyen las condiciones de la tarjeta digital Converte.</p>
+<h2>¿Qué se entrega?</h2>
+<p>Se analiza una dirección web pública que proporciona el comprador. La revisión automatizada identifica hasta 14 aspectos observables de visibilidad, contenido, uso en celular y acceso al contacto o compra. El informe distingue los elementos encontrados de aquellos que requieren comprobarse con herramientas privadas o una revisión humana.</p>
+<p>El análisis no accede a cuentas privadas de Google, no cambia tu web y no garantiza determinadas posiciones en buscadores, visitas, ventas o resultados económicos. Los cambios posteriores a la revisión no alteran el informe original.</p>
+<h2>Informe de pago único: $387 MXN</h2>
+<p>Incluye una revisión de la URL proporcionada y un archivo PDF con resultados y acciones concretas. El pago es único, sin renovación. Una segunda revisión no está incluida.</p>
+<h2>Seguimiento: $597 MXN al mes</h2>
+<p>Suscripción de renovación automática mensual, con revisiones de la misma URL cuando el suscriptor las solicita desde su panel. Cada revisión genera resultados actualizados, recomendaciones y un PDF comparativo. El historial conserva hasta 12 meses de revisiones solicitadas; no se ejecutan revisiones por sí solas ni se cobran consultas adicionales dentro del plan activo.</p>
+<h2>Entrega y acceso</h2>
+<p>Después de que Stripe confirma el pago se habilita la descarga del PDF o el acceso al panel. Cuando está activo el servicio de correo, también se envía una copia del PDF al email facilitado al pagar. Guarda el enlace privado para volver a acceder. Si una web no está disponible, el servicio puede necesitar una nueva solicitud.</p>
+<h2>Renovación y cancelación</h2>
+<p>El seguimiento se cobra cada mes hasta que se cancele la renovación desde el portal de Stripe. Cuando cancelas para el final del periodo pagado, el servicio permanece activo hasta ese final. La cancelación no representa automáticamente un reembolso por periodos anteriores. Puedes consultar las condiciones de cancelación y solicitudes de devolución en la sección correspondiente.</p>
+<h2>Pagos y comprobantes</h2>
+<p>Los pagos se procesan mediante Stripe. CONVERTE no recibe ni almacena el número completo de tu tarjeta. Los precios de este servicio se muestran en pesos mexicanos antes de iniciar Checkout. El recibo del pago se obtiene de Stripe.</p>
+{% elif section == "privacidad" %}
+<p>Este aviso describe los datos utilizados para prestar <strong>Diagnóstico Web de CONVERTE</strong>, una herramienta para revisar direcciones web públicas.</p>
+<h2>Datos tratados</h2>
+<p>La dirección de la página analizada, fecha de la revisión, señales de su contenido público, objetivo comercial seleccionado y, cuando los proporcionas, palabras clave y ciudad. Stripe gestiona el correo del comprador, identificadores de pago y suscripción. El correo solo se utiliza para identificar la compra, enviar su PDF y atender solicitudes relacionadas con el servicio.</p>
+<h2>Finalidades</h2>
+<p>Analizar la URL, generar y enviar informes, verificar que el pago esté confirmado antes de entregar información privada, conservar revisiones del seguimiento, gestionar renovaciones y resolver incidencias. No usamos los datos obtenidos de la auditoría para vender bases de datos de contacto.</p>
+<h2>Conservación</h2>
+<p>El informe único guarda un resumen de su revisión asociado a la compra de Stripe. El seguimiento guarda la revisión inicial y hasta doce revisiones mensuales anteriores, en datos asociados a su suscripción. Los plazos de conservación de datos de pago y facturación que administra Stripe están sujetos a sus propias condiciones y obligaciones aplicables.</p>
+<h2>Terceros</h2>
+<p>Stripe procesa los pagos y los correos asociados a Checkout. Render aloja la aplicación. El proveedor de correo configurado procesa el mensaje y el PDF que se envía al comprador. No se accede a cuentas privadas de Google ni se extraen métricas de Search Console o Analytics sin autorización.</p>
+<h2>Acceso, rectificación, cancelación y oposición</h2>
+<p>Puedes solicitar información sobre tus datos o ejercer los derechos que correspondan mediante el canal de atención indicado abajo. Se comprobará la titularidad antes de compartir información de una compra.</p>
+<p>El alcance y ejercicio de estos derechos se rige por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+{% elif section == "pagos" %}
+<p>Estas condiciones aplican únicamente a las compras de Diagnóstico Web de CONVERTE.</p>
+<h2>Informe $387 MXN: pago único</h2>
+<p>Solo se cobra una revisión. Una vez confirmado el pago, el informe se pone a disposición como PDF desde el enlace privado de compra y, si está habilitado el correo de entrega, se envía al correo utilizado en Stripe.</p>
+<h2>Seguimiento $597 MXN mensuales</h2>
+<p>La renovación es automática hasta que se cancele. Entra al panel de tu suscripción y selecciona <strong>Administrar o cancelar renovación en Stripe</strong>. Una cancelación al final del periodo mantiene el acceso durante el periodo ya pagado y evita la siguiente renovación.</p>
+<h2>Si no recibiste lo contratado</h2>
+<p>Conserva el recibo de Stripe y el enlace original. Si el enlace no abre, no se entrega el informe, se produce un cobro duplicado o necesitas una devolución, solicita atención. Cada solicitud se revisa conforme a la legislación aplicable y la situación concreta; no se condicionan ni eliminan los derechos legales de los consumidores.</p>
+<h2>Solicitudes y plazos</h2>
+<p>El plazo y, en su caso, la forma de restitución se determinan según las obligaciones legales aplicables, el medio de pago y la incidencia concreta. Cancelar una suscripción y solicitar un reembolso son trámites distintos.</p>
+{% endif %}
+<h2>Atención a compradores</h2>
+{% if support_email %}
+<p>Escribe a <a href="mailto:{{support_email}}">{{support_email}}</a> e incluye la fecha de compra y el tipo de informe. Nunca envíes tu contraseña ni números de tarjeta.</p>
+{% else %}
+<p>Los recibos de Stripe contienen los datos del cobro. Para gestionar una suscripción utiliza el portal de facturación mostrado en tu panel. El canal de atención adicional debe confirmarse por el proveedor antes de comercializar el servicio.</p>
+{% endif %}
+<p class="note">Última actualización: 29 de octubre de 2026. Estos documentos describen el funcionamiento del servicio, sin sustituir los derechos previstos en la legislación mexicana aplicable.</p>
+</main>
+<nav><a href="/diagnostico-web/">Volver al diagnóstico</a>
+<a href="/diagnostico-web/terminos">Condiciones</a>
+<a href="/diagnostico-web/privacidad">Privacidad</a>
+<a href="/diagnostico-web/pagos">Pagos y cancelaciones</a></nav>
+<footer>CONVERTE · Diagnóstico Web</footer></div></body></html>
