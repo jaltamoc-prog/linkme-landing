@@ -189,7 +189,9 @@ class StripeSandboxTest(unittest.TestCase):
         self.assertEqual(deny.status_code,403)
 
     def test_sandbox_paywall_does_not_accept_forged_paid_flag(self):
-        with patch.dict(os.environ,ENV):
+        with patch.dict(os.environ,ENV), patch(
+            "requests.get", side_effect=RuntimeError("Simulated Stripe network failure")
+        ):
             self.assertEqual(self.client.get("/diagnostico-web/descargar?session_id="+SID).status_code,503)
             self.assertEqual(self.client.get("/diagnostico-web/informe?session_id=cs_live_"+"L"*24).status_code,404)
 
