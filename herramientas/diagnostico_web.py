@@ -23,6 +23,7 @@ from werkzeug.exceptions import HTTPException
 from herramientas.diagnostico_pdf import build_pdf
 from herramientas import diagnostico_seguimiento as monitor
 from herramientas import diagnostico_evaluacion as business
+from herramientas import diagnostico_correo as email_delivery
 
 bp = Blueprint("diagnostico_web", __name__, url_prefix="/diagnostico-web")
 GOALS = {
@@ -678,6 +679,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         subscription_enabled=subscriptions_enabled(),
         service_checks=business.SERVICE_CHECKLIST,
         sandbox_mode=stripe_test_mode(),
+        email_enabled=email_delivery.configured(),
         download_url=download_url,
     )
     response = make_response(page, code)
@@ -776,6 +778,13 @@ def informe():
     try:
         url, goal, snapshot = verify_purchase(sid)
         result = snapshot if snapshot is not None else cached(url)
+        # Respaldo del webhook: si Stripe ya confirmó y el usuario volvió,
+        # se intenta entregar también al correo que Stripe verificó.
+        if email_delivery.configured():
+            try:
+                email_delivery.paid_delivery(sid)
+            except Exception:
+                current_app.logger.warning("Correo de informe pendiente; la descarga sigue disponible.")
         return view(url, goal, result, report_for(result, goal), paid=True,
                     session_id=sid)
     except HTTPException:
@@ -878,7 +887,8 @@ def _followup_view(sid, sub, url, goal, baseline, message=""):
         progress_history=business.history_progress(baseline, saved, goal),
         portal_url=(os.getenv("DIAGNOSTICO_STRIPE_TEST_PORTAL_URL", "")
                     if stripe_test_mode() else monitor.PORTAL),
-        sandbox_mode=stripe_test_mode(), message=message,
+        sandbox_mode=stripe_test_mode(), email_enabled=email_delivery.configured(),
+        message=message,
         status_label=monitor.customer_visible_status(sub))
     response = make_response(page)
     response.headers["Cache-Control"] = "private, no-store"
@@ -932,6 +942,11 @@ def seguimiento():
         abort(429)
     try:
         sub, url, goal, baseline = _monthly_subscription(sid)
+        if email_delivery.configured():
+            try:
+                email_delivery.paid_delivery(sid)
+            except Exception:
+                current_app.logger.warning("Correo de seguimiento pendiente; el panel sigue disponible.")
         return _followup_view(sid, sub, url, goal, baseline)
     except HTTPException:
         raise
@@ -954,8 +969,16 @@ def seguimiento_revisar():
             {"metadata[" + key + "]": value for key, value in updates.items()})
         if saved.get("id") != sub["id"]:
             raise ValueError("No se confirmó el guardado en Stripe.")
-        return _followup_view(sid, saved, url, goal, baseline,
-            "Revisión guardada. Puedes comparar los avances con el diagnóstico original.")
+        notice = "Revisión guardada. Puedes comparar los avances con el diagnóstico original."
+        if email_delivery.configured():
+            try:
+                sent = email_delivery.paid_delivery(sid, revision=True)
+                notice = ("Revisión guardada y PDF enviado al correo de tu compra."
+                          if sent == "enviado" else "Revisión guardada. Tu PDF ya se había enviado por correo.")
+            except Exception:
+                current_app.logger.warning("Revisión guardada, pero el envío de correo está pendiente.")
+                notice = "Revisión guardada. Tu PDF está disponible aquí; el correo no se pudo enviar todavía."
+        return _followup_view(sid, saved, url, goal, baseline, notice)
     except HTTPException:
         raise
     except Exception:
@@ -987,6 +1010,72 @@ def seguimiento_descargar():
         current_app.logger.exception("No se pudo preparar el PDF mensual")
         return view(error="No pudimos preparar tu PDF mensual ahora. Reintenta desde tu panel.", code=503)
 
+
+
+@bp.route("/stripe-evento", methods=["POST"])
+def stripe_evento():
+    """Webhook firmado por Stripe: entrega PDF aunque el comprador cierre la pestaña."""
+    import json as _json
+    secret = os.getenv("DIAGNOSTICO_STRIPE_WEBHOOK_SECRET", "")
+    if not secret.startswith("whsec_"):
+        abort(404)
+    payload = request.get_data(cache=False)
+    signature = request.headers.get("Stripe-Signature", "")
+    if not email_delivery.verified_stripe_signature(payload, signature, secret):
+        abort(400)
+    try:
+        event = _json.loads(payload)
+    except (_json.JSONDecodeError, UnicodeDecodeError):
+        abort(400)
+    if event.get("type") not in ("checkout.session.completed", "checkout.session.async_payment_succeeded"):
+        return {"ok": True, "ignored": True}
+    session = (event.get("data") or {}).get("object") or {}
+    service = (session.get("metadata") or {}).get("service", "")
+    if service not in ("diagnostico-web-informe", "diagnostico-web-seguimiento"):
+        return {"ok": True, "ignored": True}
+    sid = session.get("id", "")
+    if not stripe_session_valid(sid):
+        abort(400)
+    if not email_delivery.configured():
+        # Stripe reintentará. Nunca afirmar que el email salió si no hay proveedor.
+        return {"ok": False, "error": "delivery_unavailable"}, 503
+    try:
+        result = email_delivery.paid_delivery(sid)
+        return {"ok": True, "delivery": result}
+    except Exception:
+        current_app.logger.exception("No se pudo entregar el PDF pagado por correo.")
+        return {"ok": False, "error": "delivery_failed"}, 503
+
+
+@bp.route("/correo/reenviar", methods=["POST"])
+def correo_reenviar():
+    """Acción segura y opcional del comprador. Solo envía a su correo de Stripe."""
+    sid = request.form.get("session_id", "")
+    if payment_limited(visitor_ip()):
+        abort(429)
+    origin = request.headers.get("Origin")
+    if origin and origin != stripe_return_origin():
+        abort(403)
+    if not stripe_session_valid(sid):
+        abort(404)
+    if not email_delivery.configured():
+        return view(error="Todavía no está habilitado el envío por correo. Descarga tu PDF desde la página.",
+                    code=503)
+    try:
+        email_delivery.paid_delivery(sid)
+        if request.form.get("plan") == "mensual":
+            sub, url, goal, baseline = _monthly_subscription(sid)
+            return _followup_view(sid, sub, url, goal, baseline,
+                                   "Tu PDF fue enviado al correo de la compra.")
+        url, goal, snapshot = verify_purchase(sid)
+        result = snapshot if snapshot is not None else cached(url)
+        return view(url, goal, result, report_for(result, goal), paid=True, session_id=sid)
+    except HTTPException:
+        raise
+    except Exception:
+        current_app.logger.warning("No se pudo re-enviar el informe pagado.")
+        return view(error="No se pudo enviar el PDF por correo ahora. La descarga desde tu enlace sigue disponible.",
+                    code=503)
 
 
 @bp.record_once
