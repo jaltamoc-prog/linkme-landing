@@ -624,7 +624,7 @@ def checkout_handoff(destination):
 
 def verify_purchase(session_id):
     """Verifica cada acceso en Stripe; nunca se confia en un return_url sin consultar."""
-    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", session_id):
+    if not stripe_ready() or not stripe_session_valid(session_id):
         abort(404)
     import requests as http
     base = "https://api.stripe.com/v1/checkout/sessions/"
@@ -632,7 +632,7 @@ def verify_purchase(session_id):
     response = http.get(base + quote(session_id, safe=""), auth=auth, timeout=12)
     response.raise_for_status()
     data = response.json()
-    if (not data.get("livemode") or data.get("id") != session_id
+    if (data.get("livemode") is not (stripe_mode() == "live") or data.get("id") != session_id
         or data.get("payment_status") != "paid" or data.get("status") != "complete"
         or data.get("mode") != "payment" or data.get("currency") != "mxn"):
         abort(403)
@@ -643,7 +643,8 @@ def verify_purchase(session_id):
                      auth=auth, timeout=12)
     items.raise_for_status()
     line_items = items.json().get("data") or []
-    allowed_prices = {REPORT_PRICE_ID: REPORT_AMOUNT_MXN, **LEGACY_REPORT_PRICES}
+    allowed_prices = ({report_price_id(): REPORT_AMOUNT_MXN} if stripe_mode() == "test"
+                      else {REPORT_PRICE_ID: REPORT_AMOUNT_MXN, **LEGACY_REPORT_PRICES})
     if len(line_items) != 1:
         abort(403)
     item = line_items[0]
@@ -739,10 +740,10 @@ def comprar():
                     "url": audit["url"], "goal": goal, **snapshot}
         data = {
             "mode": "payment",
-            "line_items[0][price]": REPORT_PRICE_ID,
+            "line_items[0][price]": report_price_id(),
             "line_items[0][quantity]": "1",
-            "success_url": "https://converte.uno/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
-            "cancel_url": "https://converte.uno/diagnostico-web/",
+            "success_url": stripe_return_origin() + "/diagnostico-web/informe?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": stripe_return_origin() + "/diagnostico-web/",
             "client_reference_id": "diagnostico-web",
         }
         for key, value in metadata.items():
@@ -767,7 +768,7 @@ def comprar():
 @bp.route("/informe", methods=["GET"])
 def informe():
     sid = request.args.get("session_id", "")
-    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+    if not stripe_ready() or not stripe_session_valid(sid):
         abort(404)
     if payment_limited(visitor_ip()):
         abort(429)
@@ -787,7 +788,7 @@ def informe():
 @bp.route("/descargar", methods=["GET"])
 def descargar():
     sid = request.args.get("session_id", "")
-    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+    if not stripe_ready() or not stripe_session_valid(sid):
         abort(404)
     if payment_limited(visitor_ip()):
         abort(429)
@@ -829,19 +830,19 @@ def _billing_request(method, path, fields=None):
 
 
 def _monthly_subscription(sid):
-    if not stripe_ready() or not re.fullmatch(r"cs_live_[A-Za-z0-9]{15,250}", sid):
+    if not stripe_ready() or not stripe_session_valid(sid):
         abort(404)
     checkout = _billing_request("GET", "checkout/sessions/" + quote(sid))
     if (checkout.get("id") != sid or checkout.get("mode") != "subscription"
         or checkout.get("status") != "complete" or checkout.get("payment_status") != "paid"
-        or not checkout.get("livemode") or checkout.get("currency") != "mxn"
+        or checkout.get("livemode") is not (stripe_mode() == "live") or checkout.get("currency") != "mxn"
         or (checkout.get("metadata") or {}).get("service") != "diagnostico-web-seguimiento"):
         abort(403)
     sub_id = checkout.get("subscription", "")
     if not isinstance(sub_id, str) or not re.fullmatch(r"sub_[A-Za-z0-9]{12,250}", sub_id):
         abort(403)
     sub = _billing_request("GET", "subscriptions/" + quote(sub_id))
-    if (sub.get("id") != sub_id or not sub.get("livemode")
+    if (sub.get("id") != sub_id or sub.get("livemode") is not (stripe_mode() == "live")
         or sub.get("status") != "active"
         or (sub.get("metadata") or {}).get("monitor_service") != "diagnostico-web-seguimiento"):
         abort(403)
@@ -849,7 +850,8 @@ def _monthly_subscription(sid):
     if len(items) != 1 or items[0].get("quantity") != 1:
         abort(403)
     subscription_price = (items[0].get("price") or {}).get("id")
-    allowed_prices = {monitor.PRICE_ID: monitor.AMOUNT, **monitor.LEGACY_PRICES}
+    allowed_prices = ({monthly_price_id(): monitor.AMOUNT} if stripe_mode() == "test"
+                      else {monitor.PRICE_ID: monitor.AMOUNT, **monitor.LEGACY_PRICES})
     if (allowed_prices.get(subscription_price) is None
             or checkout.get("amount_total") != allowed_prices[subscription_price]):
         abort(403)
@@ -900,10 +902,10 @@ def suscribir():
                                 request.form.get("city",""), goal)
         data = {
             "mode": "subscription",
-            "line_items[0][price]": monitor.PRICE_ID,
+            "line_items[0][price]": monthly_price_id(),
             "line_items[0][quantity]": "1",
-            "success_url": "https://converte.uno/diagnostico-web/seguimiento?session_id={CHECKOUT_SESSION_ID}",
-            "cancel_url": "https://converte.uno/diagnostico-web/",
+            "success_url": stripe_return_origin() + "/diagnostico-web/seguimiento?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": stripe_return_origin() + "/diagnostico-web/",
             "metadata[service]": "diagnostico-web-seguimiento",
         }
         for key, value in monitor.baseline_metadata(baseline).items():
