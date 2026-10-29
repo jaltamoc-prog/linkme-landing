@@ -1,0 +1,38 @@
+STRIPE CARGOS FICTICIOS - CONVERTE - WINDOWS
+==============================================
+
+UBICACION EXACTA:
+C:\procesos python\Revisar metricas web\versiones\Stripe cargos ficticios
+
+INSTALACION:
+1. Descarga y descomprime el ZIP completo.
+2. Haz doble clic en INSTALAR.cmd.
+3. Se copia todo exclusivamente a la carpeta indicada y se abre el programa.
+
+USO:
+- Primera ejecucion: solicita UNA SOLA VEZ tu clave de PRUEBA "sk_test_" de Stripe.
+  No hay forma segura de verificar un pago real de Stripe Test Checkout SIN
+  autorizar esa cuenta. El programa guarda la clave cifrada con Windows DPAPI
+  dentro de la misma carpeta. JAMAS acepta claves "sk_live_".
+- A partir de ahi, solo eliges el plan a probar.
+- Se abre Checkout oficial de Stripe y ahi introduces la tarjeta de PRUEBA:
+  4242 4242 4242 4242 / vencimiento 12/34 / CVC 123.
+- El informe unico debe mostrar "Pago confirmado" y permitir descargar PDF.
+- El seguimiento mensual debe mostrar panel, nueva revision y PDF comparativo.
+- El sitio de ejemplo analizado es https://converte.uno/
+- El programa NO recopila tarjetas, NO mueve dinero real ni modifica
+  los Stripe Checkout de produccion.
+
+SI WINDOWS BLOQUEA EL EXE (SMART APP CONTROL):
+Abre la carpeta indicada arriba y haz doble clic en
+EJECUTAR_CON_PYTHON.cmd
+(usa tu Python instalado; es la misma prueba sin ejecutable unsigned).
+NO DESACTIVES Smart App Control ni el antivirus.
+
+IMPORTANTE:
+Los cargos se crean solo en Stripe Sandbox. La prueba completa requiere
+conectividad a Internet y acceso a la clave de prueba de tu cuenta Stripe.
+Si cierras el programa local, el panel no estara disponible hasta abrirlo.
+La clave cifrada no esta incluida en el ZIP; solo tu puedes autorizarla.
+
+VERSION: 1.0.0 (Stripe sandbox test GUI)
