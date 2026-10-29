@@ -677,6 +677,7 @@ def view(url="", goal="contactos", audit=None, summary=None, error="", paid=Fals
         subscription_label="$597 MXN/mes",
         subscription_enabled=subscriptions_enabled(),
         service_checks=business.SERVICE_CHECKLIST,
+        sandbox_mode=stripe_test_mode(),
         download_url=download_url,
     )
     response = make_response(page, code)
@@ -875,7 +876,9 @@ def _followup_view(sid, sub, url, goal, baseline, message=""):
         action_items=business.overview(last, goal)["actionable"][:6],
         progress=business.progress(baseline, last, goal),
         progress_history=business.history_progress(baseline, saved, goal),
-        portal_url=monitor.PORTAL, message=message,
+        portal_url=(os.getenv("DIAGNOSTICO_STRIPE_TEST_PORTAL_URL", "")
+                    if stripe_test_mode() else monitor.PORTAL),
+        sandbox_mode=stripe_test_mode(), message=message,
         status_label=monitor.customer_visible_status(sub))
     response = make_response(page)
     response.headers["Cache-Control"] = "private, no-store"
