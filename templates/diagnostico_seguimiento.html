@@ -6,10 +6,11 @@
 @media(max-width:520px){.card{padding:13px}.chartline{grid-template-columns:95px 1fr 40px;gap:6px}.chartlabel,.chartval{font-size:11px}.button,button{width:100%}.row{flex-direction:column;align-items:stretch}.month-col{min-width:47px}}
 @media print{header,form,.row,footer{display:none}.card{border:0;break-inside:avoid}main{padding:0}}
 </style></head><body>
+{% if sandbox_mode %}<div style="background:#fff2cb;color:#624400;padding:12px;text-align:center;font:800 14px system-ui">MODO DE PRUEBA · Suscripción simulada, sin cobros reales</div>{% endif %}
 <header><div class="wrap"><span style="font-size:11px;letter-spacing:.1em">CONVERTE · DIAGNÓSTICO WEB</span><h1>Seguimiento de tu página web</h1><p>Comprueba qué mejoró y qué conviene corregir después.</p></div></header>
 <main class="wrap">
 <section class="card"><h2>Tu página y suscripción</h2><p style="font-size:13px;overflow-wrap:anywhere"><strong>{{url}}</strong></p><p class="muted">{{goal}} · {{status_label}} · Un solo sitio web</p>
-<div class="row"><a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar renovación en Stripe</a><a class="button alt" href="/diagnostico-web/">Nuevo diagnóstico gratuito</a></div>
+<div class="row">{% if portal_url %}<a class="button alt" href="{{portal_url}}" rel="noopener noreferrer">Administrar o cancelar renovación en Stripe</a>{% elif sandbox_mode %}<p class="muted">Para probar la cancelación, abre la suscripción de prueba desde el panel de Stripe.</p>{% endif %}<a class="button alt" href="/diagnostico-web/">Nuevo diagnóstico gratuito</a></div>
 <p class="tiny">Este enlace privado permite consultar los informes de tu suscripción. No lo compartas. Las revisiones se ejecutan cuando las solicitas.</p></section>
 <section class="card"><h2>¿Tu web está mejorando?</h2>
 <div class="visual-totals" role="group" aria-label="Resumen de los 14 aspectos revisados">
