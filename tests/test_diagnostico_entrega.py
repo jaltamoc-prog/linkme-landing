@@ -242,7 +242,7 @@ class TestEntregaCompleta(unittest.TestCase):
             first = self.client.get("/diagnostico-web/seguimiento?session_id=" + MONTH_ID)
         self.assertEqual(first.status_code, 200)
         self.assertIn("Seguimiento de tu página web".encode(), first.data)
-        self.assertIn("Qué conviene hacer ahora".encode(), first.data)
+        self.assertIn("Tu próximo paso: empieza aquí".encode(), first.data)
         self.assertIn("Ver los 14 aspectos de esta revisión".encode(), first.data)
         self.assertIn("Primera revisión".encode(), first.data)
         self.assertIn("no-store", first.headers["Cache-Control"])
@@ -262,7 +262,7 @@ class TestEntregaCompleta(unittest.TestCase):
         self.assertEqual(after.status_code, 200)
         self.assertIn("Mes a mes".encode(), after.data)
         self.assertIn("Panaderia artesanal".encode(), after.data)
-        self.assertIn("Qué conviene hacer ahora".encode(), after.data)
+        self.assertIn("Tu próximo paso: empieza aquí".encode(), after.data)
         self.assertEqual(len(mon.history(sub["metadata"])), 1)
         self.assertTrue(mon.differences(mon.read_baseline(metadata),
                                         mon.history(sub["metadata"])[0]["audit"]))
