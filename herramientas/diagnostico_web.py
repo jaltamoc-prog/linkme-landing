@@ -1012,6 +1012,26 @@ def seguimiento_descargar():
 
 
 
+@bp.route("/<section>", methods=["GET"])
+def legal(section):
+    pages = {
+        "terminos": "Términos del servicio",
+        "privacidad": "Aviso de privacidad",
+        "pagos": "Pagos, cancelación y devoluciones",
+    }
+    if section not in pages:
+        abort(404)
+    candidate = (os.getenv("DIAGNOSTICO_SOPORTE_EMAIL") or
+                 os.getenv("DIAGNOSTICO_CORREO_REMITENTE") or "").strip()
+    support_email = candidate if email_delivery.valid_email(candidate) else ""
+    response = make_response(render_template(
+        "diagnostico_legal.html", section=section, title=pages[section],
+        support_email=support_email))
+    response.headers["Cache-Control"] = "public, max-age=300"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
 @bp.route("/stripe-evento", methods=["POST"])
 def stripe_evento():
     """Webhook firmado por Stripe: entrega PDF aunque el comprador cierre la pestaña."""
