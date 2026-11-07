@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}CONVERTE UNIDOS | Un equipo, un solo enlace{% endblock %}
+{% block description %}CONVERTE UNIDOS reúne hasta 10 perfiles CONVERTE independientes en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
+{% block content %}
+<section class="unidos-hero">
+  <div class="unidos-hero-copy">
+    <span class="eyebrow">PARA CLÍNICAS, DESPACHOS Y EQUIPOS</span>
+    <h1>Tu equipo completo.<br><em>Un solo enlace.</em></h1>
+    <p>Reúne hasta 10 perfiles CONVERTE independientes en un directorio profesional con la imagen de tu organización.</p>
+    <div class="hero-actions"><a class="button" href="https://unidos.converte.uno/login">Crear CONVERTE UNIDOS</a><a class="secondary-link" href="#planes-unidos">Ver precios</a></div>
+    <div class="hero-trust">Cada integrante conserva su cuenta · La organización administra únicamente el directorio</div>
+  </div>
+  <div class="unidos-phone" aria-label="Ejemplo de directorio CONVERTE UNIDOS">
+    <div class="unidos-phone-cover"></div><div class="unidos-phone-avatar">C</div>
+    <h2>Clínica Horizonte</h2><p>Especialistas para cada etapa</p>
+    {% for name, specialty in [('Dra. Elena Ruiz','Cardiología'),('Dr. Mateo Díaz','Pediatría'),('Dra. Ana Solís','Dermatología'),('Dr. Luis Vega','Traumatología')] %}
+    <div class="unidos-doctor"><span>{{ name[0] }}</span><div><b>{{ name }}</b><small>{{ specialty }}</small><em>Ver CONVERTE</em></div><i>→</i></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section unidos-benefits">
+  <div class="section-heading"><span class="eyebrow">SIMPLE Y SEPARADO</span><h2>Unidos, sin perder independencia.</h2><p>La clínica organiza la puerta de entrada. Cada profesional conserva el control total de su perfil individual.</p></div>
+  <div class="cards four compact-cards">
+    <article class="card"><h3>Hasta 10 perfiles</h3><p>Nombre, especialidad, fotografía, texto de botón y liga individual.</p></article>
+    <article class="card"><h3>Imagen propia</h3><p>Banner, foto, colores y tipografía de la clínica o el equipo.</p></article>
+    <article class="card"><h3>Listo para compartir</h3><p>Una sola liga, código QR y acceso desde Google Wallet.</p></article>
+    <article class="card"><h3>Cuentas independientes</h3><p>El administrador no ve ni modifica la información privada de los integrantes.</p></article>
+  </div>
+</section>
+
+<section class="section unidos-how soft-section">
+  <div class="section-heading"><span class="eyebrow">CÓMO FUNCIONA</span><h2>Tres pasos para reunir a tu equipo.</h2></div>
+  <div class="steps"><article class="step"><span>01</span><h3>Crea</h3><p>Personaliza la identidad de tu organización.</p></article><article class="step"><span>02</span><h3>Agrega</h3><p>Pega la liga del CONVERTE individual de cada integrante.</p></article><article class="step"><span>03</span><h3>Comparte</h3><p>Publica una sola liga y un QR para todo el equipo.</p></article></div>
+</section>
+
+<section id="planes-unidos" class="section unidos-pricing">
+  <div class="section-heading"><span class="eyebrow">MXN · IVA INCLUIDO</span><h2>Elige cómo comenzar.</h2><p>Los planes diferidos tienen costo y se cobran automáticamente con la periodicidad indicada.</p></div>
+  <div class="unidos-price-grid">
+    <article><span>FLEXIBLE</span><h3>Mensual</h3><strong>$1,294</strong><p>Primer cobro: inscripción de $997 + primera mensualidad de $297.</p><b>Después $297/mes</b></article>
+    <article class="recommended"><span>MEJOR VALOR</span><h3>Anual</h3><strong>$2,797</strong><p>Incluye inscripción y doce meses de servicio.</p><b>Renovación automática anual</b></article>
+    <article><span>PAGO DIFERIDO CON COSTO</span><h3>3 pagos</h3><strong>3 × $997</strong><p>Tres cargos mensuales. Importe legal de los pagos: $2,991.</p><b>Acceso anual al completar</b></article>
+    <article><span>PAGO DIFERIDO CON COSTO</span><h3>12 pagos</h3><strong>12 × $297</strong><p>Doce cargos mensuales. Importe legal de los pagos: $3,564.</p><b>Acceso durante 12 meses</b></article>
+  </div>
+  <div class="unidos-price-action"><a class="button" href="https://unidos.converte.uno/login">Crear CONVERTE UNIDOS</a></div>
+</section>
+
+<section class="final-cta"><h2>Haz visible a todo tu equipo.</h2><p>Un directorio profesional, claro y siempre actualizable.</p><a class="button" href="https://unidos.converte.uno/login">Comenzar</a></section>
+{% endblock %}

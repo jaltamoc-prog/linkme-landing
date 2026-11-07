@@ -1,3 +1,4 @@
+# v1.095 CONVERTE UNIDOS: producto para clinicas, despachos y equipos
 # v1.094 OptimizaciÃ³n de carga: videos diferidos, cachÃ© versionada y assets estÃ¡ticos
 # v1.089 Calculadora ISR y generaQR bajo converte.uno
 # Integra generaQR en /generaqr/, conserva la calculadora en /calculadora-isr/,
@@ -60,7 +61,7 @@ app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 app.register_blueprint(diagnostico_web_bp)
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
-ASSET_VERSION = "1091"
+ASSET_VERSION = "1095"
 
 @app.context_processor
 def inject_asset_version():
@@ -142,6 +143,16 @@ def index():
         chat_api_url=LINKME_CHAT_API_URL,
     )
 
+
+@app.route("/converte-unidos/")
+def converte_unidos():
+    return render_template(
+        "converte_unidos.html",
+        login_url="https://unidos.converte.uno/login",
+        create_url="https://unidos.converte.uno/login",
+        market="mxn",
+    )
+
 @app.route("/crearmilinkme")
 def crearmilinkme():
     return redirect(APP_CREATE_URL, code=302)  # compatibilidad: ruta antigua
@@ -193,6 +204,11 @@ def sitemap():
     <loc>https://converte.uno/terminos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://converte.uno/converte-unidos/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://converte.uno/calculadora-isr/</loc>
