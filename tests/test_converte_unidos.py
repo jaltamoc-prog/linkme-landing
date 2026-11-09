@@ -7,6 +7,7 @@ def test_home_mentions_product_family():
     assert response.status_code == 200
     assert b"CONVERTE UNIDOS" in response.data
     assert b"/converte-unidos/" in response.data
+    assert b'href="/converte-unidos/" target="_blank" rel="noopener noreferrer"' in response.data
 
 
 def test_converte_unidos_landing():

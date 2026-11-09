@@ -1,3 +1,4 @@
+# v1.099 CONVERTE UNIDOS abre en una pestaña nueva desde converte.uno
 # v1.098 CONVERTE UNIDOS: producto para clinicas, despachos y equipos
 # v1.094 OptimizaciÃ³n de carga: videos diferidos, cachÃ© versionada y assets estÃ¡ticos
 # v1.089 Calculadora ISR y generaQR bajo converte.uno
@@ -61,7 +62,7 @@ app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 app.register_blueprint(diagnostico_web_bp)
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
-ASSET_VERSION = "1098"
+ASSET_VERSION = "1099"
 
 @app.context_processor
 def inject_asset_version():
