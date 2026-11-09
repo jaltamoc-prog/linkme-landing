@@ -1,3 +1,4 @@
+# v1.101 CONVERTE UNIDOS de 2 a 15 integrantes y precio anual por unidad
 # v1.100 actualiza CONVERTE UNIDOS a MXN $5,500 anuales
 # v1.099 CONVERTE UNIDOS abre en una pestaña nueva desde converte.uno
 # v1.098 CONVERTE UNIDOS: producto para clinicas, despachos y equipos

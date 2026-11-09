@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">CONVERTE.UNO</title>
+  <desc id="desc">Icono CONVERTE.UNO en negro sobre fondo turquesa.</desc>
+  <rect width="1024" height="1024" fill="#ffffff"/>
+  <rect x="16" y="16" width="992" height="992" rx="152" fill="#65EAD4"/>
+  <g fill="#000000" font-family="Arial, Helvetica, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="512" y="500" font-size="190" letter-spacing="-5">CONVERTE</text>
+    <text x="512" y="705" font-size="205" letter-spacing="18">· UNO</text>
+  </g>
+</svg>

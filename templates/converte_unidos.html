@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}CONVERTE UNIDOS | Un equipo, un solo enlace{% endblock %}
-{% block description %}CONVERTE UNIDOS reúne hasta 10 perfiles CONVERTE independientes en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
+{% block description %}CONVERTE UNIDOS reúne de 2 a 15 perfiles CONVERTE independientes en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
 {% block content %}
 <section class="unidos-hero">
   <div class="unidos-hero-copy">
     <span class="eyebrow">PARA CLÍNICAS, DESPACHOS Y EQUIPOS</span>
     <h1>Tu equipo completo.<br><em>Un solo enlace.</em></h1>
-    <p>Reúne hasta 10 perfiles CONVERTE independientes en un directorio profesional con la imagen de tu organización.</p>
+    <p>Reúne de 2 a 15 perfiles CONVERTE independientes en un directorio profesional con la imagen de tu organización.</p>
     <div class="hero-actions"><a class="button" href="https://unidos.converte.uno/login">Crear CONVERTE UNIDOS</a><a class="secondary-link" href="#planes-unidos">Ver precios</a></div>
     <div class="hero-trust">Cada integrante conserva su cuenta · La organización administra únicamente el directorio</div>
   </div>
@@ -22,7 +22,7 @@
 <section class="section unidos-benefits">
   <div class="section-heading"><span class="eyebrow">SIMPLE Y SEPARADO</span><h2>Unidos, sin perder independencia.</h2><p>La clínica organiza la puerta de entrada. Cada profesional conserva el control total de su perfil individual.</p></div>
   <div class="cards four compact-cards">
-    <article class="card"><h3>Hasta 10 perfiles</h3><p>Nombre, especialidad, fotografía, texto de botón y liga individual.</p></article>
+    <article class="card"><h3>De 2 a 15 perfiles</h3><p>Cada integrante administra su nombre, especialidad, fotografía y CONVERTE individual.</p></article>
     <article class="card"><h3>Imagen propia</h3><p>Banner, foto, colores y tipografía de la clínica o el equipo.</p></article>
     <article class="card"><h3>Listo para compartir</h3><p>Una sola liga, código QR y acceso desde Google Wallet.</p></article>
     <article class="card"><h3>Cuentas independientes</h3><p>El administrador no ve ni modifica la información privada de los integrantes.</p></article>
@@ -31,16 +31,17 @@
 
 <section class="section unidos-how soft-section">
   <div class="section-heading"><span class="eyebrow">CÓMO FUNCIONA</span><h2>Tres pasos para reunir a tu equipo.</h2></div>
-  <div class="steps"><article class="step"><span>01</span><h3>Crea</h3><p>Personaliza la identidad de tu organización.</p></article><article class="step"><span>02</span><h3>Agrega</h3><p>Pega la liga del CONVERTE individual de cada integrante.</p></article><article class="step"><span>03</span><h3>Comparte</h3><p>Publica una sola liga y un QR para todo el equipo.</p></article></div>
+  <div class="steps"><article class="step"><span>01</span><h3>Crea</h3><p>Personaliza la identidad de tu organización.</p></article><article class="step"><span>02</span><h3>Invita</h3><p>Cada integrante crea o vincula su CONVERTE; sus datos se reflejan automáticamente.</p></article><article class="step"><span>03</span><h3>Comparte</h3><p>Publica una sola liga y un QR para todo el equipo.</p></article></div>
 </section>
 
 <section id="planes-unidos" class="section unidos-pricing">
   <div class="section-heading"><span class="eyebrow">MXN · IVA INCLUIDO</span><h2>Un solo plan, todo tu equipo.</h2><p>Doce meses de servicio con renovación automática anual.</p></div>
   <div class="unidos-price-grid">
     <article class="recommended">
-      <span>PLAN ANUAL</span><h3>CONVERTE UNIDOS</h3><strong>$5,500 <small>MXN / año</small></strong>
-      <p>Incluye hasta 10 perfiles enlazados, personalización y doce meses de servicio.</p>
-      <ul><li>Primer pago de contado o a meses, según la elegibilidad y las condiciones que Stripe muestre para la tarjeta.</li><li>Renovación automática cada 12 meses por $5,500 MXN en un solo cargo.</li><li>Puedes cancelar la renovación antes del siguiente cobro.</li></ul>
+      <span>PLAN ANUAL</span><h3>CONVERTE UNIDOS</h3><strong>Desde $1,500 <small>MXN / año</small></strong>
+      <p>$500 por integrante y $500 por la organización. La organización no ocupa un asiento.</p>
+      <div class="unidos-price-table">{% for n in range(2,16) %}<span>{{ n }} integrantes</span><b>${{ "{:,.0f}".format((n+1)*500) }}</b>{% endfor %}</div>
+      <ul><li>Primer pago de contado o a meses con intereses, según la elegibilidad y las condiciones que Stripe muestre para la tarjeta.</li><li>Renovación automática cada 12 meses en un solo cargo.</li><li>Puedes cancelar la renovación antes del siguiente cobro.</li></ul>
       <b>IVA incluido</b>
     </article>
   </div>

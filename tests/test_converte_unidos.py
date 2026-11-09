@@ -14,9 +14,10 @@ def test_converte_unidos_landing():
     client = app.test_client()
     response = client.get("/converte-unidos/")
     assert response.status_code == 200
-    assert b"$5,500" in response.data
+    assert b"$1,500" in response.data
+    assert b"$8,000" in response.data
     assert b"Renovaci\xc3\xb3n autom\xc3\xa1tica cada 12 meses" in response.data
-    assert b"Primer pago de contado o a meses" in response.data
+    assert b"Primer pago de contado o a meses con intereses" in response.data
     assert b"$2,797" not in response.data
     assert b"$997" not in response.data
     assert b"$297" not in response.data

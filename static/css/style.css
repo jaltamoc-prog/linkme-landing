@@ -4138,6 +4138,8 @@ h6,
   .footer-bottom{grid-column:1/-1;justify-self:end}
 }
 /* v1.100 - CONVERTE UNIDOS: plan anual MXN 5,500 */
+/* v1.101 - tabla anual de 2 a 15 integrantes */
+.unidos-price-table{display:grid;grid-template-columns:1fr auto;gap:7px 18px;margin:18px 0;padding:16px;border-radius:16px;background:#eef8f4}.unidos-price-table span,.unidos-price-table b{font-size:.92rem}
 /* v1.099 - CONVERTE UNIDOS abre en pestaña nueva */
 /* v1.098 - Familia CONVERTE y landing CONVERTE UNIDOS */
 .product-family{background:#f4faf8}.product-family-grid{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.product-family-card{position:relative;overflow:hidden;padding:36px;border:1px solid var(--line);border-radius:32px;background:#fff;box-shadow:0 18px 50px rgba(20,50,42,.07)}.product-family-card.unidos-card{background:linear-gradient(145deg,#102d27,#164e41);color:#fff}.product-family-card p{color:var(--muted);line-height:1.65;min-height:78px}.product-family-card.unidos-card p{color:#c9ddd7}.product-family-card h3{font-size:34px;letter-spacing:-.05em;margin:10px 0}.product-family-label{font-size:11px;letter-spacing:.14em;font-weight:900;color:#008f70}.unidos-card .product-family-label{color:#74e7cc}.product-family-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:#e6f8f2;color:#008f70;font-size:24px;font-weight:900}.product-family-icon.people{display:flex;justify-content:center;gap:3px}.product-family-icon.people span{width:12px;height:22px;border-radius:10px;background:#74e7cc}.product-family-icon.people span:nth-child(2){height:29px}
