@@ -2,3 +2,5 @@ __pycache__/
 .env
 *.pyc
 .DS_Store
+versiones_landing/
+versiones_zip/
