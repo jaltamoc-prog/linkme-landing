@@ -1,3 +1,4 @@
+# v1.102 selector vertical de paquetes y mensaje consistente de 2 a 15 integrantes
 # v1.101 CONVERTE UNIDOS de 2 a 15 integrantes y precio anual por unidad
 # v1.100 actualiza CONVERTE UNIDOS a MXN $5,500 anuales
 # v1.099 CONVERTE UNIDOS abre en una pestaña nueva desde converte.uno
@@ -64,7 +65,7 @@ app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 app.register_blueprint(diagnostico_web_bp)
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
-ASSET_VERSION = "1100"
+ASSET_VERSION = "1102"
 
 @app.context_processor
 def inject_asset_version():

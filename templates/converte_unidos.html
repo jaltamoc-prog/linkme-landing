@@ -38,14 +38,24 @@
   <div class="section-heading"><span class="eyebrow">MXN · IVA INCLUIDO</span><h2>Un solo plan, todo tu equipo.</h2><p>Doce meses de servicio con renovación automática anual.</p></div>
   <div class="unidos-price-grid">
     <article class="recommended">
-      <span>PLAN ANUAL</span><h3>CONVERTE UNIDOS</h3><strong>Desde $1,500 <small>MXN / año</small></strong>
+      <span>PLAN ANUAL</span><h3>CONVERTE UNIDOS</h3><strong class="unidos-price-lead">Desde $1,500 <small>MXN / año</small></strong>
       <p>$500 por integrante y $500 por la organización. La organización no ocupa un asiento.</p>
-      <div class="unidos-price-table">{% for n in range(2,16) %}<span>{{ n }} integrantes</span><b>${{ "{:,.0f}".format((n+1)*500) }}</b>{% endfor %}</div>
+      <form class="unidos-plan-picker" method="get" action="https://unidos.converte.uno/nuevo">
+        <fieldset><legend>Selecciona el tamaño de tu equipo</legend>
+          <div class="unidos-plan-list">
+            {% for n in range(2,16) %}<label class="unidos-plan-option">
+              <input type="radio" name="member_limit" value="{{ n }}" {% if n==2 %}checked{% endif %}>
+              <span class="unidos-plan-copy"><b>{{ n }} integrantes</b><small>{{ n }} perfiles más la organización</small></span>
+              <span class="unidos-plan-price">${{ "{:,.0f}".format((n+1)*500) }}<small> al año</small></span>
+            </label>{% endfor %}
+          </div>
+          <button class="button full" type="submit">Continuar con el paquete seleccionado</button>
+        </fieldset>
+      </form>
       <ul><li>Primer pago de contado o a meses con intereses, según la elegibilidad y las condiciones que Stripe muestre para la tarjeta.</li><li>Renovación automática cada 12 meses en un solo cargo.</li><li>Puedes cancelar la renovación antes del siguiente cobro.</li></ul>
       <b>IVA incluido</b>
     </article>
   </div>
-  <div class="unidos-price-action"><a class="button" href="https://unidos.converte.uno/login">Crear CONVERTE UNIDOS</a></div>
 </section>
 
 <section class="final-cta"><h2>Haz visible a todo tu equipo.</h2><p>Un directorio profesional, claro y siempre actualizable.</p><a class="button" href="https://unidos.converte.uno/login">Comenzar</a></section>

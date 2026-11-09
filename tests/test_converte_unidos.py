@@ -8,6 +8,8 @@ def test_home_mentions_product_family():
     assert b"CONVERTE UNIDOS" in response.data
     assert b"/converte-unidos/" in response.data
     assert b'href="/converte-unidos/" target="_blank" rel="noopener noreferrer"' in response.data
+    assert b"DE 2 A 15 INTEGRANTES" in response.data
+    assert b"HASTA 10 INTEGRANTES" not in response.data
 
 
 def test_converte_unidos_landing():
@@ -22,6 +24,10 @@ def test_converte_unidos_landing():
     assert b"$997" not in response.data
     assert b"$297" not in response.data
     assert b"meses sin intereses" not in response.data.lower()
+    assert response.data.count(b'name="member_limit"') == 14
+    assert b'name="member_limit" value="2" checked' in response.data
+    assert b'action="https://unidos.converte.uno/nuevo"' in response.data
+    assert b"Continuar con el paquete seleccionado" in response.data
 
 
 def test_sitemap_contains_converte_unidos():
