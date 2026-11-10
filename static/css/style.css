@@ -4155,3 +4155,63 @@ h6,
 .legal-page .legal-note{padding:18px 20px;border:1px solid var(--line);border-radius:18px;background:var(--soft)}
 .unidos-plan-picker{margin:22px 0}.unidos-plan-picker fieldset{margin:0;padding:0;border:0}.unidos-plan-picker legend{width:100%;margin-bottom:10px;font-size:15px;font-weight:850;color:#10231f}.unidos-plan-list{display:grid;gap:7px;max-height:334px;margin-bottom:15px;padding:4px 7px 4px 4px;overflow-y:auto;overscroll-behavior:contain}.unidos-plan-option{display:grid;grid-template-columns:20px minmax(0,1fr) auto;align-items:center;gap:11px;min-height:54px;padding:8px 12px;border:1px solid #dce8e3;border-radius:13px;background:#f8fbfa;cursor:pointer;transition:border-color .16s,background .16s,box-shadow .16s}.unidos-plan-option:hover{border-color:#74e7cc;background:#f2fcf8}.unidos-plan-option:has(input:checked){border-color:#168a6b;background:#eaf9f4;box-shadow:0 0 0 2px rgba(22,138,107,.12)}.unidos-plan-option input{width:17px;height:17px;margin:0;accent-color:#168a6b}.unidos-plan-copy{display:block;min-width:0}.unidos-plan-copy b,.unidos-plan-copy small{display:block}.unidos-plan-copy b{font-size:14px}.unidos-plan-copy small{margin-top:1px;color:#677670;font-size:11px}.unidos-plan-price{color:#10231f;font-size:16px;font-weight:900;white-space:nowrap}.unidos-plan-price small{font-size:10px;font-weight:700;color:#677670}.unidos-plan-picker .button{border:0;cursor:pointer}.unidos-price-grid .unidos-price-lead{font-size:42px}
 @media(max-width:700px){.unidos-price-grid article{padding:25px 17px}.unidos-price-grid .unidos-price-lead{font-size:34px}.unidos-plan-list{max-height:300px}.unidos-plan-option{grid-template-columns:18px minmax(0,1fr) auto;padding:8px 9px}.unidos-plan-copy small{display:none}.unidos-plan-price{font-size:14px}}
+/* v1.104 · accesos Google y homologación visual de CONVERTE UNIDOS */
+.lm-google-sign{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  min-height:42px;
+  padding:8px 16px;
+  border:1px solid #9aa0a6;
+  border-radius:999px;
+  background:#fff;
+  color:#202124;
+  font:600 14px/1.1 Inter,system-ui,sans-serif;
+  text-decoration:none;
+  white-space:nowrap;
+  box-shadow:0 1px 2px rgba(60,64,67,.12);
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.lm-google-sign:hover{
+  border-color:#5f6368;
+  box-shadow:0 2px 6px rgba(60,64,67,.18);
+  transform:translateY(-1px);
+}
+.lm-google-sign:focus-visible{outline:3px solid rgba(20,184,166,.3);outline-offset:2px}
+.lm-google-g{width:21px;height:21px;flex:0 0 21px}
+.unidos-purchase-card{max-width:720px;margin-inline:auto}
+.unidos-included{
+  display:grid;
+  gap:10px;
+  margin:24px 0 0;
+  padding:0;
+  list-style:none;
+  text-align:left;
+}
+.unidos-included li{
+  position:relative;
+  margin:0;
+  padding:0 0 0 27px;
+  color:#24342f;
+  line-height:1.55;
+}
+.unidos-included li::before{
+  content:"✓";
+  position:absolute;
+  left:0;
+  top:0;
+  color:#0aa78f;
+  font-weight:900;
+}
+.unidos-renewal-note{
+  max-width:720px;
+  margin:18px auto 0;
+  color:#5d6864;
+  font-size:.86rem;
+  line-height:1.5;
+  text-align:center;
+}
+@media (max-width:760px){
+  .lm-google-sign{width:100%;min-height:39px;padding:7px 11px;font-size:12px}
+}

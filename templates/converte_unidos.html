@@ -1,62 +1,60 @@
 {% extends "base.html" %}
 {% block title %}CONVERTE UNIDOS | Un equipo, un solo enlace{% endblock %}
-{% block description %}CONVERTE UNIDOS reúne de 2 a 15 perfiles CONVERTE independientes en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
+{% block description %}CONVERTE UNIDOS reúne de 2 a 15 perfiles CONVERTE en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
 {% block content %}
+<!-- v1.104: contenido homologado con unidos.converte.uno -->
 <section class="unidos-hero">
   <div class="unidos-hero-copy">
     <span class="eyebrow">PARA CLÍNICAS, DESPACHOS Y EQUIPOS</span>
-    <h1>Tu equipo completo.<br><em>Un solo enlace.</em></h1>
-    <p>Reúne de 2 a 15 perfiles CONVERTE independientes en un directorio profesional con la imagen de tu organización.</p>
-    <div class="hero-actions"><a class="button" href="https://unidos.converte.uno/login">Crear CONVERTE UNIDOS</a><a class="secondary-link" href="#planes-unidos">Ver precios</a></div>
-    <div class="hero-trust">Cada integrante conserva su cuenta · La organización administra únicamente el directorio</div>
+    <h1>Tu equipo completo,<br><em>un solo enlace.</em></h1>
+    <p>Reúne de 2 a 15 perfiles CONVERTE en un directorio profesional. Cada integrante actualiza sus datos y tú administras los asientos y el orden.</p>
+    <div class="hero-actions"><a class="button" href="#planes-unidos">Crear CONVERTE UNIDOS</a><a class="secondary-link" href="#planes-unidos">Ver precio</a></div>
   </div>
-  <div class="unidos-phone" aria-label="Ejemplo de directorio CONVERTE UNIDOS">
-    <div class="unidos-phone-cover"></div><div class="unidos-phone-avatar">C</div>
+  <div class="unidos-phone" aria-label="Vista previa de un perfil CONVERTE UNIDOS">
+    <div class="unidos-phone-cover"></div><div class="unidos-phone-avatar">+</div>
     <h2>Clínica Horizonte</h2><p>Especialistas para cada etapa</p>
-    {% for name, specialty in [('Dra. Elena Ruiz','Cardiología'),('Dr. Mateo Díaz','Pediatría'),('Dra. Ana Solís','Dermatología'),('Dr. Luis Vega','Traumatología')] %}
+    {% for name, specialty in [('Dra. Elena Ruiz','Cardiología'),('Dr. Mateo Díaz','Pediatría'),('Dra. Ana Solís','Dermatología')] %}
     <div class="unidos-doctor"><span>{{ name[0] }}</span><div><b>{{ name }}</b><small>{{ specialty }}</small><em>Ver CONVERTE</em></div><i>→</i></div>
     {% endfor %}
   </div>
 </section>
 
-<section class="section unidos-benefits">
-  <div class="section-heading"><span class="eyebrow">SIMPLE Y SEPARADO</span><h2>Unidos, sin perder independencia.</h2><p>La clínica organiza la puerta de entrada. Cada profesional conserva el control total de su perfil individual.</p></div>
-  <div class="cards four compact-cards">
-    <article class="card"><h3>De 2 a 15 perfiles</h3><p>Cada integrante administra su nombre, especialidad, fotografía y CONVERTE individual.</p></article>
-    <article class="card"><h3>Imagen propia</h3><p>Banner, foto, colores y tipografía de la clínica o el equipo.</p></article>
-    <article class="card"><h3>Listo para compartir</h3><p>Una sola liga, código QR y acceso desde Google Wallet.</p></article>
-    <article class="card"><h3>Cuentas independientes</h3><p>El administrador no ve ni modifica la información privada de los integrantes.</p></article>
-  </div>
-</section>
-
 <section class="section unidos-how soft-section">
   <div class="section-heading"><span class="eyebrow">CÓMO FUNCIONA</span><h2>Tres pasos para reunir a tu equipo.</h2></div>
-  <div class="steps"><article class="step"><span>01</span><h3>Crea</h3><p>Personaliza la identidad de tu organización.</p></article><article class="step"><span>02</span><h3>Invita</h3><p>Cada integrante crea o vincula su CONVERTE; sus datos se reflejan automáticamente.</p></article><article class="step"><span>03</span><h3>Comparte</h3><p>Publica una sola liga y un QR para todo el equipo.</p></article></div>
+  <div class="steps">
+    <article class="step"><span>01</span><h3>Crea el directorio</h3><p>Personaliza portada, foto, colores y descripción.</p></article>
+    <article class="step"><span>02</span><h3>Invita a tu equipo</h3><p>Cada integrante crea o vincula su CONVERTE y sus datos aparecen automáticamente.</p></article>
+    <article class="step"><span>03</span><h3>Compártelo</h3><p>Usa tu liga, QR o Google Wallet en recepción y redes.</p></article>
+  </div>
 </section>
 
 <section id="planes-unidos" class="section unidos-pricing">
-  <div class="section-heading"><span class="eyebrow">MXN · IVA INCLUIDO</span><h2>Un solo plan, todo tu equipo.</h2><p>Doce meses de servicio con renovación automática anual.</p></div>
+  <div class="section-heading"><span class="eyebrow">PLAN ANUAL · IVA INCLUIDO</span><h2>Elige el tamaño de tu equipo</h2></div>
   <div class="unidos-price-grid">
-    <article class="recommended">
-      <span>PLAN ANUAL</span><h3>CONVERTE UNIDOS</h3><strong class="unidos-price-lead">Desde $1,500 <small>MXN / año</small></strong>
-      <p>$500 por integrante y $500 por la organización. La organización no ocupa un asiento.</p>
+    <article class="recommended unidos-purchase-card">
+      <span>DE 2 A 15 INTEGRANTES</span><h3>CONVERTE UNIDOS</h3>
       <form class="unidos-plan-picker" method="get" action="https://unidos.converte.uno/nuevo">
-        <fieldset><legend>Selecciona el tamaño de tu equipo</legend>
+        <fieldset><legend>Selecciona tu paquete</legend>
           <div class="unidos-plan-list">
             {% for n in range(2,16) %}<label class="unidos-plan-option">
               <input type="radio" name="member_limit" value="{{ n }}" {% if n==2 %}checked{% endif %}>
-              <span class="unidos-plan-copy"><b>{{ n }} integrantes</b><small>{{ n }} perfiles más la organización</small></span>
-              <span class="unidos-plan-price">${{ "{:,.0f}".format((n+1)*500) }}<small> al año</small></span>
+              <span class="unidos-plan-copy"><b>{{ n }} integrantes</b><small>Directorio anual</small></span>
+              <span class="unidos-plan-price">${{ "{:,.0f}".format((n+1)*500) }}<small> MXN</small></span>
             </label>{% endfor %}
           </div>
-          <button class="button full" type="submit">Continuar con el paquete seleccionado</button>
+          <button class="button full" type="submit">Crear y continuar al pago</button>
         </fieldset>
       </form>
-      <ul><li>Primer pago de contado o a meses con intereses, según la elegibilidad y las condiciones que Stripe muestre para la tarjeta.</li><li>Renovación automática cada 12 meses en un solo cargo.</li><li>Puedes cancelar la renovación antes del siguiente cobro.</li></ul>
-      <b>IVA incluido</b>
+      <ul class="unidos-included">
+        <li>Potencia a tu equipo con hasta 15 perfiles por un solo costo anual. IVA incluido.</li>
+        <li>Ediciones y consultas (escaneos) ilimitados por un año.</li>
+        <li>Sin cargos ocultos ni letras chiquitas, ¡sin complicaciones!</li>
+        <li>Promociones actualizadas en el celular de tus clientes por menos de dos pesos mexicanos al día por perfil.</li>
+        <li>Precios incluyen IVA.</li>
+      </ul>
     </article>
   </div>
+  <p class="unidos-renewal-note">Servicio anual con renovación automática. Puedes cancelar la siguiente renovación y conservar el servicio hasta que finalice el periodo ya contratado.</p>
 </section>
 
-<section class="final-cta"><h2>Haz visible a todo tu equipo.</h2><p>Un directorio profesional, claro y siempre actualizable.</p><a class="button" href="https://unidos.converte.uno/login">Comenzar</a></section>
 {% endblock %}
