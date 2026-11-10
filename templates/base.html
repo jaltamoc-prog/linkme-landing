@@ -1,3 +1,4 @@
+<!-- v1.106: favicon C, directorio real y pie sin correo de soporte -->
 <!-- v1.105: navegación y botones de compra específicos de CONVERTE UNIDOS -->
 <!-- v1.104: accesos Google unificados y navegación sin botón Dudas -->
 <!-- v1.103: legales vigentes, soporte y política de devolución -->
@@ -70,8 +71,13 @@
     ]
   }
   </script>
+  {% if request.path.startswith('/converte-unidos') %}
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/converte-unidos-favicon.png') }}?v={{ asset_version }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/converte-unidos-favicon.png') }}?v={{ asset_version }}">
+  {% else %}
   <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='img/converte-uno-icon.png') }}?v={{ asset_version }}">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/converte-uno-icon.png') }}?v={{ asset_version }}">
+  {% endif %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@200&display=swap" rel="stylesheet">
@@ -122,7 +128,6 @@
   <div class="footer-identity">
     <div class="footer-brand">CONVERTE™</div>
     <p>Presentarte bien = crecer con presencia</p>
-    <a class="footer-support" href="mailto:converte.uno@gmail.com">Soporte: converte.uno@gmail.com</a>
   </div>
   <div class="footer-legal">
     <h4>Legal</h4>

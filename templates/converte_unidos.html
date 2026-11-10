@@ -2,7 +2,7 @@
 {% block title %}CONVERTE UNIDOS | Un equipo, un solo enlace{% endblock %}
 {% block description %}CONVERTE UNIDOS reúne de 2 a 15 perfiles CONVERTE en un directorio profesional para clínicas, despachos y equipos.{% endblock %}
 {% block content %}
-<!-- v1.104: contenido homologado con unidos.converte.uno -->
+<!-- v1.106: captura real del directorio y pasos compactos -->
 <section class="unidos-hero">
   <div class="unidos-hero-copy">
     <span class="eyebrow">PARA CLÍNICAS, DESPACHOS Y EQUIPOS</span>
@@ -10,21 +10,17 @@
     <p>Reúne de 2 a 15 perfiles CONVERTE en un directorio profesional. Cada integrante actualiza sus datos y tú administras los asientos y el orden.</p>
     <div class="hero-actions"><a class="button" href="#planes-unidos">Crear CONVERTE UNIDOS</a><a class="secondary-link" href="#planes-unidos">Ver precio</a></div>
   </div>
-  <div class="unidos-phone" aria-label="Vista previa de un perfil CONVERTE UNIDOS">
-    <div class="unidos-phone-cover"></div><div class="unidos-phone-avatar">+</div>
-    <h2>Clínica Horizonte</h2><p>Especialistas para cada etapa</p>
-    {% for name, specialty in [('Dra. Elena Ruiz','Cardiología'),('Dr. Mateo Díaz','Pediatría'),('Dra. Ana Solís','Dermatología')] %}
-    <div class="unidos-doctor"><span>{{ name[0] }}</span><div><b>{{ name }}</b><small>{{ specialty }}</small><em>Ver CONVERTE</em></div><i>→</i></div>
-    {% endfor %}
+  <div class="unidos-phone unidos-phone-screenshot" aria-label="Ejemplo real del directorio CONVERTE UNIDOS">
+    <img src="{{ url_for('static', filename='img/converte-unidos-directorio.png') }}?v={{ asset_version }}" alt="Directorio móvil CONVERTE UNIDOS de Clínica Juárez">
   </div>
 </section>
 
 <section class="section unidos-how soft-section">
   <div class="section-heading"><span class="eyebrow">CÓMO FUNCIONA</span><h2>Tres pasos para reunir a tu equipo.</h2></div>
   <div class="steps">
-    <article class="step"><span>01</span><h3>Crea el directorio</h3><p>Personaliza portada, foto, colores y descripción.</p></article>
-    <article class="step"><span>02</span><h3>Invita a tu equipo</h3><p>Cada integrante crea o vincula su CONVERTE y sus datos aparecen automáticamente.</p></article>
-    <article class="step"><span>03</span><h3>Compártelo</h3><p>Usa tu liga, QR o Google Wallet en recepción y redes.</p></article>
+    <article class="step"><span>01</span><h3>Crea</h3><p>Personaliza tu directorio.</p></article>
+    <article class="step"><span>02</span><h3>Invita</h3><p>Cada integrante vincula su CONVERTE.</p></article>
+    <article class="step"><span>03</span><h3>Comparte</h3><p>Usa tu liga, QR o Wallet.</p></article>
   </div>
 </section>
 

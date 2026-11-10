@@ -11,7 +11,11 @@ class LandingV1105Tests(unittest.TestCase):
         base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
         self.assertIn("Sign CONVERTE", base)
         self.assertIn("Sign CONVERTE UNIDOS", base)
-        unidos_start = base.index("{% if request.path.startswith('/converte-unidos') %}")
+        secondary_start = base.index('<div class="lm-secondary')
+        unidos_start = base.index(
+            "{% if request.path.startswith('/converte-unidos') %}",
+            secondary_start,
+        )
         unidos_end = base.index("{% else %}", unidos_start)
         unidos_header = base[unidos_start:unidos_end]
         self.assertIn('href="https://converte.uno/"', unidos_header)

@@ -32,9 +32,9 @@ class LegalV103Tests(unittest.TestCase):
         self.assertIn("cancelar la renovación automática", text)
         self.assertIn("hasta que termine la vigencia contratada", text)
 
-    def test_footer_links_support_and_refund_policy(self):
+    def test_footer_links_refund_policy_without_support_email(self):
         text = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
-        self.assertIn('href="mailto:converte.uno@gmail.com"', text)
+        self.assertNotIn("Soporte: converte.uno@gmail.com", text)
         self.assertIn('href="/reembolso"', text)
         self.assertNotIn("WhatsApp de soporte", text)
 
