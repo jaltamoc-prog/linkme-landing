@@ -1,3 +1,4 @@
+# v1.103 textos comerciales y legales vigentes, soporte y política de devolución clara
 # v1.102 selector vertical de paquetes y mensaje consistente de 2 a 15 integrantes
 # v1.101 CONVERTE UNIDOS de 2 a 15 integrantes y precio anual por unidad
 # v1.100 actualiza CONVERTE UNIDOS a MXN $5,500 anuales
