@@ -1,3 +1,4 @@
+<!-- v1.105: navegación y botones de compra específicos de CONVERTE UNIDOS -->
 <!-- v1.104: accesos Google unificados y navegación sin botón Dudas -->
 <!-- v1.103: legales vigentes, soporte y política de devolución -->
 <!-- v1.099: CONVERTE UNIDOS abre en una pestaña nueva -->
@@ -92,12 +93,24 @@
         <span>Sign CONVERTE UNIDOS</span>
       </a>
     </div>
-    <div class="lm-secondary">
+    <div class="lm-secondary{% if request.path.startswith('/converte-unidos') %} lm-secondary-unidos{% endif %}">
       <a class="lm-wallet-mark" href="/#caracteristicas" aria-label="Compatible con Google Wallet en Android">
         <img src="{{ url_for('static', filename='img/google-wallet-logo.svg') }}?v={{ asset_version }}" alt="Google Wallet">
       </a>
+      {% if request.path.startswith('/converte-unidos') %}
+      <a class="lm-chip" href="https://converte.uno/">CONVERTE</a>
+      <a class="lm-commerce-link lm-commerce-converte" href="https://converte.uno/#precio" aria-label="Crea CONVERTE">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 12h8M12 8v8"/></svg>
+        <span>Crea CONVERTE</span>
+      </a>
+      <a class="lm-commerce-link lm-commerce-unidos" href="#planes-unidos" aria-label="Crea CONVERTE UNIDOS">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3.5 19c.4-3.3 2.3-5 5.5-5s5.1 1.7 5.5 5M15 15h6M18 12v6"/></svg>
+        <span>Crea CONVERTE UNIDOS</span>
+      </a>
+      {% else %}
       <a class="lm-chip" href="/#precio">Planes</a>
       <a class="lm-chip" href="/converte-unidos/" target="_blank" rel="noopener noreferrer">CONVERTE UNIDOS</a>
+      {% endif %}
     </div>
   </nav>
 </header>

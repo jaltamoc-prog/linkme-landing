@@ -1,4 +1,4 @@
-# v1.104 homologa CONVERTE UNIDOS y unifica accesos superiores con Google
+# v1.105 separa accesos y compra, y mejora navegación móvil de CONVERTE UNIDOS
 # v1.102 selector vertical de paquetes y mensaje consistente de 2 a 15 integrantes
 # v1.101 CONVERTE UNIDOS de 2 a 15 integrantes y precio anual por unidad
 # v1.100 actualiza CONVERTE UNIDOS a MXN $5,500 anuales
@@ -66,7 +66,7 @@ app.register_blueprint(generaqr_bp, url_prefix="/generaqr")
 app.register_blueprint(diagnostico_web_bp)
 
 # v1.027 - Cache busting para que celular cargue Ãºltima versiÃ³n de CSS/JS
-ASSET_VERSION = "1104"
+ASSET_VERSION = "1105"
 
 @app.context_processor
 def inject_asset_version():
